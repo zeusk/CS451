@@ -1,0 +1,42 @@
+﻿<Window x:Class="Checkers.StartWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Checkers"
+        mc:Ignorable="d"
+        WindowStyle="SingleBorderWindow"
+        AllowsTransparency="True"
+        Background="White"
+        ResizeMode="NoResize"
+        Title="Checker" Height="350" Width="525">
+    <Grid>
+
+        <!--Game Title-->
+        <TextBox x:Name="gameTitle" Background="Transparent" BorderThickness="0" IsReadOnly="True"
+             Text="Chckers" Foreground="Black"  FontSize="58" TextAlignment="Center" FontFamily="Comic Sans MS" 
+                 FontWeight="Bold" Margin="0,48,0,188"  />
+
+        <!--Connecting user alert-->
+        <TextBox x:Name="connectingToServerText" Background="Transparent" BorderThickness="0" IsReadOnly="True" Visibility="Hidden"
+             Text="Connecting to the server..." Foreground="Black"  FontSize="30" TextAlignment="Center" FontFamily="Comic Sans MS" 
+                 FontStyle="Italic" Margin="20,189,0,47" Grid.ColumnSpan="4" />
+
+        <!--Pop up window-->
+        <Popup Name="connectionPopup" Placement="Mouse" HorizontalOffset="-100" VerticalOffset="-100"  IsOpen="True" >
+            <StackPanel Background="LightGray" Height="117" Width="304">
+                <TextBlock Name="popupText"  FontSize="16"  Margin="0,0,0,0" Text="Please enter you IP address and user name"/>
+                <StackPanel Orientation="Horizontal" Margin="30, 10, 0, 0" >
+                    <TextBlock x:Name="popupIPAddress"  FontSize="16" Text="IP Address :" FontWeight="Bold"  Height="25" />
+                    <TextBox Name="enteredUserIPAddress" HorizontalAlignment="Left" Height="25" TextWrapping="Wrap"  Width="120" Margin="25,0,0, 0"  />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="30, 0, 0, 0">
+                    <TextBlock x:Name="popupUserName"  FontSize="16" Text="User Name:" FontWeight="Bold"  Height="25" />
+                    <TextBox Name="enteredUserName" HorizontalAlignment="Left" Height="25" TextWrapping="Wrap"  Width="120" Margin="25,0,0, 0" />
+                </StackPanel>
+                <Button Background="White" Content="Ok" Height="22" Width="50"  Margin="230, 10, 0, 0" Click="connectUserToServer"/>
+            </StackPanel>
+        </Popup>
+
+    </Grid>
+</Window>
