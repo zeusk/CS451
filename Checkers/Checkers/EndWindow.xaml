@@ -5,8 +5,25 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Checkers"
         mc:Ignorable="d"
-        Title="EndWindow" Height="300" Width="300">
+        WindowStyle="SingleBorderWindow"
+        AllowsTransparency="True"
+        Background="White"
+        ResizeMode="NoResize"
+        Title="EndWindow" Height="350" Width="525">
     <Grid>
+
+        <!--Game Result-->
+        <TextBox x:Name="gameResultWon" Background="Transparent" BorderThickness="0" IsReadOnly="True" Visibility="Hidden"
+             Text="You won!" Foreground="Black"  FontSize="58" TextAlignment="Center" FontFamily="Comic Sans MS" 
+                 FontWeight="Bold" Margin="0,48,0,188"  />
+        <TextBox x:Name="gameResultLost" Background="Transparent" BorderThickness="0" IsReadOnly="True" Visibility="Hidden"
+             Text="You lost" Foreground="Black"  FontSize="58" TextAlignment="Center" FontFamily="Comic Sans MS" 
+                 FontWeight="Bold" Margin="0,48,0,188"  />
         
+        <!--The continue game button-->
+        <Button  Background="White" Content="Continue" Height="50" Width="150" FontSize="30"  Margin="84,201,285,70" Click="natigateToGameBrowserWindow"/>
+        <Button  Background="White" Content="End" Height="50" Width="150" FontSize="30"  Margin="291,201,78,70" Click="closeGame"/>
+
+
     </Grid>
 </Window>
