@@ -14,12 +14,18 @@ namespace Checkers
 
         public int connect(String netAddress)
         {
+            if (isConnected)
+                return -1;
+
             isConnected = true;
             return 0;
         }
 
         public int disconnect()
         {
+            if (!isConnected)
+                return -1;
+
             isConnected = false;
             return 0;
         }
@@ -50,6 +56,9 @@ namespace Checkers
 
         public int joinGame(GameObj remote)
         {
+            if (!isConnected || inGame)
+                return -1;
+
             inGame = true;
             remoteGame = remote;
             return 0;
@@ -57,6 +66,9 @@ namespace Checkers
 
         public int quitGame()
         {
+            if (!isConnected || !inGame)
+                return -1;
+
             inGame = false;
             remoteGame = null;
             return 0;
