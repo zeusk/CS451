@@ -85,6 +85,9 @@
     <Compile Include="GameBrowserWindow.xaml.cs">
       <DependentUpon>GameBrowserWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GameClient.cs" />
+    <Compile Include="GameObj.cs" />
+    <Compile Include="GameState.cs" />
     <Compile Include="StartWindow.xaml.cs">
       <DependentUpon>StartWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
