@@ -10,7 +10,7 @@ namespace Checkers
     {
         private Array board = new Array[8, 8];
 
-        public CheckerBoard getBoard()
+        public static CheckerBoard getBoard()
         {
             return null;
         }

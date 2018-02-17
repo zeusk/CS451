@@ -42,7 +42,7 @@ namespace Checkers
             }
         }
 
-        public static Grid generateCheckerBoardUI(CheckerBoard myboard)
+        public static StackPanel generateCheckerBoardUI(CheckerBoard myboard)
         {
             Grid board = new Grid();
             return board;
