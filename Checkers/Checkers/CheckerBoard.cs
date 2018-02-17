@@ -6,13 +6,35 @@ using System.Threading.Tasks;
 
 namespace Checkers
 {
-    class CheckerBoard
+    public class CheckerBoard
     {
-        private Array board = new Array[8, 8];
+        private int [,] board;
+
+        public CheckerBoard ()
+        {
+        	//board = new int [8][8];
+        	//Populate board
+        }
 
         public static CheckerBoard getBoard()
         {
-            return null;
+            return this.board;
+        }
+
+        public bool applyMove ()
+        {
+        	//Apply Move and return true if move successfully moved
+        }
+
+        private validateMove ()
+        {
+        	//Validate a Given Move
+        }
+
+        private bool getResult(int Player)
+        {
+            // return win status for 
+
         }
     }
 }
