@@ -21,7 +21,7 @@ namespace Checkers
     public partial class EndWindow : Window
     {
         //Check whether the user won or lost
-        private bool won = getResult();
+        private bool won = CheckerBoard.getResult(playerId);
 
         public EndWindow()
         {

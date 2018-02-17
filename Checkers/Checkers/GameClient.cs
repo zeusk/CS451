@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Checkers
 {
-    class GameClient
+    public class GameClient
     {
         private Boolean inGame = false;
         private Boolean isConnected = false;
         private GameObj remoteGame = null;
 
-        public int connect(String netAddress)
+        public int connect(String netAddress, String userName)
         {
             if (isConnected)
                 return -1;
