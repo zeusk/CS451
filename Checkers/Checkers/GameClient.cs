@@ -12,19 +12,19 @@ namespace Checkers
         private Boolean isConnected = false;
         private GameObj remoteGame = null;
 
-        int connect(String netAddress)
+        public int connect(String netAddress)
         {
             isConnected = true;
             return 0;
         }
 
-        int disconnect()
+        public int disconnect()
         {
             isConnected = false;
             return 0;
         }
 
-        List<String> listPlayers()
+        public List<String> listPlayers()
         {
             List<String> ret = new List<String>();
 
@@ -36,7 +36,7 @@ namespace Checkers
             return ret;
         }
 
-        List<GameObj> listGames()
+        public List<GameObj> listGames()
         {
             List<GameObj> ret = new List<GameObj>();
 
@@ -48,21 +48,21 @@ namespace Checkers
             return ret;
         }
 
-        int joinGame(GameObj remote)
+        public int joinGame(GameObj remote)
         {
             inGame = true;
             remoteGame = remote;
             return 0;
         }
 
-        int quitGame()
+        public int quitGame()
         {
             inGame = false;
             remoteGame = null;
             return 0;
         }
 
-        int sendMove(GameState state)
+        public int sendMove(GameState state)
         {
             if (!isConnected || !inGame)
                 return -1;
@@ -75,7 +75,8 @@ namespace Checkers
             return 0;
         }
 
-        GameState receiveMove()
+        // Note: This call may block, call in async state or in a worker thread
+        public GameState receiveMove()
         {
             if (!isConnected || !inGame)
                 return null;
@@ -83,7 +84,7 @@ namespace Checkers
             return this.receiveState(this.remoteGame);
         }
 
-        private GameState receiveState()
+        private GameState receiveState(GameObj game)
         {
             return new GameState();
         }
