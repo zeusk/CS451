@@ -21,20 +21,21 @@
         <TextBox x:Name="listOfGamesTitle" Background="Transparent"  IsReadOnly="True"
         	Text="List of Games" Foreground="Black"  FontSize="20" TextAlignment="Center" FontFamily="Comic Sans MS" 
         	FontWeight="Bold" Margin="297,10,35,278" />
-        
+
         <!--Dynamic name of players-->
         <StackPanel x:Name="listOfPlayersPanel" Margin="52,64,280,72">
-            
+
         </StackPanel>
 
         <!--Dynamic name of games-->
         <StackPanel x:Name="listOfGamesPanel" Margin="297,64,35,72">
 
         </StackPanel>
-        
-        
+
+
         <!--Start game button-->
-        
+        <Button  Background="White" Content="Start a new game" FontSize="20"  Margin="172,277,151,10" Click="startNewGame"/>
+
 
 
     </Grid>
