@@ -19,7 +19,8 @@ namespace Checkers
     public partial class StartWindow : Window
     {
         //Retrieve user name from local disc
-        private string userName = getUserNameFromLocalDisc()? getUserNameFromLocalDisc() : "";
+        private string userName = Settings.getUserNameFromLocalDisc();
+        public GameClient gc = new GameClient();
 
         public StartWindow()
         {
@@ -36,7 +37,7 @@ namespace Checkers
             string ipAddress = enteredUserIPAddress.Text;
             userName = enteredUserName.Text;
             //Connect to the server
-            connectToServer(ipAddress, userName);
+            this.gc.connect(ipAddress, userName);
             //Show text indicating connection to server
             connectingToServerText.Visibility = Visibility.Visible;
 

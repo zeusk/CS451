@@ -23,7 +23,7 @@ namespace Checkers
         private string playerName = getConnectedPlayerName();
 
         //Check if the player is 0(red) or 1(wheat)
-        private int player = getCurrentPlayer();
+        private int player = GameState.getNamePlayer1();
 
         public CheckerBoardWindow()
         {

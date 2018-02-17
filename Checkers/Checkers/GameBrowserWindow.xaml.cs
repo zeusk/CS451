@@ -19,6 +19,8 @@ namespace Checkers
     /// </summary>
     public partial class GameBrowserWindow : Window
     {
+        private int playerId = 1;
+
         public GameBrowserWindow()
         {
             InitializeComponent();
@@ -29,7 +31,7 @@ namespace Checkers
         //Generate list of players
         private void generateListOfPlayers()
         {
-            Array listOfPlayers = getOnlinePlayers();
+            Array listOfPlayers = gc.listPlayers();
             foreach (string name in listOfPlayers)
             {
                 TextBox player = new TextBox();
@@ -42,10 +44,10 @@ namespace Checkers
         //generate list of games
         private void generateListOfGames()
         {
-            string[] gameIds = getGameIds();
-            foreach (string id in gameIds)
+            List<GameState> gameIds = gc.listGames();
+            foreach (GameState gs in gameIds)
             {
-                StackPanel currentGame = generateGameOverview(id);
+                StackPanel currentGame = generateGameOverview(gs);
                 listOfGamesPanel.Children.Add(currentGame);
             }
         }
@@ -72,7 +74,7 @@ namespace Checkers
             mygame.Height = 25;
 
             //generate the name of the player who's in the game at the moment 
-            string playerName = getPlayerNameByGame(gameId);
+            string playerName = GameState.getNamePlayer1();
             TextBox player = new TextBox();
             player.Text = playerName;
             player.Width = 25;
@@ -91,6 +93,7 @@ namespace Checkers
         //Start a new game
         private void startNewGame(object sender, RoutedEventArgs e)
         {
+            playerId = 1;
             //Go to the main game page
             Uri uri = new Uri("CheckerBoardWindow.xaml", UriKind.Relative);
             NavigationService.Navigate(uri);
