@@ -1,0 +1,29 @@
+﻿<Window x:Class="Checkers.EndWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Checkers"
+        mc:Ignorable="d"
+        WindowStyle="SingleBorderWindow"
+        AllowsTransparency="True"
+        Background="White"
+        ResizeMode="NoResize"
+        Title="EndWindow" Height="350" Width="525">
+    <Grid>
+
+        <!--Game Result-->
+        <TextBox x:Name="gameResultWon" Background="Transparent" BorderThickness="0" IsReadOnly="True" Visibility="Hidden"
+             Text="You won!" Foreground="Black"  FontSize="58" TextAlignment="Center" FontFamily="Comic Sans MS" 
+                 FontWeight="Bold" Margin="0,48,0,188"  />
+        <TextBox x:Name="gameResultLost" Background="Transparent" BorderThickness="0" IsReadOnly="True" Visibility="Hidden"
+             Text="You lost" Foreground="Black"  FontSize="58" TextAlignment="Center" FontFamily="Comic Sans MS" 
+                 FontWeight="Bold" Margin="0,48,0,188"  />
+        
+        <!--The continue game button-->
+        <Button  Background="White" Content="Continue" Height="50" Width="150" FontSize="30"  Margin="84,201,285,70" Click="natigateToGameBrowserWindow"/>
+        <Button  Background="White" Content="End" Height="50" Width="150" FontSize="30"  Margin="291,201,78,70" Click="closeGame"/>
+
+
+    </Grid>
+</Window>
