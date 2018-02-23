@@ -9,16 +9,16 @@ namespace Checkers
     public class CheckerBoard
     {
         private int [,] board;
-
         public CheckerBoard ()
         {
         	//board = new int [8][8];
         	//Populate board
         }
 
-        public static CheckerBoard getBoard()
+        public int[,] getBoard()
         {
-            return this.board;
+            int[,] board = new int[8, 8];
+            return board;
         }
 
         public bool applyMove ()

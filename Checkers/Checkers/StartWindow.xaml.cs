@@ -20,7 +20,7 @@ namespace Checkers
     {
         //Retrieve user name from local disc
         private string userName = Settings.getUserNameFromLocalDisc();
-        public GameClient gc = new GameClient();
+        private GameClient gc = new GameClient();
 
         public StartWindow()
         {
@@ -48,8 +48,9 @@ namespace Checkers
 
         private void navigateToGameBrowserPage()
         {
-            Uri uri = new Uri("GameBrowserWindow.xaml", UriKind.Relative);
-            NavigationService.Navigate(uri);
+            NavigationService n = NavigationService.GetNavigationService(this);
+            n.Navigate(new Uri("GameBrowserWindow.xaml", UriKind.Relative), gc);
         }
+
     }
 }

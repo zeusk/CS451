@@ -21,7 +21,8 @@ namespace Checkers
     public partial class EndWindow : Window
     {
         //Check whether the user won or lost
-        private bool won = CheckerBoard.getResult(playerId);
+        private bool won = CheckerBoard.getResult;
+        private GameState gc;
 
         public EndWindow()
         {
@@ -37,16 +38,21 @@ namespace Checkers
             }
         }
 
+        void NavigationService_LoadCompleted(object sender, NavigationEventArgs e)
+        {
+            gc = e;
+        }
+
         private void natigateToGameBrowserWindow(object sender, RoutedEventArgs e)
         {
-            Uri uri = new Uri("GameBrowserWindow.xaml", UriKind.Relative);
-            NavigationService.Navigate(uri);
+            NavigationService n = NavigationService.GetNavigationService(this);
+            n.Navigate(new Uri("GameBrowserWindow.xaml", UriKind.Relative), gc);
         }
 
         //exit the game
         private void closeGame(object sender, RoutedEventArgs e)
         {
-            Application.Exit();
+            Application.Current.Shutdown();
         }
     }
 }

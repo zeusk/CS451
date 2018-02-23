@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Navigation;
 
 namespace Checkers
 {
@@ -99,6 +100,11 @@ namespace Checkers
         private GameState receiveState(GameObj game)
         {
             return new GameState();
+        }
+
+        public static implicit operator GameClient(NavigationEventArgs v)
+        {
+            throw new NotImplementedException();
         }
     }
 }
