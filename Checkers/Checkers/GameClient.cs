@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Navigation;
 
 namespace Checkers
 {
@@ -10,7 +11,7 @@ namespace Checkers
     {
         private Boolean inGame = false;
         private Boolean isConnected = false;
-        private GameObj remoteGame = null;
+        private GameState remoteGame = null;
 
         public int connect(String netAddress, String userName)
         {
@@ -42,9 +43,9 @@ namespace Checkers
             return ret;
         }
 
-        public List<GameObj> listGames()
+        public List<GameState> listGames()
         {
-            List<GameObj> ret = new List<GameObj>();
+            List<GameState> ret = new List<GameState>();
 
             if (isConnected)
             {
@@ -82,7 +83,7 @@ namespace Checkers
             return this.sendState(this.remoteGame, state);
         }
 
-        private int sendState(GameObj remoteGame, GameState state)
+        private int sendState(GameState remoteGame, GameState state)
         {
             return 0;
         }
@@ -96,9 +97,14 @@ namespace Checkers
             return this.receiveState(this.remoteGame);
         }
 
-        private GameState receiveState(GameObj game)
+        private GameState receiveState(GameState game)
         {
             return new GameState();
+        }
+
+        public static implicit operator GameClient(NavigationEventArgs v)
+        {
+            throw new NotImplementedException();
         }
     }
 }

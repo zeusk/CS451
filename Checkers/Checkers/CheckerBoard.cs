@@ -9,24 +9,20 @@ namespace Checkers
     public class CheckerBoard
     {
         private int [,] board;
-
         public CheckerBoard ()
         {
         	//board = new int [8][8];
         	//Populate board
         }
 
-        public static CheckerBoard getBoard()
+
+        public int[,] applyMove (List<int> movePair)
         {
-            return this.board;
+            //Apply Move and return true if move successfully moved
+            return null;
         }
 
-        public bool applyMove ()
-        {
-        	//Apply Move and return true if move successfully moved
-        }
-
-        private validateMove ()
+        private bool validateMove ()
         {
         	//Validate a Given Move
         }

@@ -11,7 +11,9 @@
         ResizeMode="NoResize"
         Title="Checker" Height="350" Width="525">
     <Grid>
-
+        <!--<DockPanel>
+            <Frame x:Name="_mainFrame" />
+        </DockPanel>-->
         <!--Game Title-->
         <TextBox x:Name="gameTitle" Background="Transparent" BorderThickness="0" IsReadOnly="True"
              Text="Chckers" Foreground="Black"  FontSize="58" TextAlignment="Center" FontFamily="Comic Sans MS" 
