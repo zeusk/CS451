@@ -9,6 +9,19 @@ namespace Checkers
 {
     public class GameState
     {
+        private CheckerBoard _checkerBoard;
+        public CheckerBoard cb
+        {
+            get
+            {
+                return _checkerBoard;
+            }
+            set
+            {
+                _checkerBoard = value;
+            }
+        }
+
         private static string _player1Name;
         public static string player1Name
         {
@@ -23,6 +36,12 @@ namespace Checkers
         }
 
         private static string _player2Name;
+
+        public bool getResult()
+        {
+            throw new NotImplementedException();
+        }
+
         public static string player2Name
         {
             get
@@ -46,6 +65,12 @@ namespace Checkers
             {
                 _currentPlayer = value;
             }
+        }
+
+        public int[,] getBoard()
+        {
+            int[,] board = new int[8, 8];
+            return board;
         }
 
         public static implicit operator GameState(NavigationEventArgs v)

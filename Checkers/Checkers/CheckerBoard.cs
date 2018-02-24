@@ -15,18 +15,14 @@ namespace Checkers
         	//Populate board
         }
 
-        public int[,] getBoard()
+
+        public int[,] applyMove (List<int> movePair)
         {
-            int[,] board = new int[8, 8];
-            return board;
+            //Apply Move and return true if move successfully moved
+            return null;
         }
 
-        public bool applyMove ()
-        {
-        	//Apply Move and return true if move successfully moved
-        }
-
-        private validateMove ()
+        private bool validateMove ()
         {
         	//Validate a Given Move
         }

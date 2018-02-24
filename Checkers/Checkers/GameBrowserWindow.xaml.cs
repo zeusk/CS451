@@ -53,8 +53,8 @@ namespace Checkers
         //generate list of games
         private void generateListOfGames()
         {
-            List<GameObj> allGames = gc.listGames();
-            foreach (GameObj gs in allGames)
+            List<GameState> allGames = gc.listGames();
+            foreach (GameState gs in allGames)
             {
                 StackPanel currentGame = generateGameOverview(gs);
                 listOfGamesPanel.Children.Add(currentGame);
@@ -62,7 +62,7 @@ namespace Checkers
         }
 
         //Generate game overview
-        private StackPanel generateGameOverview(GameObj go)
+        private StackPanel generateGameOverview(GameState gs)
         {
             StackPanel game = new StackPanel();
 
@@ -79,7 +79,7 @@ namespace Checkers
             };
 
             //gnerate the overview of the board
-            Grid mygame = CheckerBoardWindow.generateCheckerBoardUI(go);
+            Grid mygame = CheckerBoardWindow.generateCheckerBoardUI(gs);
             mygame.Width = 25;
             mygame.Height = 25;
 

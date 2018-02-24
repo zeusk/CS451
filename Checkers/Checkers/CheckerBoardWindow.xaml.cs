@@ -16,14 +16,15 @@ namespace Checkers
         //The player the the user is currently playing against
         private string opponentName = GameBrowserWindow.playerId==1?GameState.player1Name:GameState.player2Name;
         private bool isMyTurn;
-        private GameState gc;
+        private GameClient gc;
+        private GameState gs;
         private static List<int> movePair = new List<int>();
 
         public CheckerBoardWindow()
         {
             InitializeComponent();
-            CheckerBoard myboard = CheckerBoard.getBoard();
-            checkerBoardGrid = generateCheckerBoardUI(myboard);
+  
+            checkerBoardGrid = generateCheckerBoardUI(gs);
             checkerBoardGrid.Margin = new Thickness(249, 25, 35, 61);
             checkerBoardGrid.Height = 240;
             checkerBoardGrid.Width = 240;
@@ -43,11 +44,13 @@ namespace Checkers
         void NavigationService_LoadCompleted(object sender, NavigationEventArgs e)
         {
             gc = e;
+            gs = gc.receiveMove();
         }
 
-        public static Grid generateCheckerBoardUI(CheckerBoard cb)
+        public static Grid generateCheckerBoardUI(GameState gs)
         {
             Grid myGrid = new Grid();
+            int[,] myboard = gs.getBoard();
 
             // Create Columns
             List<ColumnDefinition> gridCols = new List<ColumnDefinition>();
@@ -71,7 +74,6 @@ namespace Checkers
                 myGrid.RowDefinitions.Add(r);
             }
 
-            int[,] board = cb.getBoard();
             Color backGroundColor = new Color();
 
             for (int i = 0; i < 8; i++)
@@ -93,7 +95,7 @@ namespace Checkers
                     checkerboxButton.Click += (s, e) => {
                         if(GameState.currentPlayer == GameBrowserWindow.playerId)
                         {
-                            addMove(i, j);
+                            addMove(i, j, gs.cb);
                         }
                     };
                     Shape ellips = new Ellipse() { Height = 20, Width = 20, HorizontalAlignment = HorizontalAlignment.Center };
@@ -101,32 +103,33 @@ namespace Checkers
                     ellips.SetValue(Grid.ColumnProperty, j);
                     Panel.SetZIndex(ellips, 1);
                     //Check if there is a checker piece on this box
-                    if (board[i, j] == 1)
+                    if (myboard[i, j] == 1)
                     {
                         //player 1, regular
                         ellips.Fill = new SolidColorBrush(Colors.Red);
-                        ellips.Stroke = new SolidColorBrush(Colors.Orange);
-                        ellips.StrokeThickness = 4;
-                    }else if(board[i, j] == 2)
+                        ellips.Stroke = new SolidColorBrush(Colors.Black);
+                        ellips.StrokeThickness = 2;
+                    }
+                    else if(myboard[i, j] == 2)
                     {
                         //player 1, kinged
                         ellips.Fill = new SolidColorBrush(Colors.Red);
-                        ellips.Stroke = new SolidColorBrush(Colors.Black);
-                        ellips.StrokeThickness = 2;
-                    }
-                    else if(board[i, j] == 3)
-                    {
-                        //player 2, regular
-                        ellips.Fill = new SolidColorBrush(Colors.White);
                         ellips.Stroke = new SolidColorBrush(Colors.Orange);
                         ellips.StrokeThickness = 4;
                     }
-                    else if (board[i, j] == 4)
+                    else if(myboard[i, j] == 3)
                     {
-                        //player 2, kinged
+                        //player 2, regular
                         ellips.Fill = new SolidColorBrush(Colors.White);
                         ellips.Stroke = new SolidColorBrush(Colors.Black);
                         ellips.StrokeThickness = 2;
+                    }
+                    else if (myboard[i, j] == 4)
+                    {
+                        //player 2, kinged
+                        ellips.Fill = new SolidColorBrush(Colors.White);
+                        ellips.Stroke = new SolidColorBrush(Colors.Orange);
+                        ellips.StrokeThickness = 4;
                     }
                     else
                     {
@@ -140,7 +143,7 @@ namespace Checkers
             return myGrid;
         }
 
-        private static void addMove(int i, int j)
+        private static void addMove(int i, int j, CheckerBoard cb)
         {
             if (movePair.Count == 0 )
             {
@@ -151,7 +154,7 @@ namespace Checkers
             {
                 movePair.Add(i);
                 movePair.Add(j);
-                GameState newS = GameState.makeMove(movePair);
+                int[,] newS = cb.applyMove(movePair);
                 movePair.Clear();
                 if (newS != null)
                 {
@@ -162,6 +165,12 @@ namespace Checkers
                     MessageBox.Show("Your move was not valid");
                 }
             }
+        }
+
+        private void navigateToEndWindow(object sender, RoutedEventArgs e)
+        {
+            NavigationService n = NavigationService.GetNavigationService(this);
+            n.Navigate(new Uri("EndWindow.xaml", UriKind.Relative), gc);
         }
 
     }

@@ -43,10 +43,10 @@ namespace Checkers
 
 
             //Go to next page if success
-            navigateToGameBrowserPage();
+            navigateToGameBrowserWindow();
         }
 
-        private void navigateToGameBrowserPage()
+        private void navigateToGameBrowserWindow()
         {
             NavigationService n = NavigationService.GetNavigationService(this);
             n.Navigate(new Uri("GameBrowserWindow.xaml", UriKind.Relative), gc);
