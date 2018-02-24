@@ -26,5 +26,11 @@ namespace Checkers
         {
         	//Validate a Given Move
         }
+
+        private bool getResult(int Player)
+        {
+            // return win status for 
+
+        }
     }
 }

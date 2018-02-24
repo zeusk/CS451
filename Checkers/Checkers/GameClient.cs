@@ -55,14 +55,14 @@ namespace Checkers
             return ret;
         }
 
-        public int joinGame(GameState remote)
+        public GameState joinGame(GameObj remote)
         {
             if (!isConnected || inGame)
-                return -1;
+                return null;
 
             inGame = true;
             remoteGame = remote;
-            return 0;
+            return new GameState();
         }
 
         public int quitGame()
