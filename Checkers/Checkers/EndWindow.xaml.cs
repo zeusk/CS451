@@ -40,20 +40,20 @@ namespace Checkers
             }
         }
 
-        void NavigationService_LoadCompleted(object sender, NavigationEventArgs e)
+        protected void NavigationService_LoadCompleted(object sender, NavigationEventArgs e)
         {
             gc = e;
             gs = gc.receiveMove();
         }
 
-        private void navigateToGameBrowserWindow(object sender, RoutedEventArgs e)
+        public void NavigateToGameBrowserWindow(object sender, RoutedEventArgs e)
         {
             NavigationService n = NavigationService.GetNavigationService(this);
             n.Navigate(new Uri("GameBrowserWindow.xaml", UriKind.Relative), gc);
         }
 
         //exit the game
-        private void closeGame(object sender, RoutedEventArgs e)
+        protected void CloseGame(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
         }

@@ -32,13 +32,13 @@ namespace Checkers
         }
 
 
-        void NavigationService_LoadCompleted(object sender, NavigationEventArgs e)
+        protected void NavigationService_LoadCompleted(object sender, NavigationEventArgs e)
         {
             gc = e;
         }
 
         //Generate list of players
-        private void generateListOfPlayers()
+        protected void generateListOfPlayers()
         {
             List<String> listOfPlayers = gc.listPlayers();
             foreach (string name in listOfPlayers)
@@ -51,7 +51,7 @@ namespace Checkers
 
 
         //generate list of games
-        private void generateListOfGames()
+        protected void generateListOfGames()
         {
             List<GameState> allGames = gc.listGames();
             foreach (GameState gs in allGames)
@@ -62,7 +62,7 @@ namespace Checkers
         }
 
         //Generate game overview
-        private StackPanel generateGameOverview(GameState gs)
+        protected StackPanel generateGameOverview(GameState gs)
         {
             StackPanel game = new StackPanel();
 
@@ -102,7 +102,7 @@ namespace Checkers
         }
 
         //Start a new game
-        private void startNewGame(object sender, RoutedEventArgs e)
+        protected void startNewGame(object sender, RoutedEventArgs e)
         {
             playerId = 1;
             //Go to the main game page

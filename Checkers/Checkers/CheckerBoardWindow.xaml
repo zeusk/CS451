@@ -14,7 +14,7 @@
         <!--Connected to Text-->
         <TextBox x:Name="connectedToText" Background="Transparent" IsReadOnly="True"
              Text="Connected to:" Foreground="Black"  FontSize="15" FontFamily="Comic Sans MS" 
-                 FontWeight="Bold" Margin="25,71,355,219" TextChanged="connectedToText_TextChanged" />
+                 FontWeight="Bold" Margin="25,71,355,219" />
         <!--Connected player-->
         <TextBox x:Name="connectedPlayerName" Background="Transparent" IsReadOnly="True" Foreground="Black"  FontSize="15" FontFamily="Comic Sans MS" 
                  FontWeight="Bold" Margin="25,102,355,188" />
@@ -23,7 +23,7 @@
         <!--Turn to move-->
         <StackPanel Margin="25,154,313,104">
             <TextBox x:Name="turnToMoveText" Background="Transparent" IsReadOnly="True" Foreground="Black"  FontSize="15" FontFamily="Comic Sans MS" 
-                 Text="It's your turn to move" FontWeight="Bold" TextChanged="turnToMoveText_TextChanged" />
+                 Text="It's your turn to move" FontWeight="Bold" />
             <Grid HorizontalAlignment="Left">
                 <Ellipse Name="playerColorCircle" Width="15" Height="15" Stroke="Black"  StrokeThickness="1"/>
             </Grid>

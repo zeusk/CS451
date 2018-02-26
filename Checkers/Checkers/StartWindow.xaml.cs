@@ -32,7 +32,7 @@ namespace Checkers
             enteredUserName.Text = userName;
         }
 
-        private void connectUserToServer(object sender, RoutedEventArgs e)
+        protected void connectUserToServer(object sender, RoutedEventArgs e)
         {
             string ipAddress = enteredUserIPAddress.Text;
             userName = enteredUserName.Text;
@@ -46,7 +46,7 @@ namespace Checkers
             navigateToGameBrowserWindow();
         }
 
-        private void navigateToGameBrowserWindow()
+        protected void navigateToGameBrowserWindow()
         {
             NavigationService n = NavigationService.GetNavigationService(this);
             n.Navigate(new Uri("GameBrowserWindow.xaml", UriKind.Relative), gc);
