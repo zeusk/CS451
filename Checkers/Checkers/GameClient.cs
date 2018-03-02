@@ -22,7 +22,7 @@ namespace Checkers
 
         private static GameClient gcInstance = null;
 
-        public static GameClient init(String netAddress, String userName)
+        public static GameClient init()
         {
             if (GameClient.gcInstance == null)
                 GameClient.gcInstance = new GameClient();
