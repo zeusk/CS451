@@ -21,8 +21,8 @@
                  FontWeight="Bold" Margin="0,48,0,188"  />
         
         <!--The continue game button-->
-        <Button  Background="White" Content="Continue" Height="50" Width="150" FontSize="30"  Margin="84,201,285,70" Click="natigateToGameBrowserWindow"/>
-        <Button  Background="White" Content="End" Height="50" Width="150" FontSize="30"  Margin="291,201,78,70" Click="closeGame"/>
+        <Button  Background="White" Content="Continue" Height="50" Width="150" FontSize="30"  Margin="84,201,285,70" Click="NavigateToGameBrowserWindow"/>
+        <Button  Background="White" Content="End" Height="50" Width="150" FontSize="30"  Margin="291,201,78,70" Click="CloseGame"/>
 
 
     </Grid>

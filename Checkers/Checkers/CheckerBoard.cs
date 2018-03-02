@@ -24,7 +24,8 @@ namespace Checkers
 
         private bool validateMove ()
         {
-        	//Validate a Given Move
+            //Validate a Given Move
+            return false;
         }
 
         private bool getResult(int Player)

@@ -34,14 +34,27 @@ namespace Checkers
             connectedPlayerName.Text = opponentName;
             if(GameState.currentPlayer == 1)
             {
-                playerColorCircle.Fill = new SolidColorBrush(Colors.Red); 
-            }else
-            {
-                playerColorCircle.Fill = new SolidColorBrush(Colors.Wheat);
+                playerColorCircle.Fill = new SolidColorBrush(Colors.Red);
+                turnToMoveText.Visibility = Visibility.Visible;
+                playerColorCircle.Visibility = Visibility.Visible;
             }
+            else
+            {
+                playerColorCircle.Fill = new SolidColorBrush(Colors.Blue);
+                turnToMoveText.Visibility = Visibility.Hidden;
+                playerColorCircle.Visibility = Visibility.Hidden;
+            }
+
+            /*while (Game not end){
+                //check if it's the user's turn
+                //If it is, show texts, ask for move 
+                //update the UI
+            }*/
+
+
         }
 
-        void NavigationService_LoadCompleted(object sender, NavigationEventArgs e)
+        protected void NavigationService_LoadCompleted(object sender, NavigationEventArgs e)
         {
             gc = e;
             gs = gc.receiveMove();
@@ -143,7 +156,7 @@ namespace Checkers
             return myGrid;
         }
 
-        private static void addMove(int i, int j, CheckerBoard cb)
+        protected static void addMove(int i, int j, CheckerBoard cb)
         {
             if (movePair.Count == 0 )
             {
@@ -167,7 +180,7 @@ namespace Checkers
             }
         }
 
-        private void navigateToEndWindow(object sender, RoutedEventArgs e)
+        protected void navigateToEndWindow(object sender, RoutedEventArgs e)
         {
             NavigationService n = NavigationService.GetNavigationService(this);
             n.Navigate(new Uri("EndWindow.xaml", UriKind.Relative), gc);
