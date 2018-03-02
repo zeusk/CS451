@@ -15,10 +15,24 @@ namespace Checkers
         private Boolean inGame = false;
         private Boolean isConnected = false;
 
-        private String     userId;
+        private String userId;
         private IPEndPoint remote;
-        private Socket     client;
-        private byte[]     r_buff = new byte[16384];
+        private Socket client;
+        private byte[] r_buff = new byte[16384];
+
+        private static GameClient gcInstance = null;
+
+        public static GameClient init(String netAddress, String userName)
+        {
+            if (GameClient.gcInstance == null)
+                GameClient.gcInstance = new GameClient();
+            return GameClient.gcInstance;
+        }
+
+        public static GameClient getInstance()
+        {
+            return GameClient.gcInstance;
+        }
 
         // TODO: make these part of GameState
         private static GameState parseFromString(String gString)
@@ -33,7 +47,7 @@ namespace Checkers
             return "";
         }
 
-        public int Connect(String netAddress, String userName)
+        private int Connect(String netAddress, String userName)
         {
             if (isConnected)
             {
@@ -79,7 +93,8 @@ namespace Checkers
                 client.Shutdown(SocketShutdown.Both);
                 client.Close();
                 isConnected = false;
-            } catch (Exception e) {Console.Write(e.ToString());}
+            }
+            catch (Exception e) { Console.Write(e.ToString()); }
 
             return 0;
         }
@@ -194,7 +209,7 @@ namespace Checkers
             return -1;
         }
 
-        private int sendState(GameState game)
+        public int sendState(GameState game)
         {
             if (isConnected && inGame)
             {
@@ -218,7 +233,7 @@ namespace Checkers
             return -1;
         }
 
-        private GameState receiveState(GameState game)
+        public GameState receiveState(GameState game)
         {
             GameState ret = null;
 
@@ -245,12 +260,6 @@ namespace Checkers
             }
 
             return ret;
-        }
-
-        // ???
-        public static implicit operator GameClient(NavigationEventArgs v)
-        {
-            throw new NotImplementedException();
         }
     }
 }
