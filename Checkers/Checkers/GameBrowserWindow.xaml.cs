@@ -21,7 +21,7 @@ namespace Checkers
     public partial class GameBrowserWindow : Page
     {
         //private int playerId = 1;
-        private GameClient gc;
+        private GameClient gc = GameClient.getInstance();
         public static int playerId;
 
         public GameBrowserWindow()
@@ -32,19 +32,13 @@ namespace Checkers
         }
 
 
-        void NavigationService_LoadCompleted(object sender, NavigationEventArgs e)
-        {
-            gc = (GameClient)e.ExtraData;
-            Debug.Write("gc is here");
-        }
-
         //Generate list of players
         protected void generateListOfPlayers()
         {
-            //List<String> listOfPlayers = gc.listPlayers();
-            List<String> listOfPlayers = new List<string>();
-            listOfPlayers.Add("Andy");
-            listOfPlayers.Add("Marry");
+            List<String> listOfPlayers = gc.listPlayers();
+            //List<String> listOfPlayers = new List<string>();
+            //listOfPlayers.Add("Andy");
+            //listOfPlayers.Add("Marry");
             foreach (string name in listOfPlayers)
             {
                 TextBox player = new TextBox();
@@ -88,8 +82,8 @@ namespace Checkers
             joinButton.Click += (s, e) => {
                 //Go to the main game page
                 playerId = 2;
-                NavigationService n = NavigationService.GetNavigationService(this);
-                n.Navigate(new Uri("CheckerBoardWindow.xaml", UriKind.Relative), gc);
+                gc.joinGame(gs);
+                NavigationService.Navigate(new Uri("CheckerBoardWindow.xaml", UriKind.Relative));
             };
             joinButton.HorizontalAlignment = HorizontalAlignment.Left;
 
@@ -100,7 +94,7 @@ namespace Checkers
             mygame.HorizontalAlignment = HorizontalAlignment.Center;
 
             //generate the name of the player who's in the game at the moment 
-            //GameState gs = go.getGameState();
+            //string playerName = gs.player1Name;
             string playerName = "temp";
             TextBox player = new TextBox();
             player.Text = playerName;
@@ -121,10 +115,10 @@ namespace Checkers
         //Start a new game
         protected void startNewGame(object sender, RoutedEventArgs e)
         {
-            gc = new GameClient();
             playerId = 1;
             //Go to the main game page
-            NavigationService.Navigate(new Uri("CheckerBoardWindow.xaml", UriKind.Relative), gc);
+            gc.joinGame();
+            NavigationService.Navigate(new Uri("CheckerBoardWindow.xaml", UriKind.Relative));
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Checkers
         //Retrieve user name from local disc
         private string userName = "Mike";
         //private string userName = Settings.getUserNameFromLocalDisc();
-        private GameClient gc = new GameClient();
+        private GameClient gc;
 
         public StartWindow()
         {
@@ -31,6 +31,9 @@ namespace Checkers
             //Set the user name field for popup window
             enteredUserName.Text = userName;
             connectionPopup.IsOpen = true;
+
+            GameClient.init();
+            gc = GameClient.getInstance();
         }
 
         protected void connectUserToServer(object sender, RoutedEventArgs e)
@@ -45,12 +48,12 @@ namespace Checkers
             userName = enteredUserName.Text;
 
             //Connect to the server
-            //Task<int> taskConnect = Task<int>.Factory.StartNew( () => this.gc.connect(ipAddress, userName) );
-            //taskConnect.Wait();
-            //int isConnected = taskConnect.Result;
-            int isConnected = 0;
-            //if (taskConnect.Status == TaskStatus.Faulted || (isConnected != 0 && isConnected != -1))
-            if ( isConnected != 0 && isConnected != -1)
+            Task<int> taskConnect = Task<int>.Factory.StartNew( () => this.gc.Connect(ipAddress, userName) );
+            taskConnect.Wait();
+            int isConnected = taskConnect.Result;
+            //int isConnected = 0;
+            if (taskConnect.Status == TaskStatus.Faulted || (isConnected != 0 && isConnected != -1))
+            //if ( isConnected != 0 && isConnected != -1)
             {
                 MessageBox.Show("Connection failed. Please try again.");
                 connectionPopup.IsOpen = true;
@@ -67,7 +70,7 @@ namespace Checkers
 
         protected void navigateToGameBrowserWindow()
         {
-             NavigationService.Navigate(new Uri("GameBrowserWindow.xaml", UriKind.Relative), gc);
+             NavigationService.Navigate(new Uri("GameBrowserWindow.xaml", UriKind.Relative));
         }
     }
 }

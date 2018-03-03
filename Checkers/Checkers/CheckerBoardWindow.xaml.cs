@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -17,8 +18,7 @@ namespace Checkers
         //The player the the user is currently playing against
         //private string opponentName = GameBrowserWindow.playerId==1?GameState.player1Name:GameState.player2Name;
         private string opponentName = "oppo";
-        private static GameClient gc;
-        private static GameState gs;
+        private static GameClient gc = GameClient.getInstance();
         private static List<int> movePair = new List<int>();
         private static Color currentPlayerColor = new Color();
 
@@ -26,7 +26,7 @@ namespace Checkers
         {
             InitializeComponent();
             
-            checkerBoardGrid.Children.Add(generateCheckerBoardUI(240, gs));
+            checkerBoardGrid.Children.Add(generateCheckerBoardUI(240, gc.getGameState()));
             checkerBoardGrid.Margin = new Thickness(249, 25, 35, 61);
 
             if(GameBrowserWindow.playerId == 1)
@@ -57,7 +57,9 @@ namespace Checkers
                     turnToMoveText.Visibility = Visibility.Hidden;
                     playerColorCircle.Visibility = Visibility.Hidden;
                 }
-
+                Task<GameState> taskConnect = Task<GameState>.Factory.StartNew(() => this.gc.receiveState());
+                taskConnect.Wait();
+                int isConnected = taskConnect.Result;
             }
             //navigateToEndWindow();
 
@@ -120,10 +122,7 @@ namespace Checkers
                     checkerboxButton.SetValue(Grid.ColumnProperty, j);
                     checkerboxButton.Background = new SolidColorBrush(backGroundColor); ;
                     checkerboxButton.Click += (s, e) => {
-                        if(GameState.currentPlayer == GameBrowserWindow.playerId)
-                        {
                             addMove(i, j, gs.cb);
-                        }
                     };
                     double ellipSize = (size / 8) * 0.8;
                     Shape ellips = new Ellipse() { Height = ellipSize, Width = ellipSize, HorizontalAlignment = HorizontalAlignment.Center };
@@ -171,7 +170,7 @@ namespace Checkers
             return myGrid;
         }
 
-        protected static void addMove(int i, int j, CheckerBoard cb)
+        protected static GameState addMove(int i, int j, CheckerBoard cb)
         {
             if (movePair.Count == 0 )
             {
@@ -182,7 +181,7 @@ namespace Checkers
             {
                 movePair.Add(i);
                 movePair.Add(j);
-                int[,] newS = gs.cb.applyMove(movePair);
+                GameState newS = gc.getGameState().applyMove(movePair);
                 movePair.Clear();
                 if (newS == null)
                 {
@@ -190,9 +189,14 @@ namespace Checkers
                 }
                 else
                 {
-                    GameState.currentPlayer = 3 - GameBrowserWindow.playerId;
+                    if (gc.sendState(newS) != 0)
+                    {
+                        MessageBox.Show("Failed updating move");
+                    }
                 }
             }
+            return gc.getGameState();
+
         }
 
         protected void navigateToEndWindow()

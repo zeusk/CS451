@@ -18,13 +18,12 @@ namespace Checkers
     {
         //Check whether the user won or lost
         private bool won;
-        private GameClient gc;
-        private GameState gs;
+        private GameClient gc = GameClient.getInstance();
 
         public EndWindow()
         {
             InitializeComponent();
-            won = gs.getResult();
+            won = gc.getGameState().getResult();
 
             //Generate the text to indicate won or lost
             if (won)
@@ -38,15 +37,14 @@ namespace Checkers
 
         void NavigationService_LoadCompleted(object sender, NavigationEventArgs e)
         {
-            gc = (GameClient)e.ExtraData;
-            gs = gc.receiveMove();
+            //gc = (GameClient)e.ExtraData;
             Debug.Write("gc is here");
         }
 
 
         public void NavigateToGameBrowserWindow(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new Uri("GameBrowserWindow.xaml", UriKind.Relative), gc);
+            NavigationService.Navigate(new Uri("GameBrowserWindow.xaml", UriKind.Relative));
         }
 
         //exit the game

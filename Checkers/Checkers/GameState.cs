@@ -22,8 +22,8 @@ namespace Checkers
             }
         }
 
-        private static string _player1Name;
-        public static string player1Name
+        private string _player1Name;
+        public string player1Name
         {
             get
             {
@@ -35,14 +35,14 @@ namespace Checkers
             }
         }
 
-        private static string _player2Name;
+        private string _player2Name;
 
         public bool getResult()
         {
             throw new NotImplementedException();
         }
 
-        public static string player2Name
+        public string player2Name
         {
             get
             {
@@ -54,8 +54,10 @@ namespace Checkers
             }
         }
 
-        private static int _currentPlayer;
-        public static int currentPlayer
+        //Not useful for now
+        /*
+        private int _currentPlayer;
+        public int currentPlayer
         {
             get
             {
@@ -65,7 +67,7 @@ namespace Checkers
             {
                 _currentPlayer = value;
             }
-        }
+        }*/
 
         public int[,] getBoard()
         {
@@ -73,9 +75,11 @@ namespace Checkers
             return board;
         }
 
-        public static implicit operator GameState(NavigationEventArgs v)
+        public GameState applyMove(List<int> movePair)
         {
-            throw new NotImplementedException();
+            GameState gs = new GameState();
+            return gs;
         }
+
     }
 }

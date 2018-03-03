@@ -22,7 +22,7 @@ namespace Checkers
 
         private static GameClient gcInstance = null;
 
-        public static GameClient init(String netAddress, String userName)
+        public static GameClient init()
         {
             if (GameClient.gcInstance == null)
                 GameClient.gcInstance = new GameClient();
@@ -47,7 +47,7 @@ namespace Checkers
             return "";
         }
 
-        private int Connect(String netAddress, String userName)
+        public int Connect(String netAddress, String userName)
         {
             if (isConnected)
             {
