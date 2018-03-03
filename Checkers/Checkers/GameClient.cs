@@ -20,17 +20,21 @@ namespace Checkers
         private Socket client;
         private byte[] r_buff = new byte[16384];
 
+        private GameState game = null;
+
         private static GameClient gcInstance = null;
 
         public static GameClient init()
         {
-            if (GameClient.gcInstance == null)
-                GameClient.gcInstance = new GameClient();
-            return GameClient.gcInstance;
+            // TODO
+
+            return GameClient.getInstance();
         }
 
         public static GameClient getInstance()
         {
+            if (GameClient.gcInstance == null)
+                GameClient.gcInstance = new GameClient();
             return GameClient.gcInstance;
         }
 
@@ -155,10 +159,8 @@ namespace Checkers
             return ret;
         }
 
-        public GameState joinGame(GameState remote)
+        public int joinGame()
         {
-            GameState ret = null;
-
             if (isConnected && !inGame)
             {
                 try
@@ -167,7 +169,7 @@ namespace Checkers
                     String r;
 
                     // TODO: OtherPlayerName
-                    client.Send(Encoding.ASCII.GetBytes(userId + ": JOIN " + GameState.player1Name));
+                    client.Send(Encoding.ASCII.GetBytes(userId + ": NEW"));
 
                     r_sz = client.Receive(r_buff);
                     r = Encoding.ASCII.GetString(r_buff, 0, r_sz);
@@ -175,19 +177,49 @@ namespace Checkers
                     if (r.StartsWith("S: OKAY", StringComparison.OrdinalIgnoreCase))
                     {
                         r = Encoding.ASCII.GetString(r_buff, 8, r_sz);
-                        ret = parseFromString(r);
+                        this.game = parseFromString(r);
                         inGame = true;
+                        return 0;
                     }
                 }
                 catch (Exception e) { Console.WriteLine(e.ToString()); }
             }
 
-            return ret;
+            return -1;
+        }
+
+        public int joinGame(GameState remote)
+        {
+            if (isConnected && !inGame)
+            {
+                try
+                {
+                    int r_sz;
+                    String r;
+
+                    // TODO: OtherPlayerName
+                    client.Send(Encoding.ASCII.GetBytes(userId + ": JOIN " + remote.player1Name));
+
+                    r_sz = client.Receive(r_buff);
+                    r = Encoding.ASCII.GetString(r_buff, 0, r_sz);
+
+                    if (r.StartsWith("S: OKAY", StringComparison.OrdinalIgnoreCase))
+                    {
+                        r = Encoding.ASCII.GetString(r_buff, 8, r_sz);
+                        this.game = parseFromString(r);
+                        inGame = true;
+                        return 0;
+                    }
+                }
+                catch (Exception e) { Console.WriteLine(e.ToString()); }
+            }
+
+            return -1;
         }
 
         public int quitGame()
         {
-            if (isConnected && !inGame)
+            if (isConnected && inGame)
             {
                 try
                 {
@@ -201,12 +233,22 @@ namespace Checkers
                     r = Encoding.ASCII.GetString(r_buff, 0, r_sz);
 
                     if (r.StartsWith("S: OKAY", StringComparison.OrdinalIgnoreCase))
+                    {
+                        this.game = null;
+                        this.inGame = false;
+
                         return 0;
+                    }
                 }
                 catch (Exception e) { Console.WriteLine(e.ToString()); }
             }
 
             return -1;
+        }
+
+        public GameState getGameState()
+        {
+            return this.game;
         }
 
         public int sendState(GameState game)
@@ -233,9 +275,9 @@ namespace Checkers
             return -1;
         }
 
-        public GameState receiveState(GameState game)
+        public int receiveState(GameState game)
         {
-            GameState ret = null;
+            int ret = -1;
 
             if (isConnected && inGame)
             {
@@ -253,7 +295,7 @@ namespace Checkers
                     if (r.StartsWith("S: OKAY", StringComparison.OrdinalIgnoreCase))
                     {
                         r = Encoding.ASCII.GetString(r_buff, 8, r_sz);
-                        ret = parseFromString(r);
+                        this.game = parseFromString(r);
                     }
                 }
                 catch (Exception e) { Console.WriteLine(e.ToString()); }
