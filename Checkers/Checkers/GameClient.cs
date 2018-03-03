@@ -47,7 +47,7 @@ namespace Checkers
             return "";
         }
 
-        private int Connect(String netAddress, String userName)
+        public int Connect(String netAddress, String userName)
         {
             if (isConnected)
             {

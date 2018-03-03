@@ -31,7 +31,7 @@ namespace Checkers
         private bool getResult(int Player)
         {
             // return win status for 
-
+            return true;
         }
     }
 }

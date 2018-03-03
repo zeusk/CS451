@@ -1,14 +1,11 @@
-﻿<Window x:Class="Checkers.GameBrowserWindow"
+﻿<Page x:Class="Checkers.GameBrowserWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Checkers"
         mc:Ignorable="d"
-        WindowStyle="SingleBorderWindow"
-        AllowsTransparency="True"
         Background="White"
-        ResizeMode="NoResize"
         Title="GameBrowserWindow" Height="350" Width="525">
     <Grid>
 
@@ -23,20 +20,19 @@
         	FontWeight="Bold" Margin="297,10,35,278" />
 
         <!--Dynamic name of players-->
-        <StackPanel x:Name="listOfPlayersPanel" Margin="52,64,280,72">
+        <StackPanel x:Name="listOfPlayersPanel" Margin="52,77,279.8,72">
 
         </StackPanel>
 
         <!--Dynamic name of games-->
-        <StackPanel x:Name="listOfGamesPanel" Margin="297,64,35,72">
-
+        <StackPanel x:Name="listOfGamesPanel"  Margin="297,77,34.8,72">
         </StackPanel>
 
 
         <!--Start game button-->
-        <Button  Background="White" Content="Start a new game" FontSize="20"  Margin="172,277,151,10" Click="startNewGame"/>
+        <Button  Background="White" Content="Start a new game" FontSize="20"  Margin="176,304,150.8,10" Click="startNewGame"/>
 
 
 
     </Grid>
-</Window>
+</Page>
