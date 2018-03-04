@@ -80,11 +80,22 @@ namespace Checkers
                     board[oldPosition[0], oldPosition[1]] = 0;
                     return true;
                 }
-                else if (moveType == 3 || moveType == 4)
+                else if (moveType == 3)
                 {
+                    //Keep Jumping Untill All Jumps of this piece
                     board[newPosition[0], newPosition[1]] = board[oldPosition[0], oldPosition[1]];
-                    //Jumped Piece Removed
+                    int[] toBeJumped = genLeftForwardPos(oldPosition, player);
+                    board[toBeJumped[0], toBeJumped[1]] = 0;
+                    board[oldPosition[0], oldPosition[1]] = 0;
                     return true;
+                }
+                else if (moveType == 4)
+                {
+                    //Keep Jumping Untill All Jumps of this piece
+                    board[newPosition[0], newPosition[1]] = board[oldPosition[0], oldPosition[1]];
+                    int[] toBeJumped = genRightForwardPos(oldPosition, player);
+                    board[toBeJumped[0], toBeJumped[1]] = 0;
+                    board[oldPosition[0], oldPosition[1]] = 0;
                 }
                 else if (moveType == 5 || moveType == 6)
                 {
@@ -92,9 +103,24 @@ namespace Checkers
                     board[oldPosition[0], oldPosition[1]] = 0;
                     return true;
                 }
+                else if (moveType == 7)
+                {
+                    //Keep Jumping Untill All Jumps of this piece
+                    board[newPosition[0], newPosition[1]] = board[oldPosition[0], oldPosition[1]];
+                    int[] toBeJumped = genLeftBackwardPos(oldPosition, player);
+                    board[toBeJumped[0], toBeJumped[1]] = 0;
+                    board[oldPosition[0], oldPosition[1]] = 0;
+                }
+                else if (moveType == 8)
+                {
+                    board[newPosition[0], newPosition[1]] = board[oldPosition[0], oldPosition[1]];
+                    int[] toBeJumped = genRightBackwardPos(oldPosition, player);
+                    board[toBeJumped[0], toBeJumped[1]] = 0;
+                    board[oldPosition[0], oldPosition[1]] = 0;
+                }
             }
             return false;
-            //Apply Move and return true if move successfully moved
+
         }
 
         private bool validateMove(int[] prev, int[] now, int player)
@@ -119,16 +145,21 @@ namespace Checkers
             }
             else if (moveType == 3)
             {
-                return validateJumpLeft(now, prev, player, board[prev[0], prev[1]]);
+                return validateForwardJumpLeft(now, prev, player, board[prev[0], prev[1]]);
             }
             else if (moveType == 4)
             {
-                return validateJumpRight(now, prev, player, board[prev[0], prev[1]]);
+                return validateForwardJumpRight(now, prev, player, board[prev[0], prev[1]]);
             }
             else if (moveType == 5 && pieceKing)
                 return validateBackwardLeft(now, prev, player, board[prev[0], prev[1]]);
             else if (moveType == 6 && pieceKing)
                 return validateBackwardRight(now, prev, player, board[prev[0], prev[1]]);
+            else if (moveType == 7 && pieceKing)
+                return validateBackwardJumpLeft(now, prev, player, board[prev[0], prev[1]]);
+            else if (moveType == 8 && pieceKing)
+                return validateBackwardJumpRight(now, prev, player, board[prev[0], prev[1]]);
+
             else
                 return false;
             return false;
@@ -144,32 +175,40 @@ namespace Checkers
 
         // 1 - Forward Left
         // 2 - Forward Right
-        // 3 - Jump Left
-        // 4 - Jump Right
+        // 3 - Forward Jump Left
+        // 4 - Forward Jump Right
         // 5 - Backward Left
         // 6 - Backward Right
+        // 7 - Backward Jump Left
+        // 8 - Backward Jump Right
         private int getMoveType(int[] now, int[] prev, int player)
         {
             int res = -1;
             int[] fl = genLeftForwardPos(prev, player);
             int[] fr = genRightForwardPos(prev, player);
-            int[] jl = genLeftJumpPos(prev, player);
-            int[] jr = genRightJumpPos(prev, player);
+            int[] fjl = genLeftForwardJumpPos(prev, player);
+            int[] fjr = genRightForwardJumpPos(prev, player);
             int[] bl = genLeftBackwardPos(prev, player);
             int[] br = genRightBackwardPos(prev, player);
+            int[] bjl = genLeftBackwardJumpPos(prev, player);
+            int[] bjr = genRightBackwardJumpPos(prev, player);
 
             if (areEqualPos(now, fl))
                 return 1;
             else if (areEqualPos(now, fr))
                 return 2;
-            else if (areEqualPos(now, jl))
+            else if (areEqualPos(now, fjl))
                 return 3;
-            else if (areEqualPos(now, jr))
+            else if (areEqualPos(now, fjr))
                 return 4;
             else if (areEqualPos(now, bl))
                 return 5;
             else if (areEqualPos(now, br))
                 return 6;
+            else if (areEqualPos(now, bjl))
+                return 7;
+            else if (areEqualPos(now, bjr))
+                return 8;
             else
                 return -1;
 
@@ -211,7 +250,7 @@ namespace Checkers
             return rightForward;
         }
 
-        private bool validateJumpLeft(int[] now, int[] prev, int player, int piece)
+        private bool validateForwardJumpLeft(int[] now, int[] prev, int player, int piece)
         {
             bool jumpLeft = false;
             if (player == 1)
@@ -225,7 +264,21 @@ namespace Checkers
             return jumpLeft;
         }
 
-        private bool validateJumpRight(int[] now, int[] prev, int player, int piece)
+        private bool validateBackwardJumpLeft(int[] now, int[] prev, int player, int piece)
+        {
+            bool jumpLeft = false;
+            if (player == 1)
+            {
+                jumpLeft = (now[0] - prev[0] == -2) && (now[1] - prev[1] == 2) && ((board[now[0] + 1, now[1] - 1] == 2) || (board[now[0] + 1, now[1] - 1] == 4)) && (board[prev[0], prev[1]] == 3);
+            }
+            else if (player == 2)
+            {
+                jumpLeft = (now[0] - prev[0] == 2) && (now[1] - prev[1] == -2) && ((board[now[0] - 1, now[1] + 1] == 1) || (board[now[0] - 1, now[1] + 1] == 3)) && (board[prev[0], prev[1]] == 4);
+            }
+            return jumpLeft;
+        }
+
+        private bool validateForwardJumpRight(int[] now, int[] prev, int player, int piece)
         {
             bool jumpRight = false;
 
@@ -236,6 +289,21 @@ namespace Checkers
             else if (player == 2)
             {
                 jumpRight = (now[0] - prev[0] == -2) && (now[1] - prev[1] == 2) && (board[now[0] + 1, now[1] - 1] == piece - 1) && (board[prev[0], prev[1]] == piece);
+            }
+            return jumpRight;
+        }
+
+        private bool validateBackwardJumpRight(int[] now, int[] prev, int player, int piece)
+        {
+            bool jumpRight = false;
+
+            if (player == 1)
+            {
+                jumpRight = (now[0] - prev[0] == -2) && (now[1] - prev[1] == -2) && ((board[now[0] + 1, now[1] + 1] == 2) || (board[now[0] + 1, now[1] + 1] == 4)) && (board[prev[0], prev[1]] == 3);
+            }
+            else if (player == 2)
+            {
+                jumpRight = (now[0] - prev[0] == 2) && (now[1] - prev[1] == 2) && (board[now[0] - 1, now[1] - 1] == 1 || board[now[0] - 1, now[1] - 1] == 3) && (board[prev[0], prev[1]] == 4);
             }
             return jumpRight;
         }
@@ -313,7 +381,7 @@ namespace Checkers
             else
                 return true;
         }
-        private int[] genLeftJumpPos(int[] pos, int player)
+        private int[] genLeftForwardJumpPos(int[] pos, int player)
         {
             int[] leftJumpPos = new int[2];
             if (player == 1)
@@ -328,7 +396,39 @@ namespace Checkers
             }
             return leftJumpPos;
         }
-        private int[] genRightJumpPos(int[] pos, int player)
+        /*
+        private int[] genBeingJumpedLeftForwardPos(int[] initPos, int player)
+        {
+            int[] pos = new int[2];
+            if(player == 1)
+            {
+                pos[0] = initPos[0] + 1;
+                pos[1] = initPos[1] + 1;
+            }
+            else if(player == 2)
+            {
+                pos[0] = initPos[0] - 1;
+                pos[0] = initPos[0] - 1;
+            }
+            return pos;
+        }
+        */
+        private int[] genLeftBackwardJumpPos(int[] pos, int player)
+        {
+            int[] leftJumpPos = new int[2];
+            if (player == 1)
+            {
+                leftJumpPos[0] = pos[0] - 2;
+                leftJumpPos[1] = pos[1] + 2;
+            }
+            else if (player == 2)
+            {
+                leftJumpPos[0] = pos[0] + 2;
+                leftJumpPos[1] = pos[1] - 2;
+            }
+            return leftJumpPos;
+        }
+        private int[] genRightForwardJumpPos(int[] pos, int player)
         {
             int[] rightJumpPos = new int[2];
             if (player == 1)
@@ -339,6 +439,22 @@ namespace Checkers
             else if (player == 2)
             {
                 rightJumpPos[0] = pos[0] - 2;
+                rightJumpPos[1] = pos[1] + 2;
+            }
+            return rightJumpPos;
+        }
+
+        private int[] genRightBackwardJumpPos(int[] pos, int player)
+        {
+            int[] rightJumpPos = new int[2];
+            if (player == 1)
+            {
+                rightJumpPos[0] = pos[0] - 2;
+                rightJumpPos[1] = pos[1] - 2;
+            }
+            else if (player == 2)
+            {
+                rightJumpPos[0] = pos[0] + 2;
                 rightJumpPos[1] = pos[1] + 2;
             }
             return rightJumpPos;
@@ -410,19 +526,40 @@ namespace Checkers
             return rightBackwardPos;
         }
 
-        private bool checkJumpPossible(int[] pos, int player)
+        private bool checkForwardJumpPossible(int[] pos, int player)
         {
             bool leftJump = false;
             bool rightJump = false;
-            int[] leftJumpPos = genLeftJumpPos(pos, player);
+            int[] leftJumpPos = genLeftForwardJumpPos(pos, player);
             if (checkValidPosition(leftJumpPos))
-                leftJump = validateJumpLeft(leftJumpPos, pos, player, board[pos[0], pos[1]]);
+                leftJump = validateForwardJumpLeft(leftJumpPos, pos, player, board[pos[0], pos[1]]);
             else
                 leftJump = false;
 
-            int[] rightJumpPos = genRightJumpPos(pos, player);
+            int[] rightJumpPos = genRightForwardJumpPos(pos, player);
             if (checkValidPosition(rightJumpPos))
-                rightJump = validateJumpRight(rightJumpPos, pos, player, board[pos[0], pos[1]]);
+                rightJump = validateForwardJumpRight(rightJumpPos, pos, player, board[pos[0], pos[1]]);
+            else
+                rightJump = false;
+
+            return false;
+        }
+
+        private bool checkBackwardJumpPossible(int[] pos, int player)
+        {
+            if (board[pos[0], pos[1]] != 3 || board[pos[0], pos[1]] != 4)
+                return false;
+            bool leftJump = false;
+            bool rightJump = false;
+            int[] leftJumpPos = genLeftForwardJumpPos(pos, player);
+            if (checkValidPosition(leftJumpPos))
+                leftJump = validateBackwardJumpLeft(leftJumpPos, pos, player, board[pos[0], pos[1]]);
+            else
+                leftJump = false;
+
+            int[] rightJumpPos = genRightForwardJumpPos(pos, player);
+            if (checkValidPosition(rightJumpPos))
+                rightJump = validateBackwardJumpRight(rightJumpPos, pos, player, board[pos[0], pos[1]]);
             else
                 rightJump = false;
 
@@ -437,13 +574,13 @@ namespace Checkers
 
             int[] leftForwardPos = genLeftForwardPos(pos, player);
             if (checkValidPosition(leftForwardPos))
-                leftForward = validateJumpLeft(leftForwardPos, pos, player, board[pos[0], pos[1]]);
+                leftForward = validateForwardLeft(leftForwardPos, pos, player, board[pos[0], pos[1]]);
             else
                 leftForward = false;
 
             int[] rightForwardPos = genRightForwardPos(pos, player);
             if (checkValidPosition(rightForwardPos))
-                rightForward = validateJumpRight(rightForwardPos, pos, player, board[pos[0], pos[1]]);
+                rightForward = validateForwardRight(rightForwardPos, pos, player, board[pos[0], pos[1]]);
             else
                 rightForward = false;
 
@@ -478,7 +615,7 @@ namespace Checkers
             bool validJump = false;
             foreach (var a in availablePieces)
             {
-                if (checkJumpPossible(a, player))
+                if (checkForwardJumpPossible(a, player) || checkBackwardJumpPossible(a, player))
                 {
                     validJump = true;
                     break;
