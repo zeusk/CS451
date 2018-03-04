@@ -185,7 +185,7 @@ namespace Checkers
         {
             if (testLocal)
             {
-                this.game = new GameState();
+                this.game = new GameState(userId);
                 return 0;
             }
 
@@ -205,7 +205,7 @@ namespace Checkers
                     if (r.StartsWith("S: OKAY", StringComparison.OrdinalIgnoreCase))
                     {
                         r = Encoding.ASCII.GetString(r_buff, 8, r_sz);
-                        this.game = new GameState();
+                        this.game = new GameState(userId);
                         inGame = true;
                         return 0;
                     }
@@ -314,7 +314,12 @@ namespace Checkers
                     r = Encoding.ASCII.GetString(r_buff, 0, r_sz);
 
                     if (r.StartsWith("S: OKAY", StringComparison.OrdinalIgnoreCase))
+                    {
+                        this.game = game;
                         return 0;
+                    }
+
+                    return -1;
                 }
                 catch (Exception e) { Console.WriteLine(e.ToString()); }
             }
