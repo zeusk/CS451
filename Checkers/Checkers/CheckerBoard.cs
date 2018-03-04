@@ -83,8 +83,23 @@ namespace Checkers
             cleanPos[1] = Int32.Parse(pos[1]);
             return cleanPos;
         }
-
         public bool applyMove(List<int> coords, int player)
+        {
+            if (applyMoveX(coords, player))
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    if (board[0, i] == 2)
+                        board[0, i] = 4;
+                    if (board[7, i] == 1)
+                        board[7, i] = 3;
+                }
+                return true;
+            }
+            else
+                return false;
+        }
+        public bool applyMoveX(List<int> coords, int player)
         {
             int[] oldPosition = new int [2];
             oldPosition[0] = coords.ElementAt(0);
@@ -97,6 +112,7 @@ namespace Checkers
             {
                 Console.WriteLine("Is Valid");
                 int moveType = getMoveType(newPosition, oldPosition, player);
+                Console.WriteLine($"Move Type" + moveType);
                 if (moveType == 1 || moveType == 2)
                 {
                     board[newPosition[0], newPosition[1]] = board[oldPosition[0], oldPosition[1]];
@@ -119,6 +135,7 @@ namespace Checkers
                     int[] toBeJumped = genRightForwardPos(oldPosition, player);
                     board[toBeJumped[0], toBeJumped[1]] = 0;
                     board[oldPosition[0], oldPosition[1]] = 0;
+                    return true;
                 }
                 else if (moveType == 5 || moveType == 6)
                 {
@@ -133,6 +150,7 @@ namespace Checkers
                     int[] toBeJumped = genLeftBackwardPos(oldPosition, player);
                     board[toBeJumped[0], toBeJumped[1]] = 0;
                     board[oldPosition[0], oldPosition[1]] = 0;
+                    return true;
                 }
                 else if (moveType == 8)
                 {
@@ -140,6 +158,7 @@ namespace Checkers
                     int[] toBeJumped = genRightBackwardPos(oldPosition, player);
                     board[toBeJumped[0], toBeJumped[1]] = 0;
                     board[oldPosition[0], oldPosition[1]] = 0;
+                    return true;
                 }
             }
             return false;
@@ -148,7 +167,8 @@ namespace Checkers
 
         public bool validateMove(int[] prev, int[] now, int player)
         {
-            
+            if (!(board[prev[0], prev[1]] == player || board[prev[0], prev[1]] == player + 2))
+                return false;
             //Determine Piece Type
             bool pieceKing = isKing(board[prev[0], prev[1]]);
             int moveType = getMoveType(now, prev, player);

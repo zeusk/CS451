@@ -29,17 +29,15 @@ namespace Checkers
             InitializeComponent();
             Instance = this;
             refreshBoard(generateCheckerBoardUI(240, gc.getGameState(), GameBrowserWindow.playerId));
+            currentPlayerColor = getColorForPlayer(GameBrowserWindow.playerId);
 
-
-            if(GameBrowserWindow.playerId == 1)
+            if (GameBrowserWindow.playerId == 1)
             {
-                currentPlayerColor = Colors.Red;
                 turnToMoveText.Visibility = Visibility.Visible;
                 playerColorCircle.Visibility = Visibility.Visible;
             }
             else
             {
-                currentPlayerColor = Colors.White;
                 turnToMoveText.Visibility = Visibility.Hidden;
                 playerColorCircle.Visibility = Visibility.Hidden;
             }
@@ -54,6 +52,18 @@ namespace Checkers
         {
             gc = (GameClient)e.ExtraData;
             Debug.Write("gc is here");
+        }
+
+        private static Color getColorForPlayer(int id)
+        {
+            if (id == 1)
+            {
+                return (Colors.Red);
+            }
+            else
+            {
+                return (Colors.White);
+            }
         }
 
         public static Grid generateCheckerBoardUI(int size, GameState gs, int playerId)
@@ -180,13 +190,14 @@ namespace Checkers
                 movePair.Add(j);
                 Debug.WriteLine($"second click-- " + movePair[0] + " "+ movePair[1] + " " +  movePair[2]+ " "+ movePair[3]);
                 GameState newS = gc.getGameState().applyMove(movePair, GameBrowserWindow.playerId);
-                
+
                 if (newS == null)
                 {
                     MessageBox.Show("Your move was not valid");
                 }
                 else
                 {
+                    
                     Task<int> taskSendState = Task<int>.Factory.StartNew(() => gc.sendState(newS));
                     taskSendState.Wait();
                     if (taskSendState.Result != 0)
@@ -195,6 +206,7 @@ namespace Checkers
                         movePair.Clear();
                         return;
                     }
+                   
                     refreshBoard(generateCheckerBoardUI(240, gc.getGameState(), GameBrowserWindow.playerId));
                     if (gc.getGameState().getResult() != -1)
                     {
@@ -203,8 +215,16 @@ namespace Checkers
                     }
                     else
                     {
-                        if (!gc.getGameState().checkAvailableJump(movePair[0], movePair[1], GameBrowserWindow.playerId))
+                        int dist = (Math.Abs(movePair[2] - movePair[0]) + Math.Abs(movePair[3] - movePair[1]));
+                        if (dist <= 2 || !gc.getGameState().checkAvailableJump(movePair[2], movePair[3], GameBrowserWindow.playerId))
                         {
+                            //----------------------------------------
+                            //------------------------------------------
+                            GameBrowserWindow.playerId = 3 - GameBrowserWindow.playerId;
+                            Instance.playerColorCircle.Fill = new SolidColorBrush(getColorForPlayer(GameBrowserWindow.playerId));
+                            //----------------------------------------------
+                            //--------------------------------------------
+
                             Instance.turnToMoveText.Visibility = Visibility.Hidden;
                             Instance.playerColorCircle.Visibility = Visibility.Hidden;
                             Task<int> taskReceiveState = Task<int>.Factory.StartNew(() => gc.receiveState(newS));
@@ -230,7 +250,7 @@ namespace Checkers
                             } 
                         }
                     }
-
+                    
                 }
                 movePair.Clear();
             }            
