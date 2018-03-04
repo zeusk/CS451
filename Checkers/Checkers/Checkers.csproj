@@ -86,7 +86,6 @@
       <DependentUpon>GameBrowserWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="GameClient.cs" />
-    <Compile Include="GameObj.cs" />
     <Compile Include="GameState.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="StartWindow.xaml.cs">

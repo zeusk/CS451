@@ -5,7 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
+using System.Windows.Navigation;
+using System.Diagnostics;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -17,9 +18,11 @@ namespace Checkers
     /// <summary>
     /// Interaction logic for GameBrowserWindow.xaml
     /// </summary>
-    public partial class GameBrowserWindow : Window
+    public partial class GameBrowserWindow : Page
     {
-        private int playerId = 1;
+        //private int playerId = 1;
+        private GameClient gc = GameClient.getInstance();
+        public static int playerId;
 
         public GameBrowserWindow()
         {
@@ -28,13 +31,22 @@ namespace Checkers
             generateListOfGames();
         }
 
+
         //Generate list of players
-        private void generateListOfPlayers()
+        protected void generateListOfPlayers()
         {
-            Array listOfPlayers = gc.listPlayers();
+            List<String> listOfPlayers = gc.listPlayers();
+            //List<String> listOfPlayers = new List<string>();
+            //listOfPlayers.Add("Andy");
+            //listOfPlayers.Add("Marry");
             foreach (string name in listOfPlayers)
             {
                 TextBox player = new TextBox();
+                player.Width = 100;
+                player.Height = 30;
+                player.FontSize = 15;
+                player.HorizontalAlignment = HorizontalAlignment.Left;
+                player.BorderThickness = new Thickness(0);
                 player.Text = name; 
                 listOfPlayersPanel.Children.Add(player);
             }
@@ -42,10 +54,13 @@ namespace Checkers
 
 
         //generate list of games
-        private void generateListOfGames()
+        protected void generateListOfGames()
         {
-            List<GameState> gameIds = gc.listGames();
-            foreach (GameState gs in gameIds)
+            //List<GameState> allGames = gc.listGames();
+            List<GameState> allGames = new List<GameState>();
+            allGames.Add(new GameState());
+            allGames.Add(new GameState());
+            foreach (GameState gs in allGames)
             {
                 StackPanel currentGame = generateGameOverview(gs);
                 listOfGamesPanel.Children.Add(currentGame);
@@ -53,33 +68,40 @@ namespace Checkers
         }
 
         //Generate game overview
-        private StackPanel generateGameOverview(string gameId)
+        protected StackPanel generateGameOverview(GameState gs)
         {
             StackPanel game = new StackPanel();
+            game.Width = 200;
+            game.Height = 60;
 
             //create the join button 
             Button joinButton = new Button();
-            joinButton.Content = "join";
-            joinButton.Width = 10;
-            joinButton.Height = 10;
+            joinButton.Content = "Join";
+            joinButton.Width = 40;
+            joinButton.Height = 20;
             joinButton.Click += (s, e) => {
                 //Go to the main game page
-                Uri uri = new Uri("CheckerBoardWindow.xaml", UriKind.Relative);
-                NavigationService.Navigate(uri);
+                playerId = 2;
+                gc.joinGame(gs);
+                NavigationService.Navigate(new Uri("CheckerBoardWindow.xaml", UriKind.Relative));
             };
+            joinButton.HorizontalAlignment = HorizontalAlignment.Left;
+
 
             //gnerate the overview of the board
-            Grid mygame = CheckerBoardWindow.generateCheckerBoardUI();
-            mygame.Width = 25;
-            mygame.Height = 25;
+            Grid mygame = CheckerBoardWindow.generateCheckerBoardUI(60, gs);
+
+            mygame.HorizontalAlignment = HorizontalAlignment.Center;
 
             //generate the name of the player who's in the game at the moment 
-            string playerName = GameState.getNamePlayer1();
+            //string playerName = gs.player1Name;
+            string playerName = "temp";
             TextBox player = new TextBox();
             player.Text = playerName;
-            player.Width = 25;
-            player.Height = 10;
-
+            player.Width = 80;
+            player.Height = 20;
+            player.BorderThickness = new Thickness(0);
+            player.HorizontalAlignment = HorizontalAlignment.Right;
 
             //Add all elements to the stack panel
             game.Orientation = Orientation.Horizontal;
@@ -91,12 +113,12 @@ namespace Checkers
         }
 
         //Start a new game
-        private void startNewGame(object sender, RoutedEventArgs e)
+        protected void startNewGame(object sender, RoutedEventArgs e)
         {
             playerId = 1;
             //Go to the main game page
-            Uri uri = new Uri("CheckerBoardWindow.xaml", UriKind.Relative);
-            NavigationService.Navigate(uri);
+            gc.joinGame();
+            NavigationService.Navigate(new Uri("CheckerBoardWindow.xaml", UriKind.Relative));
         }
     }
 }

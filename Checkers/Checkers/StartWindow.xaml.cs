@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,40 +17,60 @@ using System.Windows.Shapes;
 
 namespace Checkers
 {
-    public partial class StartWindow : Window
+    public partial class StartWindow : Page
     {
         //Retrieve user name from local disc
-        private string userName = Settings.getUserNameFromLocalDisc();
-        public GameClient gc = new GameClient();
+        private string userName = "Mike";
+        //private string userName = Settings.getUserNameFromLocalDisc();
+        private GameClient gc;
 
         public StartWindow()
         {
             InitializeComponent();
 
             //Set the user name field for popup window
-            Popup popup = connectionPopup;
-            popup.IsOpen = true;
             enteredUserName.Text = userName;
+            connectionPopup.IsOpen = true;
+
+            GameClient.init();
+            gc = GameClient.getInstance();
         }
 
-        private void connectUserToServer(object sender, RoutedEventArgs e)
+        protected void connectUserToServer(object sender, RoutedEventArgs e)
         {
-            string ipAddress = enteredUserIPAddress.Text;
-            userName = enteredUserName.Text;
-            //Connect to the server
-            this.gc.connect(ipAddress, userName);
-            //Show text indicating connection to server
+            connectionPopup.IsOpen = false;
+
+            //Show the text Connecting to server
             connectingToServerText.Visibility = Visibility.Visible;
 
+            //Pass in user name and ip address
+            string ipAddress = enteredUserIPAddress.Text;
+            userName = enteredUserName.Text;
 
-            //Go to next page if success
-            navigateToGameBrowserPage();
+            //Connect to the server
+            Task<int> taskConnect = Task<int>.Factory.StartNew( () => this.gc.Connect(ipAddress, userName) );
+            taskConnect.Wait();
+            int isConnected = taskConnect.Result;
+            //int isConnected = 0;
+            if (taskConnect.Status == TaskStatus.Faulted || (isConnected != 0 && isConnected != -1))
+            //if ( isConnected != 0 && isConnected != -1)
+            {
+                MessageBox.Show("Connection failed. Please try again.");
+                connectionPopup.IsOpen = true;
+            }
+            else
+            {
+                //Go to next page if success
+                navigateToGameBrowserWindow();
+            }
+            
+            
         }
 
-        private void navigateToGameBrowserPage()
+
+        protected void navigateToGameBrowserWindow()
         {
-            Uri uri = new Uri("GameBrowserWindow.xaml", UriKind.Relative);
-            NavigationService.Navigate(uri);
+             NavigationService.Navigate(new Uri("GameBrowserWindow.xaml", UriKind.Relative));
         }
     }
 }

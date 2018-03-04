@@ -9,9 +9,14 @@ namespace Checkers
 {
     public class CheckerBoard
     {
+<<<<<<< HEAD
         private int[,] board;
 
         public CheckerBoard()
+=======
+        private int [,] board;
+        public CheckerBoard ()
+>>>>>>> upstream/master
         {
             board = new int[8, 8];
 
@@ -496,6 +501,7 @@ namespace Checkers
             return leftForwardPos;
         }
 
+<<<<<<< HEAD
         public int[] genRightForwardPos(int[] pos, int player)
         {
             int[] rightForwardPos = new int[2];
@@ -543,10 +549,24 @@ namespace Checkers
                 rightBackwardPos[1] = pos[1] + 1;
             }
             return rightBackwardPos;
+=======
+
+        public int[,] applyMove (List<int> movePair)
+        {
+            //Apply Move and return true if move successfully moved
+            return null;
+        }
+
+        private bool validateMove ()
+        {
+            //Validate a Given Move
+            return false;
+>>>>>>> upstream/master
         }
 
         public bool checkForwardJumpPossible(int[] pos, int player)
         {
+<<<<<<< HEAD
             bool leftJump = false;
             bool rightJump = false;
             int[] leftJumpPos = genLeftForwardJumpPos(pos, player);
@@ -783,6 +803,10 @@ namespace Checkers
 
 
 
+=======
+            // return win status for 
+            return true;
+>>>>>>> upstream/master
         }
     }
 }
