@@ -71,9 +71,9 @@ namespace Checkers
                 Console.WriteLine();
             }
         }
-        public CheckerBoard getBoard()
+        public int[,] getBoard()
         {
-            return this;
+            return this.board;
         }
         private int[] parseMove(String mv)
         {
@@ -84,10 +84,14 @@ namespace Checkers
             return cleanPos;
         }
 
-        public bool applyMove(String init, String fin, int player)
+        public bool applyMove(List<int> coords, int player)
         {
-            int[] oldPosition = parseMove(init);
-            int[] newPosition = parseMove(fin);
+            int[] oldPosition = new int [2];
+            oldPosition[0] = coords.ElementAt(0);
+            oldPosition[1] = coords.ElementAt(1);
+            int[] newPosition = new int [2];
+            newPosition[0] = coords.ElementAt(2);
+            newPosition[1] = coords.ElementAt(3);
 
             if (validateMove(oldPosition, newPosition, player))
             {
@@ -608,6 +612,11 @@ namespace Checkers
             return leftBackward || rightBackward;
         }
 
+        public bool checkAnyJumpPossiblePiece(int[] pos, int player)
+        {   
+            return checkForwardJumpPossible(pos, player) || checkBackwardJumpPossible(pos, player);
+        }
+
         public bool checkAnyJumpPossible(int player)
         {
             List<int[]> availablePieces = allAvailablePieces(player);
@@ -638,6 +647,7 @@ namespace Checkers
             }
             return validForward;
         }
+
         public bool checkAnyBackwardPossible(int player)
         {
             List<int[]> allKings = allAvailableKings(player);
