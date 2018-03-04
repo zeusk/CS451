@@ -7,7 +7,6 @@ namespace CheckersHost
     {
         static void Main(string[] args)
         {
-            GameState 
             Console.WriteLine("Hello World!");
         }
     }

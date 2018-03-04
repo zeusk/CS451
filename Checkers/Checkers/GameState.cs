@@ -65,6 +65,20 @@ namespace Checkers
             return this._checkerBoard.getBoard();
         }
 
+        public static String toString(GameState gs)
+        {
+            return "";
+        }
+
+        public static GameState fromString(String gState)
+        {
+            GameState ret = new GameState("");
+
+            // ret.state = parse(gState);
+
+            return ret;
+        }
+
         public GameState applyMove(List<int> movePair, int playerID)
         {
             this._checkerBoard.applyMove(movePair, playerID);
