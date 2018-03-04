@@ -56,10 +56,9 @@ namespace Checkers
         //generate list of games
         protected void generateListOfGames()
         {
-            //List<GameState> allGames = gc.listGames();
-            List<GameState> allGames = new List<GameState>();
-            allGames.Add(new GameState());
-            allGames.Add(new GameState());
+            List<GameState> allGames = gc.listGames();
+            //List<GameState> allGames = new List<GameState>();
+
             foreach (GameState gs in allGames)
             {
                 StackPanel currentGame = generateGameOverview(gs);
@@ -89,7 +88,7 @@ namespace Checkers
 
 
             //gnerate the overview of the board
-            Grid mygame = CheckerBoardWindow.generateCheckerBoardUI(60, gs);
+            Grid mygame = CheckerBoardWindow.generateCheckerBoardUI(60, gs, playerId);
 
             mygame.HorizontalAlignment = HorizontalAlignment.Center;
 
