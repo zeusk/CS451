@@ -67,14 +67,35 @@ namespace Checkers
 
         public static String toString(GameState gs)
         {
-            return "";
+            List<String> output = new List<String>();
+            for(int i=0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                    output.Add(gs._checkerBoard.getBoard()[i, j].ToString());
+            }
+            output.Add(gs.player1Name);
+            output.Add(gs.player2Name);
+            String res = String.Join("|", output);
+            return res;
         }
 
         public static GameState fromString(String gState)
         {
             GameState ret = new GameState("");
-
-            // ret.state = parse(gState);
+            List<String> ls = new List<String>(gState.Split('|'));
+            ret.cb = new CheckerBoard(true);
+            for(int i = 0; i < 8; i++)
+            {
+                for(int j = 0; j < 8; j++)
+                {
+                    int[] pos = new int[2];
+                    pos[0] = i;
+                    pos[1] = j;
+                    ret.cb.placePiece(pos, Int32.Parse(ls[i * 8 + j])); 
+                }
+                ret.player1Name = ls[64];
+                ret.player2Name = ls[65];
+            }
 
             return ret;
         }
