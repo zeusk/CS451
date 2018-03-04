@@ -12,6 +12,8 @@ namespace Checkers
 {
     public class GameClient
     {
+        private readonly Boolean testLocal = true;
+   
         private Boolean inGame = false;
         private Boolean isConnected = false;
 
@@ -53,6 +55,9 @@ namespace Checkers
 
         public int Connect(String netAddress, String userName)
         {
+            if (testLocal)
+                return 0;
+
             if (isConnected)
             {
                 userId = userName;
@@ -65,18 +70,17 @@ namespace Checkers
                     String r;
 
                     client.Connect(remote);
-
-                    client.Send(Encoding.ASCII.GetBytes(userId + ": HELLO"));
+                    client.Send(Encoding.ASCII.GetBytes(userId + ": HELLO<EOT>"));
 
                     r_sz = client.Receive(r_buff);
                     r = Encoding.ASCII.GetString(r_buff, 0, r_sz);
 
-                    if (r.Equals("S: WELCOME", StringComparison.OrdinalIgnoreCase))
+                    if (r.StartsWith("S: WELCOME", StringComparison.OrdinalIgnoreCase))
                     {
                         isConnected = true;
                         return 0;
                     }
-                    else if (r.Equals("S: E:USER EXISTS", StringComparison.OrdinalIgnoreCase))
+                    else if (r.StartsWith("S: E:USER EXISTS", StringComparison.OrdinalIgnoreCase))
                     {
                         return -2;
                     }
@@ -89,6 +93,9 @@ namespace Checkers
 
         public int disconnect()
         {
+            if (testLocal)
+                return 0;
+
             if (!isConnected)
                 return -1;
 
@@ -107,6 +114,16 @@ namespace Checkers
         {
             List<String> ret = null;
 
+            if (testLocal)
+            {
+                ret.Add("testPlayer1");
+                ret.Add("Shantanu");
+                ret.Add("Vivian");
+                ret.Add("Guruansh");
+
+                return ret;
+            }
+
             if (isConnected)
             {
                 try
@@ -114,7 +131,7 @@ namespace Checkers
                     int r_sz;
                     String r;
 
-                    client.Send(Encoding.ASCII.GetBytes(userId + ": LIST PLAYERS"));
+                    client.Send(Encoding.ASCII.GetBytes(userId + ": LIST PLAYERS<EOT>"));
 
                     r_sz = client.Receive(r_buff);
                     r = Encoding.ASCII.GetString(r_buff, 0, r_sz);
@@ -134,6 +151,11 @@ namespace Checkers
         public List<GameState> listGames()
         {
             List<GameState> ret = null;
+
+            if (testLocal)
+            {
+                return ret;
+            }
 
             if (isConnected)
             {
@@ -161,6 +183,12 @@ namespace Checkers
 
         public int joinGame()
         {
+            if (testLocal)
+            {
+                this.game = new GameState();
+                return 0;
+            }
+
             if (isConnected && !inGame)
             {
                 try
@@ -177,7 +205,7 @@ namespace Checkers
                     if (r.StartsWith("S: OKAY", StringComparison.OrdinalIgnoreCase))
                     {
                         r = Encoding.ASCII.GetString(r_buff, 8, r_sz);
-                        this.game = parseFromString(r);
+                        this.game = new GameState();
                         inGame = true;
                         return 0;
                     }
@@ -190,6 +218,12 @@ namespace Checkers
 
         public int joinGame(GameState remote)
         {
+            if (testLocal)
+            {
+                this.game = remote;
+                return 0;
+            }
+
             if (isConnected && !inGame)
             {
                 try
@@ -219,6 +253,13 @@ namespace Checkers
 
         public int quitGame()
         {
+            if (testLocal)
+            {
+                this.game = null;
+                this.inGame = false;
+                return 0;
+            }
+
             if (isConnected && inGame)
             {
                 try
@@ -253,6 +294,12 @@ namespace Checkers
 
         public int sendState(GameState game)
         {
+            if (testLocal)
+            {
+                this.game = game;
+                return 0;
+            }
+
             if (isConnected && inGame)
             {
                 try
@@ -277,7 +324,11 @@ namespace Checkers
 
         public int receiveState(GameState game)
         {
-            int ret = -1;
+            if (testLocal)
+            {
+                this.game = game;
+                return 0;
+            }
 
             if (isConnected && inGame)
             {
@@ -301,7 +352,7 @@ namespace Checkers
                 catch (Exception e) { Console.WriteLine(e.ToString()); }
             }
 
-            return ret;
+            return -1;
         }
     }
 }
