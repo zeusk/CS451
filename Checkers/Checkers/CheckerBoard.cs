@@ -43,6 +43,25 @@ namespace Checkers
 
         }
 
+        public CheckerBoard(bool flag)
+        {
+            if (flag)
+            {
+                board = new int[8, 8];
+
+                for (int i = 0; i <= 7; i++)
+                {
+                    for (int j = 0; j <= 7; j++)
+                        board[i, j] = 0;
+                }
+            }
+        }
+
+        public void placePiece(int[] pos, int piece)
+        {
+            board[pos[0], pos[1]] = piece;
+        }
+
         public void printBoard()
         {
             for (int i = 0; i < 8; i++)
@@ -123,7 +142,7 @@ namespace Checkers
 
         }
 
-        private bool validateMove(int[] prev, int[] now, int player)
+        public bool validateMove(int[] prev, int[] now, int player)
         {
             Console.WriteLine($"prev:" + prev[0] + "," + prev[1]);
             Console.WriteLine($"now:" + now[0] + "," + now[1]);
@@ -165,7 +184,7 @@ namespace Checkers
             return false;
         }
 
-        private bool isKing(int piece)
+        public bool isKing(int piece)
         {
             if (piece == 3 || piece == 4)
                 return true;
@@ -181,7 +200,7 @@ namespace Checkers
         // 6 - Backward Right
         // 7 - Backward Jump Left
         // 8 - Backward Jump Right
-        private int getMoveType(int[] now, int[] prev, int player)
+        public int getMoveType(int[] now, int[] prev, int player)
         {
             int res = -1;
             int[] fl = genLeftForwardPos(prev, player);
@@ -213,7 +232,7 @@ namespace Checkers
                 return -1;
 
         }
-        private bool areEqualPos(int[] a, int[] b)
+        public bool areEqualPos(int[] a, int[] b)
         {
             if (a[0] == b[0] && a[1] == b[1])
                 return true;
@@ -221,7 +240,7 @@ namespace Checkers
                 return false;
         }
 
-        private bool validateForwardLeft(int[] now, int[] prev, int player, int piece)
+        public bool validateForwardLeft(int[] now, int[] prev, int player, int piece)
         {
             bool leftForward = false;
             if (player == 1)
@@ -235,7 +254,7 @@ namespace Checkers
             return leftForward;
         }
 
-        private bool validateForwardRight(int[] now, int[] prev, int player, int piece)
+        public bool validateForwardRight(int[] now, int[] prev, int player, int piece)
         {
             bool rightForward = false;
 
@@ -250,7 +269,7 @@ namespace Checkers
             return rightForward;
         }
 
-        private bool validateForwardJumpLeft(int[] now, int[] prev, int player, int piece)
+        public bool validateForwardJumpLeft(int[] now, int[] prev, int player, int piece)
         {
             bool jumpLeft = false;
             if (player == 1)
@@ -264,7 +283,7 @@ namespace Checkers
             return jumpLeft;
         }
 
-        private bool validateBackwardJumpLeft(int[] now, int[] prev, int player, int piece)
+        public bool validateBackwardJumpLeft(int[] now, int[] prev, int player, int piece)
         {
             bool jumpLeft = false;
             if (player == 1)
@@ -278,7 +297,7 @@ namespace Checkers
             return jumpLeft;
         }
 
-        private bool validateForwardJumpRight(int[] now, int[] prev, int player, int piece)
+        public bool validateForwardJumpRight(int[] now, int[] prev, int player, int piece)
         {
             bool jumpRight = false;
 
@@ -293,7 +312,7 @@ namespace Checkers
             return jumpRight;
         }
 
-        private bool validateBackwardJumpRight(int[] now, int[] prev, int player, int piece)
+        public bool validateBackwardJumpRight(int[] now, int[] prev, int player, int piece)
         {
             bool jumpRight = false;
 
@@ -308,7 +327,7 @@ namespace Checkers
             return jumpRight;
         }
 
-        private bool validateBackwardLeft(int[] now, int[] prev, int player, int piece)
+        public bool validateBackwardLeft(int[] now, int[] prev, int player, int piece)
         {
             bool backwardLeft = false;
             if (player == 1)
@@ -322,7 +341,7 @@ namespace Checkers
             return backwardLeft;
         }
 
-        private bool validateBackwardRight(int[] now, int[] prev, int player, int piece)
+        public bool validateBackwardRight(int[] now, int[] prev, int player, int piece)
         {
             bool backwardRight = false;
             if (player == 1 && piece == 3)
@@ -336,13 +355,13 @@ namespace Checkers
             return backwardRight;
         }
 
-        private bool noPiecesLeft(int player)
+        public bool noPiecesLeft(int player)
         {
             return allAvailablePieces(player).Count() == 0;
 
         }
 
-        private List<int[]> allAvailablePieces(int player)
+        public List<int[]> allAvailablePieces(int player)
         {
             List<int[]> pieces = new List<int[]>();
             for (int i = 0; i < 7; i++)
@@ -361,7 +380,7 @@ namespace Checkers
             return pieces;
         }
 
-        private List<int[]> allAvailableKings(int player)
+        public List<int[]> allAvailableKings(int player)
         {
             List<int[]> kings = new List<int[]>();
             List<int[]> allPieces = allAvailablePieces(player);
@@ -374,14 +393,14 @@ namespace Checkers
             return kings;
         }
 
-        private bool checkValidPosition(int[] pos)
+        public bool checkValidPosition(int[] pos)
         {
             if (pos[0] < 0 || pos[0] > 7 || pos[1] < 0 || pos[1] > 7)
                 return false;
             else
                 return true;
         }
-        private int[] genLeftForwardJumpPos(int[] pos, int player)
+        public int[] genLeftForwardJumpPos(int[] pos, int player)
         {
             int[] leftJumpPos = new int[2];
             if (player == 1)
@@ -413,7 +432,7 @@ namespace Checkers
             return pos;
         }
         */
-        private int[] genLeftBackwardJumpPos(int[] pos, int player)
+        public int[] genLeftBackwardJumpPos(int[] pos, int player)
         {
             int[] leftJumpPos = new int[2];
             if (player == 1)
@@ -428,7 +447,7 @@ namespace Checkers
             }
             return leftJumpPos;
         }
-        private int[] genRightForwardJumpPos(int[] pos, int player)
+        public int[] genRightForwardJumpPos(int[] pos, int player)
         {
             int[] rightJumpPos = new int[2];
             if (player == 1)
@@ -444,7 +463,7 @@ namespace Checkers
             return rightJumpPos;
         }
 
-        private int[] genRightBackwardJumpPos(int[] pos, int player)
+        public int[] genRightBackwardJumpPos(int[] pos, int player)
         {
             int[] rightJumpPos = new int[2];
             if (player == 1)
@@ -460,7 +479,7 @@ namespace Checkers
             return rightJumpPos;
         }
 
-        private int[] genLeftForwardPos(int[] pos, int player)
+        public int[] genLeftForwardPos(int[] pos, int player)
         {
             int[] leftForwardPos = new int[2];
 
@@ -477,7 +496,7 @@ namespace Checkers
             return leftForwardPos;
         }
 
-        private int[] genRightForwardPos(int[] pos, int player)
+        public int[] genRightForwardPos(int[] pos, int player)
         {
             int[] rightForwardPos = new int[2];
 
@@ -494,7 +513,7 @@ namespace Checkers
             return rightForwardPos;
         }
 
-        private int[] genLeftBackwardPos(int[] pos, int player)
+        public int[] genLeftBackwardPos(int[] pos, int player)
         {
             int[] leftBackwardPos = new int[2];
             if (player == 1)
@@ -510,7 +529,7 @@ namespace Checkers
             return leftBackwardPos;
         }
 
-        private int[] genRightBackwardPos(int[] pos, int player)
+        public int[] genRightBackwardPos(int[] pos, int player)
         {
             int[] rightBackwardPos = new int[2];
             if (player == 1)
@@ -526,7 +545,7 @@ namespace Checkers
             return rightBackwardPos;
         }
 
-        private bool checkForwardJumpPossible(int[] pos, int player)
+        public bool checkForwardJumpPossible(int[] pos, int player)
         {
             bool leftJump = false;
             bool rightJump = false;
@@ -545,7 +564,7 @@ namespace Checkers
             return false;
         }
 
-        private bool checkBackwardJumpPossible(int[] pos, int player)
+        public bool checkBackwardJumpPossible(int[] pos, int player)
         {
             if (board[pos[0], pos[1]] != 3 || board[pos[0], pos[1]] != 4)
                 return false;
@@ -566,7 +585,7 @@ namespace Checkers
             return false;
         }
 
-        private bool checkForwardPossible(int[] pos, int player)
+        public bool checkForwardPossible(int[] pos, int player)
         {
             bool leftForward = false;
             bool rightForward = false;
@@ -587,7 +606,7 @@ namespace Checkers
             return leftForward || rightForward;
         }
 
-        private bool checkBackwardPossible(int[] pos, int player)
+        public bool checkBackwardPossible(int[] pos, int player)
         {
             bool leftBackward = false;
             bool rightBackward = false;
@@ -609,7 +628,7 @@ namespace Checkers
             return leftBackward || rightBackward;
         }
 
-        private bool checkAnyJumpPossible(int player)
+        public bool checkAnyJumpPossible(int player)
         {
             List<int[]> availablePieces = allAvailablePieces(player);
             bool validJump = false;
@@ -624,7 +643,7 @@ namespace Checkers
             return validJump;
         }
 
-        private bool checkAnyForwardPossible(int player)
+        public bool checkAnyForwardPossible(int player)
         {
             List<int[]> availablePieces = allAvailablePieces(player);
 
@@ -639,7 +658,7 @@ namespace Checkers
             }
             return validForward;
         }
-        private bool checkAnyBackwardPossible(int player)
+        public bool checkAnyBackwardPossible(int player)
         {
             List<int[]> allKings = allAvailableKings(player);
             bool validBackward = false;
@@ -657,12 +676,12 @@ namespace Checkers
             }
             return validBackward;
         }
-        private bool checkAnyPossibleMoves(int player)
+        public bool checkAnyPossibleMoves(int player)
         {
 
             return checkAnyForwardPossible(player) || checkAnyJumpPossible(player) || checkAnyBackwardPossible(player);
         }
-        private bool checkWin(int player)
+        public bool checkWin(int player)
         {
             if (player == 1)
             {
@@ -685,20 +704,87 @@ namespace Checkers
                 return -1;
         }
     }
-}
-
-public class Driver
-{
-    public static void Main()
+    public class Driver
     {
-        CheckerBoard n = new CheckerBoard();
-        n.printBoard();
-        //n.applyMove("2,1", "3,2", 1);
-        Console.WriteLine();
-        //n.applyMove("1,2", "2,1", 1);
-        Console.WriteLine();
-        n.applyMove("5,2", "4,1", 2);
-        n.applyMove("5,4", "4,5", 2);
-        n.printBoard();
+        static CheckerBoard n;
+
+        private static int[] genPos(int r, int c)
+        {
+            int[] pos = new int[2];
+            pos[0] = r;
+            pos[1] = c;
+            return pos;
+        }
+        private void valFL()
+        {
+            n = new CheckerBoard();
+
+            if (!n.validateForwardJumpLeft(genPos(3, 2), genPos(2, 1), 1, 1))
+                Console.WriteLine("valFL failed");
+
+        }
+        public static void Main()
+        {
+            /*
+            CheckerBoard n = new CheckerBoard(true);
+
+            
+            n.printBoard();
+            //n.applyMove("2,1", "3,2", 1);
+            Console.WriteLine();
+            //n.applyMove("1,2", "2,1", 1);
+            Console.WriteLine();
+            n.applyMove("5,2", "4,1", 2);
+            n.applyMove("5,4", "4,5", 2);
+            n.printBoard();
+            */
+            n = new CheckerBoard();
+            Console.WriteLine("Running Tests");
+            //validate FL
+            if (!n.validateForwardLeft(genPos(3, 2), genPos(2, 1), 1, 1))
+            {
+                n.printBoard();
+                Console.WriteLine("valFL failed");
+            }
+            //validate FR
+
+            if (!n.validateForwardRight(genPos(3, 0), genPos(2, 1), 1, 1))
+            {
+                n.printBoard();
+                Console.WriteLine("valFR failed");
+            }
+            //validate FJL
+            n.placePiece(genPos(3, 2), 2);
+            if (!n.validateForwardJumpLeft(genPos(4, 3), genPos(2, 1), 1, 1))
+            {
+                n.printBoard();
+                Console.WriteLine("valFJL failed");
+            }
+            //validate FJR
+            n.placePiece(genPos(3, 2), 2);
+            if (!n.validateForwardJumpRight(genPos(4, 1), genPos(2, 3), 1, 1))
+            {
+                n.printBoard();
+                Console.WriteLine("valFJR failed");
+            }
+            //validate BL
+            n.placePiece(genPos(4, 2), 3);
+            if (!n.validateForwardJumpRight(genPos(4, 1), genPos(2, 3), 1, 1))
+            {
+                n.printBoard();
+                Console.WriteLine("valFJR failed");
+            }
+            //validate BR
+            //validate BJL
+            //validate BJR 
+
+
+
+
+
+
+        }
     }
 }
+
+
