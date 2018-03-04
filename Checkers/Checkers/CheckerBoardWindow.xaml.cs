@@ -180,20 +180,21 @@ namespace Checkers
                 movePair.Add(j);
                 Debug.WriteLine($"second click-- " + movePair[0] + " "+ movePair[1] + " " +  movePair[2]+ " "+ movePair[3]);
                 GameState newS = gc.getGameState().applyMove(movePair, GameBrowserWindow.playerId);
-
                 
                 if (newS == null)
                 {
                     MessageBox.Show("Your move was not valid");
                 }
-                else if(gc.sendState(newS) != 0)
-                {
-                    MessageBox.Show("Failed updating move");
-                }
                 else
                 {
                     Task<int> taskSendState = Task<int>.Factory.StartNew(() => gc.sendState(newS));
                     taskSendState.Wait();
+                    if (taskSendState.Result != 0)
+                    {
+                        MessageBox.Show("Failed updating move");
+                        movePair.Clear();
+                        return;
+                    }
                     refreshBoard(generateCheckerBoardUI(240, gc.getGameState(), GameBrowserWindow.playerId));
                     if (gc.getGameState().getResult() != -1)
                     {
@@ -208,17 +209,25 @@ namespace Checkers
                             Instance.playerColorCircle.Visibility = Visibility.Hidden;
                             Task<int> taskReceiveState = Task<int>.Factory.StartNew(() => gc.receiveState(newS));
                             taskReceiveState.Wait();
-                            refreshBoard(generateCheckerBoardUI(240, gc.getGameState(), GameBrowserWindow.playerId));
-                            if (gc.getGameState().getResult() != -1)
+                            if (taskReceiveState.Result != 0)
                             {
-                                //Game end, go to end window
+                                //The other player drop, go to end window
                                 Instance.navigateToEndWindow();
                             }
                             else
                             {
-                                Instance.turnToMoveText.Visibility = Visibility.Visible;
-                                Instance.playerColorCircle.Visibility = Visibility.Visible;
-                            }
+                                refreshBoard(generateCheckerBoardUI(240, gc.getGameState(), GameBrowserWindow.playerId));
+                                if (gc.getGameState().getResult() != -1)
+                                {
+                                    //Game end, go to end window
+                                    Instance.navigateToEndWindow();
+                                }
+                                else
+                                {
+                                    Instance.turnToMoveText.Visibility = Visibility.Visible;
+                                    Instance.playerColorCircle.Visibility = Visibility.Visible;
+                                }
+                            } 
                         }
                     }
 
