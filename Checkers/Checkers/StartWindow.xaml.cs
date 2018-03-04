@@ -51,11 +51,14 @@ namespace Checkers
             Task<int> taskConnect = Task<int>.Factory.StartNew( () => this.gc.Connect(ipAddress, userName) );
             taskConnect.Wait();
             int isConnected = taskConnect.Result;
-            //int isConnected = 0;
-            if (taskConnect.Status == TaskStatus.Faulted || (isConnected != 0 && isConnected != -1))
+            if (isConnected == -1)
             //if ( isConnected != 0 && isConnected != -1)
             {
                 MessageBox.Show("Connection failed. Please try again.");
+                connectionPopup.IsOpen = true;
+            }else if(isConnected == -2)
+            {
+                MessageBox.Show("User name taken. Please try again.");
                 connectionPopup.IsOpen = true;
             }
             else
