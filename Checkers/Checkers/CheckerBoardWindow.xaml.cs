@@ -20,48 +20,33 @@ namespace Checkers
         private string opponentName = "oppo";
         private static GameClient gc = GameClient.getInstance();
         private static List<int> movePair = new List<int>();
+        private static List<int> chosenPiece = new List<int>();
         private static Color currentPlayerColor = new Color();
+        public static CheckerBoardWindow Instance { get; private set; }
 
         public CheckerBoardWindow()
         {
             InitializeComponent();
-            
+            Instance = this;
             checkerBoardGrid.Children.Add(generateCheckerBoardUI(240, gc.getGameState()));
             checkerBoardGrid.Margin = new Thickness(249, 25, 35, 61);
 
             if(GameBrowserWindow.playerId == 1)
             {
                 currentPlayerColor = Colors.Red;
+                turnToMoveText.Visibility = Visibility.Visible;
+                playerColorCircle.Visibility = Visibility.Visible;
             }
             else
             {
                 currentPlayerColor = Colors.White;
+                turnToMoveText.Visibility = Visibility.Hidden;
+                playerColorCircle.Visibility = Visibility.Hidden;
             }
             playerColorCircle.Fill = new SolidColorBrush(currentPlayerColor);
 
             //Set player info on UI
             connectedPlayerName.Text = opponentName;
-            
-
-            //while (Game not end){
-            for (int i = 0; i< 3; i++) {
-                //check if it's the user's turn
-                //if (GameState.currentPlayer == GameBrowserWindow.playerId)
-                if(true)
-                {
-                    turnToMoveText.Visibility = Visibility.Visible;
-                    playerColorCircle.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    turnToMoveText.Visibility = Visibility.Hidden;
-                    playerColorCircle.Visibility = Visibility.Hidden;
-                }
-                Task<GameState> taskConnect = Task<GameState>.Factory.StartNew(() => this.gc.receiveState());
-                taskConnect.Wait();
-                int isConnected = taskConnect.Result;
-            }
-            //navigateToEndWindow();
 
         }
 
@@ -76,10 +61,10 @@ namespace Checkers
             Grid myGrid = new Grid();
             myGrid.Height = size;
             myGrid.Width = size;
-            //int[,] myboard = gs.getBoard();
-            int [,] myboard = new int[,] { { 0,1,0,1,0,1,0,1}, {1,0,1,0,1,0,1,0}, 
-                { 0, 1, 0, 1, 0, 1, 0, 1 }, {0,0,0,0,0,0,0,0}, { 0, 0, 0, 0, 0, 0, 0, 0 },
-                {3,0,3,0,3,0,3,0}, { 0, 3, 0, 3, 0, 3, 0, 3 }, {3,0,3,0,3,0,3,0} };
+            int[,] myboard = gs.getBoard();
+            //int [,] myboard = new int[,] { { 0,1,0,1,0,1,0,1}, {1,0,1,0,1,0,1,0}, 
+              //  { 0, 1, 0, 1, 0, 1, 0, 1 }, {0,0,0,0,0,0,0,0}, { 0, 0, 0, 0, 0, 0, 0, 0 },
+                //{2,0,2,0,2,0,2,0}, { 0, 2, 0, 2, 0, 2, 0, 2 }, {2,0,2,0,2,0,2,0} };
 
             // Create Columns
             List<ColumnDefinition> gridCols = new List<ColumnDefinition>();
@@ -137,14 +122,14 @@ namespace Checkers
                         ellips.Stroke = new SolidColorBrush(Colors.Black);
                         ellips.StrokeThickness = ellipSize/10;
                     }
-                    else if(myboard[i, j] == 2)
+                    else if(myboard[i, j] == 3)
                     {
                         //player 1, kinged
                         ellips.Fill = new SolidColorBrush(Colors.Red);
                         ellips.Stroke = new SolidColorBrush(Colors.Orange);
                         ellips.StrokeThickness = ellipSize/5;
                     }
-                    else if(myboard[i, j] == 3)
+                    else if(myboard[i, j] == 2)
                     {
                         //player 2, regular
                         ellips.Fill = new SolidColorBrush(Colors.White);
@@ -170,7 +155,7 @@ namespace Checkers
             return myGrid;
         }
 
-        protected static GameState addMove(int i, int j, CheckerBoard cb)
+        protected static void addMove(int i, int j, CheckerBoard cb)
         {
             if (movePair.Count == 0 )
             {
@@ -187,21 +172,47 @@ namespace Checkers
                 {
                     MessageBox.Show("Your move was not valid");
                 }
+                else if(gc.sendState(newS) != 0)
+                {
+                    MessageBox.Show("Failed updating move");
+                }
                 else
                 {
-                    if (gc.sendState(newS) != 0)
+                    Task<int> taskSendState = Task<int>.Factory.StartNew(() => gc.sendState(newS));
+                    taskSendState.Wait();
+                    Instance.checkerBoardGrid.Children.Add(generateCheckerBoardUI(240, gc.getGameState()));
+                    if (gc.getGameState().getResult())
                     {
-                        MessageBox.Show("Failed updating move");
+                        //Game end, go to end window
+                        Instance.navigateToEndWindow();
+                    }
+                    else
+                    {
+                        if (!gc.getGameState().checkAvailableJump(movePair[0], movePair[1]))
+                        {
+                            Instance.turnToMoveText.Visibility = Visibility.Hidden;
+                            Instance.playerColorCircle.Visibility = Visibility.Hidden;
+                            Task<int> taskReceiveState = Task<int>.Factory.StartNew(() => gc.receiveState(newS));
+                            taskReceiveState.Wait();
+                            Instance.checkerBoardGrid.Children.Add(generateCheckerBoardUI(240, gc.getGameState()));
+                            if (gc.getGameState().getResult())
+                            {
+                                //Game end, go to end window
+                                Instance.navigateToEndWindow();
+                            }
+                            else
+                            {
+                                Instance.turnToMoveText.Visibility = Visibility.Visible;
+                                Instance.playerColorCircle.Visibility = Visibility.Visible;
+                            }
+                        }
                     }
                 }
-            }
-            return gc.getGameState();
-
+            }            
         }
 
         protected void navigateToEndWindow()
         {
-            gc = new GameClient();
             NavigationService.Navigate(new Uri("EndWindow.xaml", UriKind.Relative), gc);
         }
 

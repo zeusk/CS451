@@ -17,16 +17,16 @@ namespace Checkers
     public partial class EndWindow : Page
     {
         //Check whether the user won or lost
-        private bool won;
+        private bool currentPlayerWon;
         private GameClient gc = GameClient.getInstance();
 
         public EndWindow()
         {
             InitializeComponent();
-            won = gc.getGameState().getResult();
+            currentPlayerWon = gc.getGameState().checkWin(GameBrowserWindow.playerId);
 
             //Generate the text to indicate won or lost
-            if (won)
+            if (currentPlayerWon)
             {
                 gameResultWon.Visibility = Visibility.Visible;
             }else
@@ -37,7 +37,6 @@ namespace Checkers
 
         void NavigationService_LoadCompleted(object sender, NavigationEventArgs e)
         {
-            //gc = (GameClient)e.ExtraData;
             Debug.Write("gc is here");
         }
 
