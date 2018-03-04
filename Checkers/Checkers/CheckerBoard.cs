@@ -276,11 +276,11 @@ namespace Checkers
             bool jumpLeft = false;
             if (player == 1)
             {
-                jumpLeft = (now[0] - prev[0] == 2) && (now[1] - prev[1] == 2) && ((board[now[0] - 1, now[1] - 1] == 2) || (board[now[0] - 1, now[1] - 1] == 4)) && (board[prev[0], prev[1]] == piece);
+                jumpLeft = (now[0] - prev[0] == 2) && (now[1] - prev[1] == 2) && ((board[now[0] - 1, now[1] - 1] == 2) || (board[now[0] - 1, now[1] - 1] == 4)) && (board[prev[0], prev[1]] == piece) && (board[now[0],now[1]] == 0);
             }
             else if (player == 2)
             {
-                jumpLeft = (now[0] - prev[0] == -2) && (now[1] - prev[1] == -2) && ((board[now[0] + 1, now[1] + 1] == 1) || (board[now[0] + 1, now[1] + 1] == 3)) && (board[prev[0], prev[1]] == piece);
+                jumpLeft = (now[0] - prev[0] == -2) && (now[1] - prev[1] == -2) && ((board[now[0] + 1, now[1] + 1] == 1) || (board[now[0] + 1, now[1] + 1] == 3)) && (board[prev[0], prev[1]] == piece) && (board[now[0], now[1]] == 0);
             }
             return jumpLeft;
         }
@@ -290,11 +290,11 @@ namespace Checkers
             bool jumpLeft = false;
             if (player == 1)
             {
-                jumpLeft = (now[0] - prev[0] == -2) && (now[1] - prev[1] == 2) && ((board[now[0] + 1, now[1] - 1] == 2) || (board[now[0] + 1, now[1] - 1] == 4)) && (board[prev[0], prev[1]] == 3);
+                jumpLeft = (now[0] - prev[0] == -2) && (now[1] - prev[1] == 2) && ((board[now[0] + 1, now[1] - 1] == 2) || (board[now[0] + 1, now[1] - 1] == 4)) && (board[prev[0], prev[1]] == 3) && (board[now[0], now[1]] == 0);
             }
             else if (player == 2)
             {
-                jumpLeft = (now[0] - prev[0] == 2) && (now[1] - prev[1] == -2) && ((board[now[0] - 1, now[1] + 1] == 1) || (board[now[0] - 1, now[1] + 1] == 3)) && (board[prev[0], prev[1]] == 4);
+                jumpLeft = (now[0] - prev[0] == 2) && (now[1] - prev[1] == -2) && ((board[now[0] - 1, now[1] + 1] == 1) || (board[now[0] - 1, now[1] + 1] == 3)) && (board[prev[0], prev[1]] == 4) && (board[now[0], now[1]] == 0);
             }
             return jumpLeft;
         }
@@ -305,11 +305,11 @@ namespace Checkers
 
             if (player == 1)
             {
-                jumpRight = (now[0] - prev[0] == 2) && (now[1] - prev[1] == -2) && ((board[now[0] - 1, now[1] + 1] == 2) || (board[now[0] - 1, now[1] + 1] == 4)) && (board[prev[0], prev[1]] == piece);
+                jumpRight = (now[0] - prev[0] == 2) && (now[1] - prev[1] == -2) && ((board[now[0] - 1, now[1] + 1] == 2) || (board[now[0] - 1, now[1] + 1] == 4)) && (board[prev[0], prev[1]] == piece) && (board[now[0], now[1]] == 0);
             }
             else if (player == 2)
             {
-                jumpRight = (now[0] - prev[0] == -2) && (now[1] - prev[1] == 2) && (board[now[0] + 1, now[1] - 1] == piece - 1) && (board[prev[0], prev[1]] == piece);
+                jumpRight = (now[0] - prev[0] == -2) && (now[1] - prev[1] == 2) && (board[now[0] + 1, now[1] - 1] == piece - 1) && (board[prev[0], prev[1]] == piece) && (board[now[0], now[1]] == 0);
             }
             return jumpRight;
         }
@@ -320,11 +320,11 @@ namespace Checkers
 
             if (player == 1)
             {
-                jumpRight = (now[0] - prev[0] == -2) && (now[1] - prev[1] == -2) && ((board[now[0] + 1, now[1] + 1] == 2) || (board[now[0] + 1, now[1] + 1] == 4)) && (board[prev[0], prev[1]] == 3);
+                jumpRight = (now[0] - prev[0] == -2) && (now[1] - prev[1] == -2) && ((board[now[0] + 1, now[1] + 1] == 2) || (board[now[0] + 1, now[1] + 1] == 4)) && (board[prev[0], prev[1]] == 3) && (board[now[0], now[1]] == 0);
             }
             else if (player == 2)
             {
-                jumpRight = (now[0] - prev[0] == 2) && (now[1] - prev[1] == 2) && (board[now[0] - 1, now[1] - 1] == 1 || board[now[0] - 1, now[1] - 1] == 3) && (board[prev[0], prev[1]] == 4);
+                jumpRight = (now[0] - prev[0] == 2) && (now[1] - prev[1] == 2) && (board[now[0] - 1, now[1] - 1] == 1 || board[now[0] - 1, now[1] - 1] == 3) && (board[prev[0], prev[1]] == 4) && (board[now[0], now[1]] == 0);
             }
             return jumpRight;
         }
