@@ -60,22 +60,6 @@ namespace Checkers
             }
         }
  
-
-        //Not useful for now
-        /*
-        private int _currentPlayer;
-        public int currentPlayer
-        {
-            get
-            {
-                return _currentPlayer;
-            }
-            set
-            {
-                _currentPlayer = value;
-            }
-        }*/
-
         public int[,] getBoard()
         {
             return this._checkerBoard.getBoard();
