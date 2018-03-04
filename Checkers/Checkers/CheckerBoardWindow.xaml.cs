@@ -105,9 +105,14 @@ namespace Checkers
                     Button checkerboxButton = new Button();
                     checkerboxButton.SetValue(Grid.RowProperty, i);
                     checkerboxButton.SetValue(Grid.ColumnProperty, j);
-                    checkerboxButton.Background = new SolidColorBrush(backGroundColor); ;
+                    checkerboxButton.Background = new SolidColorBrush(backGroundColor);
+                    checkerboxButton.Tag = i.ToString() + " " + j.ToString();
                     checkerboxButton.Click += (s, e) => {
-                            addMove(i, j, gs.cb);
+                        string coor = (string)((Button)s).Tag;
+                        Debug.WriteLine(coor);
+                        int row = Int32.Parse(coor.Split(' ')[0]);
+                        int col = Int32.Parse(coor.Split(' ')[1]);
+                        addMove(row, col, gs.cb);
                     };
                     double ellipSize = (size / 8) * 0.8;
                     Shape ellips = new Ellipse() { Height = ellipSize, Width = ellipSize, HorizontalAlignment = HorizontalAlignment.Center };
@@ -167,13 +172,16 @@ namespace Checkers
             {
                 movePair.Add(i);
                 movePair.Add(j);
+                Debug.WriteLine($"first click --"+ i+ " "+ j);
             }
             else if(movePair.Count == 2)
             {
                 movePair.Add(i);
                 movePair.Add(j);
+                Debug.WriteLine($"second click-- " + movePair[0] + " "+ movePair[1] + " " +  movePair[2]+ " "+ movePair[3]);
                 GameState newS = gc.getGameState().applyMove(movePair, GameBrowserWindow.playerId);
-                movePair.Clear();
+
+                
                 if (newS == null)
                 {
                     MessageBox.Show("Your move was not valid");
@@ -213,7 +221,9 @@ namespace Checkers
                             }
                         }
                     }
+
                 }
+                movePair.Clear();
             }            
         }
 

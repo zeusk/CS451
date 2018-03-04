@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Navigation;
@@ -81,8 +81,19 @@ namespace Checkers
 
         public GameState applyMove(List<int> movePair, int playerID)
         {
-            this._checkerBoard.applyMove(movePair, playerID);
-            return this;
+            Debug.WriteLine("before:");
+            this._checkerBoard.printBoard();
+            if (this._checkerBoard.applyMove(movePair, playerID))
+            {
+                Debug.WriteLine("valid--after:");
+                this._checkerBoard.printBoard();
+                return this;
+            }
+            else
+            {
+                Debug.WriteLine("invalid move:");
+                return null;
+            }
         }
 
         public bool checkAvailableJump(int x, int y, int playerID)

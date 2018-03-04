@@ -366,9 +366,9 @@ namespace Checkers
         public List<int[]> allAvailablePieces(int player)
         {
             List<int[]> pieces = new List<int[]>();
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < 8; i++)
             {
-                for (int j = 0; j < 7; j++)
+                for (int j = 0; j < 8; j++)
                 {
                     if (board[i, j] == player || board[i, j] == (player + 2))
                     {
@@ -675,11 +675,11 @@ namespace Checkers
         {
             if (player == 1)
             {
-                return noPiecesLeft(2) || checkAnyPossibleMoves(2);
+                return noPiecesLeft(2) || !checkAnyPossibleMoves(2);
             }
             else if (player == 2)
             {
-                return noPiecesLeft(1) || checkAnyPossibleMoves(1);
+                return noPiecesLeft(1) || !checkAnyPossibleMoves(1);
             }
             return false;
         }
