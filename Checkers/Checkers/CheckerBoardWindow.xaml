@@ -26,7 +26,7 @@
             </Grid>
         </StackPanel>
 
-        <Grid Name="checkerBoardGrid" Height="240" Width="240" Margin="249,25,35,61">
+        <Grid Name="dynamicGrid" Height="240" Width="240" Margin="249,25,35,61">
         </Grid>
 
     </Grid>
