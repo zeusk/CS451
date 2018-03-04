@@ -23,7 +23,7 @@ namespace Checkers
         public EndWindow()
         {
             InitializeComponent();
-            currentPlayerWon = gc.getGameState().checkWin(GameBrowserWindow.playerId);
+            currentPlayerWon = (gc.getGameState().getResult() == GameBrowserWindow.playerId);
 
             //Generate the text to indicate won or lost
             if (currentPlayerWon)

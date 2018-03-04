@@ -28,8 +28,8 @@ namespace Checkers
         {
             InitializeComponent();
             Instance = this;
-            checkerBoardGrid.Children.Add(generateCheckerBoardUI(240, gc.getGameState()));
-            checkerBoardGrid.Margin = new Thickness(249, 25, 35, 61);
+            refreshBoard(generateCheckerBoardUI(240, gc.getGameState(), GameBrowserWindow.playerId));
+
 
             if(GameBrowserWindow.playerId == 1)
             {
@@ -56,7 +56,7 @@ namespace Checkers
             Debug.Write("gc is here");
         }
 
-        public static Grid generateCheckerBoardUI(int size, GameState gs)
+        public static Grid generateCheckerBoardUI(int size, GameState gs, int playerId)
         {
             Grid myGrid = new Grid();
             myGrid.Height = size;
@@ -152,6 +152,12 @@ namespace Checkers
                     myGrid.Children.Add(ellips);
                 }
             }
+            if(playerId == 1)
+            {
+                //flip the board 180 degrees 
+                RotateTransform myRotateTransform = new RotateTransform(180, 0.5, 0.5);
+                myGrid.LayoutTransform = myRotateTransform;
+            }
             return myGrid;
         }
 
@@ -166,7 +172,7 @@ namespace Checkers
             {
                 movePair.Add(i);
                 movePair.Add(j);
-                GameState newS = gc.getGameState().applyMove(movePair);
+                GameState newS = gc.getGameState().applyMove(movePair, GameBrowserWindow.playerId);
                 movePair.Clear();
                 if (newS == null)
                 {
@@ -180,22 +186,22 @@ namespace Checkers
                 {
                     Task<int> taskSendState = Task<int>.Factory.StartNew(() => gc.sendState(newS));
                     taskSendState.Wait();
-                    Instance.checkerBoardGrid.Children.Add(generateCheckerBoardUI(240, gc.getGameState()));
-                    if (gc.getGameState().getResult())
+                    refreshBoard(generateCheckerBoardUI(240, gc.getGameState(), GameBrowserWindow.playerId));
+                    if (gc.getGameState().getResult() != -1)
                     {
                         //Game end, go to end window
                         Instance.navigateToEndWindow();
                     }
                     else
                     {
-                        if (!gc.getGameState().checkAvailableJump(movePair[0], movePair[1]))
+                        if (!gc.getGameState().checkAvailableJump(movePair[0], movePair[1], GameBrowserWindow.playerId))
                         {
                             Instance.turnToMoveText.Visibility = Visibility.Hidden;
                             Instance.playerColorCircle.Visibility = Visibility.Hidden;
                             Task<int> taskReceiveState = Task<int>.Factory.StartNew(() => gc.receiveState(newS));
                             taskReceiveState.Wait();
-                            Instance.checkerBoardGrid.Children.Add(generateCheckerBoardUI(240, gc.getGameState()));
-                            if (gc.getGameState().getResult())
+                            refreshBoard(generateCheckerBoardUI(240, gc.getGameState(), GameBrowserWindow.playerId));
+                            if (gc.getGameState().getResult() != -1)
                             {
                                 //Game end, go to end window
                                 Instance.navigateToEndWindow();
@@ -209,6 +215,12 @@ namespace Checkers
                     }
                 }
             }            
+        }
+
+        private static void refreshBoard(Grid newG)
+        {
+            Instance.dynamicGrid.Children.Clear();
+            Instance.dynamicGrid.Children.Add(newG);
         }
 
         protected void navigateToEndWindow()
