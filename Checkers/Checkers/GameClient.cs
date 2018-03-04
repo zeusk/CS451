@@ -103,6 +103,8 @@ namespace Checkers
 
             if (testLocal)
             {
+                ret = new List<String>();
+
                 ret.Add("testPlayer1");
                 ret.Add("Shantanu");
                 ret.Add("Vivian");
