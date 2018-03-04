@@ -141,6 +141,7 @@ namespace Checkers
 
             if (testLocal)
             {
+                ret = new List<GameState>();
                 return ret;
             }
 
