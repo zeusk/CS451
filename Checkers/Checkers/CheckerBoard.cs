@@ -144,8 +144,7 @@ namespace Checkers
 
         public bool validateMove(int[] prev, int[] now, int player)
         {
-            Console.WriteLine($"prev:" + prev[0] + "," + prev[1]);
-            Console.WriteLine($"now:" + now[0] + "," + now[1]);
+            
             //Determine Piece Type
             bool pieceKing = isKing(board[prev[0], prev[1]]);
             int moveType = getMoveType(now, prev, player);
@@ -202,7 +201,6 @@ namespace Checkers
         // 8 - Backward Jump Right
         public int getMoveType(int[] now, int[] prev, int player)
         {
-            int res = -1;
             int[] fl = genLeftForwardPos(prev, player);
             int[] fr = genRightForwardPos(prev, player);
             int[] fjl = genLeftForwardJumpPos(prev, player);
@@ -415,23 +413,6 @@ namespace Checkers
             }
             return leftJumpPos;
         }
-        /*
-        private int[] genBeingJumpedLeftForwardPos(int[] initPos, int player)
-        {
-            int[] pos = new int[2];
-            if(player == 1)
-            {
-                pos[0] = initPos[0] + 1;
-                pos[1] = initPos[1] + 1;
-            }
-            else if(player == 2)
-            {
-                pos[0] = initPos[0] - 1;
-                pos[0] = initPos[0] - 1;
-            }
-            return pos;
-        }
-        */
         public int[] genLeftBackwardJumpPos(int[] pos, int player)
         {
             int[] leftJumpPos = new int[2];
@@ -561,7 +542,7 @@ namespace Checkers
             else
                 rightJump = false;
 
-            return false;
+            return leftJump || rightJump;
         }
 
         public bool checkBackwardJumpPossible(int[] pos, int player)
@@ -570,19 +551,19 @@ namespace Checkers
                 return false;
             bool leftJump = false;
             bool rightJump = false;
-            int[] leftJumpPos = genLeftForwardJumpPos(pos, player);
+            int[] leftJumpPos = genLeftBackwardJumpPos(pos, player);
             if (checkValidPosition(leftJumpPos))
                 leftJump = validateBackwardJumpLeft(leftJumpPos, pos, player, board[pos[0], pos[1]]);
             else
                 leftJump = false;
 
-            int[] rightJumpPos = genRightForwardJumpPos(pos, player);
+            int[] rightJumpPos = genRightBackwardJumpPos(pos, player);
             if (checkValidPosition(rightJumpPos))
                 rightJump = validateBackwardJumpRight(rightJumpPos, pos, player, board[pos[0], pos[1]]);
             else
                 rightJump = false;
 
-            return false;
+            return leftJump || rightJump;
         }
 
         public bool checkForwardPossible(int[] pos, int player)
@@ -610,7 +591,6 @@ namespace Checkers
         {
             bool leftBackward = false;
             bool rightBackward = false;
-
 
             int[] leftBackwardPos = genLeftBackwardPos(pos, player);
 
@@ -702,87 +682,6 @@ namespace Checkers
                 return 2;
             else
                 return -1;
-        }
-    }
-    public class Driver
-    {
-        static CheckerBoard n;
-
-        private static int[] genPos(int r, int c)
-        {
-            int[] pos = new int[2];
-            pos[0] = r;
-            pos[1] = c;
-            return pos;
-        }
-        private void valFL()
-        {
-            n = new CheckerBoard();
-
-            if (!n.validateForwardJumpLeft(genPos(3, 2), genPos(2, 1), 1, 1))
-                Console.WriteLine("valFL failed");
-
-        }
-        public static void Main()
-        {
-            /*
-            CheckerBoard n = new CheckerBoard(true);
-
-            
-            n.printBoard();
-            //n.applyMove("2,1", "3,2", 1);
-            Console.WriteLine();
-            //n.applyMove("1,2", "2,1", 1);
-            Console.WriteLine();
-            n.applyMove("5,2", "4,1", 2);
-            n.applyMove("5,4", "4,5", 2);
-            n.printBoard();
-            */
-            n = new CheckerBoard();
-            Console.WriteLine("Running Tests");
-            //validate FL
-            if (!n.validateForwardLeft(genPos(3, 2), genPos(2, 1), 1, 1))
-            {
-                n.printBoard();
-                Console.WriteLine("valFL failed");
-            }
-            //validate FR
-
-            if (!n.validateForwardRight(genPos(3, 0), genPos(2, 1), 1, 1))
-            {
-                n.printBoard();
-                Console.WriteLine("valFR failed");
-            }
-            //validate FJL
-            n.placePiece(genPos(3, 2), 2);
-            if (!n.validateForwardJumpLeft(genPos(4, 3), genPos(2, 1), 1, 1))
-            {
-                n.printBoard();
-                Console.WriteLine("valFJL failed");
-            }
-            //validate FJR
-            n.placePiece(genPos(3, 2), 2);
-            if (!n.validateForwardJumpRight(genPos(4, 1), genPos(2, 3), 1, 1))
-            {
-                n.printBoard();
-                Console.WriteLine("valFJR failed");
-            }
-            //validate BL
-            n.placePiece(genPos(4, 2), 3);
-            if (!n.validateForwardJumpRight(genPos(4, 1), genPos(2, 3), 1, 1))
-            {
-                n.printBoard();
-                Console.WriteLine("valFJR failed");
-            }
-            //validate BR
-            //validate BJL
-            //validate BJR 
-
-
-
-
-
-
         }
     }
 }
