@@ -40,19 +40,6 @@ namespace Checkers
             return GameClient.gcInstance;
         }
 
-        // TODO: make these part of GameState
-        private static GameState parseFromString(String gString)
-        {
-            GameState ret = new GameState();
-
-            return ret;
-        }
-
-        private static String parseToString(GameState gState)
-        {
-            return "";
-        }
-
         public int Connect(String netAddress, String userName)
         {
             if (testLocal)
@@ -172,7 +159,7 @@ namespace Checkers
                     if (r.StartsWith("S: OKAY", StringComparison.OrdinalIgnoreCase))
                     {
                         r = Encoding.ASCII.GetString(r_buff, 8, r_sz);
-                        ret = r.Split('|').Select(gString => parseFromString(gString)).ToList();
+                        ret = r.Split('|').Select(gString => GameState.fromString(gString)).ToList();
                     }
                 }
                 catch (Exception e) { Console.WriteLine(e.ToString()); }
@@ -185,7 +172,7 @@ namespace Checkers
         {
             if (testLocal)
             {
-                this.game = new GameState();
+                this.game = new GameState(userId);
                 return 0;
             }
 
@@ -205,7 +192,7 @@ namespace Checkers
                     if (r.StartsWith("S: OKAY", StringComparison.OrdinalIgnoreCase))
                     {
                         r = Encoding.ASCII.GetString(r_buff, 8, r_sz);
-                        this.game = new GameState();
+                        this.game = new GameState(userId);
                         inGame = true;
                         return 0;
                     }
@@ -240,7 +227,7 @@ namespace Checkers
                     if (r.StartsWith("S: OKAY", StringComparison.OrdinalIgnoreCase))
                     {
                         r = Encoding.ASCII.GetString(r_buff, 8, r_sz);
-                        this.game = parseFromString(r);
+                        this.game = GameState.fromString(r);
                         inGame = true;
                         return 0;
                     }
@@ -308,13 +295,18 @@ namespace Checkers
                     String r;
 
                     // TODO: OtherPlayerName
-                    client.Send(Encoding.ASCII.GetBytes(userId + ": SEND " + parseToString(game)));
+                    client.Send(Encoding.ASCII.GetBytes(userId + ": SEND " + GameState.toString(game)));
 
                     r_sz = client.Receive(r_buff);
                     r = Encoding.ASCII.GetString(r_buff, 0, r_sz);
 
                     if (r.StartsWith("S: OKAY", StringComparison.OrdinalIgnoreCase))
+                    {
+                        this.game = game;
                         return 0;
+                    }
+
+                    return -1;
                 }
                 catch (Exception e) { Console.WriteLine(e.ToString()); }
             }
@@ -338,7 +330,7 @@ namespace Checkers
                     String r;
 
                     // TODO: OtherPlayerName
-                    client.Send(Encoding.ASCII.GetBytes(userId + ": SEND " + parseToString(game)));
+                    client.Send(Encoding.ASCII.GetBytes(userId + ": RECV "));
 
                     r_sz = client.Receive(r_buff);
                     r = Encoding.ASCII.GetString(r_buff, 0, r_sz);
@@ -346,7 +338,7 @@ namespace Checkers
                     if (r.StartsWith("S: OKAY", StringComparison.OrdinalIgnoreCase))
                     {
                         r = Encoding.ASCII.GetString(r_buff, 8, r_sz);
-                        this.game = parseFromString(r);
+                        this.game = GameState.fromString(r);
                     }
                 }
                 catch (Exception e) { Console.WriteLine(e.ToString()); }
