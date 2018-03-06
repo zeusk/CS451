@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:Checkers"
         mc:Ignorable="d"
         Background="White"
+        ShowsNavigationUI="False"
         Title="EndWindow" Height="350" Width="525">
     <Grid>
 

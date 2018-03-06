@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:Checkers"
         mc:Ignorable="d"
         Background="White"
+        ShowsNavigationUI="False"
         Title="CheckerBoardWindow" Height="350" Width="525">
     <Page.Resources>
         <Style x:Key="ButtonStyle" TargetType="{x:Type Button}">
