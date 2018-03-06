@@ -7,6 +7,25 @@
         mc:Ignorable="d"
         Background="White"
         Title="CheckerBoardWindow" Height="350" Width="525">
+    <Page.Resources>
+        <Style x:Key="ButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="Black"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Grid >
+                            <Ellipse Fill="Red" Width="{TemplateBinding Property=Width}" Height="{TemplateBinding Property=Width}"></Ellipse>
+                            <ContentPresenter VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalAlignment}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
     <Grid>
         <!--Connected to Text-->
         <TextBox x:Name="connectedToText" BorderThickness="0" Background="Transparent" IsReadOnly="True"
@@ -15,7 +34,6 @@
         <!--Connected player-->
         <TextBox x:Name="connectedPlayerName" Background="Transparent" IsReadOnly="True" Foreground="Black"  FontSize="15" FontFamily="Comic Sans MS" 
                  FontWeight="Bold" BorderThickness="0" Margin="25,102,355,188" />
-
 
         <!--Turn to move-->
         <StackPanel Margin="25,154,313,104">

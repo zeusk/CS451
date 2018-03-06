@@ -125,46 +125,48 @@ namespace Checkers
                         addMove(row, col, gs.cb);
                     };
                     double ellipSize = (size / 8) * 0.8;
-                    Shape ellips = new Ellipse() { Height = ellipSize, Width = ellipSize, HorizontalAlignment = HorizontalAlignment.Center };
-                    ellips.SetValue(Grid.RowProperty, i);
-                    ellips.SetValue(Grid.ColumnProperty, j);
-                    Panel.SetZIndex(ellips, 1);
-                    //Check if there is a checker piece on this box
-                    if (myboard[i, j] == 1)
+
+                   
+                    if(myboard[i, j] != 0)
                     {
-                        //player 1, regular
-                        ellips.Fill = new SolidColorBrush(Colors.Red);
-                        ellips.Stroke = new SolidColorBrush(Colors.Black);
-                        ellips.StrokeThickness = ellipSize/10;
-                    }
-                    else if(myboard[i, j] == 3)
-                    {
-                        //player 1, kinged
-                        ellips.Fill = new SolidColorBrush(Colors.Red);
-                        ellips.Stroke = new SolidColorBrush(Colors.Orange);
-                        ellips.StrokeThickness = ellipSize/5;
-                    }
-                    else if(myboard[i, j] == 2)
-                    {
-                        //player 2, regular
-                        ellips.Fill = new SolidColorBrush(Colors.White);
-                        ellips.Stroke = new SolidColorBrush(Colors.Black);
-                        ellips.StrokeThickness = ellipSize/10;
-                    }
-                    else if (myboard[i, j] == 4)
-                    {
-                        //player 2, kinged
-                        ellips.Fill = new SolidColorBrush(Colors.White);
-                        ellips.Stroke = new SolidColorBrush(Colors.Orange);
-                        ellips.StrokeThickness = ellipSize/5;
-                    }
-                    else
-                    {
-                        Panel.SetZIndex(ellips, 0);
+                        Border OuterBorder = new Border();
+                        OuterBorder.Width = ellipSize;
+                        OuterBorder.Height = ellipSize;
+
+                        if (myboard[i, j] == 1)
+                        {
+                            //player 1, regular
+                            OuterBorder.Background = new SolidColorBrush(Colors.Red);
+                            OuterBorder.BorderBrush = new SolidColorBrush(Colors.Black);
+                            OuterBorder.BorderThickness = new Thickness(ellipSize / 20);
+                        }
+                        else if (myboard[i, j] == 3)
+                        {
+                            //player 1, kinged
+                            OuterBorder.Background = new SolidColorBrush(Colors.Red);
+                            OuterBorder.BorderBrush = new SolidColorBrush(Colors.Yellow);
+                            OuterBorder.BorderThickness = new Thickness(ellipSize / 10);
+                        }
+                        else if (myboard[i, j] == 2)
+                        {
+                            //player 2, regular
+                            OuterBorder.Background = new SolidColorBrush(Colors.White);
+                            OuterBorder.BorderBrush = new SolidColorBrush(Colors.Black);
+                            OuterBorder.BorderThickness = new Thickness(ellipSize / 20);
+                        }
+                        else if (myboard[i, j] == 4)
+                        {
+                            //player 2, kinged
+                            OuterBorder.Background = new SolidColorBrush(Colors.White);
+                            OuterBorder.BorderBrush = new SolidColorBrush(Colors.Yellow);
+                            OuterBorder.BorderThickness = new Thickness(ellipSize / 10);
+                        }
+                        OuterBorder.CornerRadius = new CornerRadius(20);
+                        OuterBorder.HorizontalAlignment = HorizontalAlignment.Center;
+                        checkerboxButton.Content = OuterBorder;
                     }
 
                     myGrid.Children.Add(checkerboxButton);
-                    myGrid.Children.Add(ellips);
                 }
             }
             if(playerId == 1)
@@ -267,5 +269,9 @@ namespace Checkers
             NavigationService.Navigate(new Uri("EndWindow.xaml", UriKind.Relative), gc);
         }
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
