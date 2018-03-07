@@ -48,25 +48,22 @@ namespace Checkers
 
             //Connect to the server
             Task<int> taskConnect = Task<int>.Factory.StartNew( () => this.gc.Connect(ipAddress, userName) );
+
             taskConnect.Wait();
-            int isConnected = taskConnect.Result;
-            if (isConnected == -1)
-            //if ( isConnected != 0 && isConnected != -1)
+
+            if (taskConnect.Result == 0)
             {
-                MessageBox.Show("Connection failed. Please try again.");
-                connectionPopup.IsOpen = true;
-            }else if(isConnected == -2)
-            {
+                navigateToGameBrowserWindow(); // Continue if successfully connected to host
+            } else if (taskConnect.Result == -2) {
                 MessageBox.Show("User name taken. Please try again.");
                 connectionPopup.IsOpen = true;
+            } else if (taskConnect.Result == -3) {
+                MessageBox.Show("Invalid IP address. Please try again.");
+                connectionPopup.IsOpen = true;
+            } else {
+                MessageBox.Show("Connection failed.");
+                connectionPopup.IsOpen = true;
             }
-            else
-            {
-                //Go to next page if success
-                navigateToGameBrowserWindow();
-            }
-            
-            
         }
 
 

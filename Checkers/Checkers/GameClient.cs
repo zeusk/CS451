@@ -10,7 +10,7 @@ namespace Checkers
 {
     public class GameClient
     {
-        private readonly Boolean testLocal = true;
+        private readonly Boolean testLocal = false;
         private Boolean inGame = false;
         private Boolean isConnected = false;
 
@@ -35,11 +35,29 @@ namespace Checkers
         private Socket client = null;
         private IPEndPoint remote = null;
 
-        private void Init(String netAddress, String userName)
+        private int Init(String netAddress, String userName)
         {
-            userId = userName;
-            remote = new IPEndPoint(IPAddress.Parse(netAddress), 9001);
-            client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            int port = 9001;
+
+            try
+            {
+                if (netAddress.IndexOf(":") > -1)
+                {
+                    String[] frag = netAddress.Split(':');
+
+                    netAddress = frag[0];
+                    port = Int32.Parse(frag[1]);
+                }
+
+                if (!Util.ValidateIPv4(netAddress))
+                    return -2;
+
+                userId = userName;
+                remote = new IPEndPoint(IPAddress.Parse(netAddress), port);
+                client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            } catch (Exception e) { Debug.WriteLine(e.ToString()); return -1; }
+
+            return 0;
         }
 
         private void DisInit()
@@ -62,19 +80,19 @@ namespace Checkers
                 client.Connect(remote);
                 client.Send(s_buff);
 
-                while (true) {
+                do {
                     r_sz = client.Receive(r_buff);
                     r += Encoding.ASCII.GetString(r_buff, 0, r_sz);
-                    if (r.IndexOf("<EOT>") > -1)
-                        break;
-                }
+                } while (r.IndexOf("<EOT>") < 0);
 
                 r = r.Substring(0, r.IndexOf("<EOT>"));
             } catch (Exception e) {
                 Debug.WriteLine($"GameClient::sendRecv() EXCEPTION\n{e}");
             } finally {
-                client.Shutdown(SocketShutdown.Both);
-                client.Close();
+                try {
+                    client.Shutdown(SocketShutdown.Both);
+                    client.Close();
+                } catch (Exception e) { Debug.WriteLine(e.ToString()); }
             }
             Debug.WriteLine($"GameClient::sendRecv()- {r}");
 
@@ -88,7 +106,11 @@ namespace Checkers
                 return 0;
             if (!isConnected)
             {
-                Init(netAddress, userName);
+                switch (Init(netAddress, userName))
+                {
+                    case -2: return -3; // invalid IP
+                    case -1: return -1; // unknown error
+                }
 
                 String r = SendRecv("HELLO");
                 if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
@@ -97,10 +119,10 @@ namespace Checkers
                     return 0;
                 }
                 if (r.StartsWith("USER EXISTS", StringComparison.OrdinalIgnoreCase))
-                    return -2;
+                    return -2; // User exists
             }
 
-            return -1;
+            return -1; // unknown error
         }
 
         public int Disconnect()
