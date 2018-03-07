@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "CheckersHost": {
+      "commandName": "Project"
+    }
+  }
+}
