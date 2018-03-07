@@ -187,7 +187,7 @@ namespace Checkers
             if (isConnected && !inGame)
             {
                 game = new GameState(userId);
-                String r = SendRecv("NEWG " + game.ToString());
+                String r = SendRecv("NEWG " + game.toString());
                 if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
                     inGame = true;
