@@ -20,13 +20,15 @@ namespace Checkers
     public partial class StartWindow : Page
     {
         //Retrieve user name from local disc
-        private string userName = "Mike";
+        private string userName;
         //private string userName = Settings.getUserNameFromLocalDisc();
         private GameClient gc;
 
         public StartWindow()
         {
             InitializeComponent();
+
+            userName = Util.GetUserName();
 
             //Set the user name field for popup window
             enteredUserName.Text = userName;
@@ -45,6 +47,8 @@ namespace Checkers
             //Pass in user name and ip address
             string ipAddress = enteredUserIPAddress.Text;
             userName = enteredUserName.Text;
+
+            Util.SetUserName(userName);
 
             //Connect to the server
             Task<int> taskConnect = Task<int>.Factory.StartNew( () => this.gc.Connect(ipAddress, userName) );

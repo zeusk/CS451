@@ -8,6 +8,16 @@ namespace Checkers
 {
     class Util
     {
+        public static int SetUserName(String uName)
+        {
+            return 0; // TODO: Save to disk
+        }
+
+        public static String GetUserName()
+        {
+            return "Mike"; // TODO: Read from disk
+        }
+
         public static bool ValidateIPv4(string ipString)
         {
             if (String.IsNullOrWhiteSpace(ipString))
