@@ -57,7 +57,7 @@ namespace Checkers
             byte[] r_buff = new byte[8192];
             byte[] s_buff = Encoding.ASCII.GetBytes(userId + ": " + s + "<EOT>");
 
-            Debug.WriteLine($"GameClient::sendRecv()+ " + s);
+            Debug.WriteLine($"GameClient::sendRecv()+ {s}");
             try {
                 client.Connect(remote);
                 client.Send(s_buff);
@@ -68,13 +68,15 @@ namespace Checkers
                     if (r.IndexOf("<EOT>") > -1)
                         break;
                 }
+
+                r = r.Substring(0, r.IndexOf("<EOT>"));
             } catch (Exception e) {
-                Debug.WriteLine($"GameClient::sendRecv() EXCEPTION\n" + e);
+                Debug.WriteLine($"GameClient::sendRecv() EXCEPTION\n{e}");
             } finally {
                 client.Shutdown(SocketShutdown.Both);
                 client.Close();
             }
-            Debug.WriteLine($"GameClient::sendRecv()- " + r);
+            Debug.WriteLine($"GameClient::sendRecv()- {r}");
 
             return r;
         }
@@ -124,7 +126,7 @@ namespace Checkers
                 String r = SendRecv("LIST PLAYERS");
                 if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
-                    r = r.Substring(5, r.IndexOf("<EOT>") - 5); Debug.WriteLine(r);
+                    r = r.Substring(5);
                     return r.Split('~').ToList();
                 }
             }
@@ -141,7 +143,7 @@ namespace Checkers
                 String r = SendRecv("LIST GAMES");
                 if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
-                    r = r.Substring(5, r.IndexOf("<EOT>") - 5); Debug.WriteLine(r);
+                    r = r.Substring(5);
                     return r.Split('~').Select(gString => GameState.fromString(gString)).ToList();
                 }
             }
@@ -183,7 +185,7 @@ namespace Checkers
                 String r = SendRecv("JOIN " + remote.player1Name);
                 if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
-                    r = r.Substring(5, r.IndexOf("<EOT>") - 5); Debug.WriteLine(r);
+                    r = r.Substring(5);
                     game = GameState.fromString(r);
                     inGame = true;
                     return 0;
@@ -248,7 +250,7 @@ namespace Checkers
                 String r = SendRecv("RECV");
                 if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
-                    r = r.Substring(5, r.IndexOf("<EOT>") - 5); Debug.WriteLine(r);
+                    r = r.Substring(5);
                     this.game = GameState.fromString(r);
                     return 0;
                 }
