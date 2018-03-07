@@ -7,6 +7,7 @@ using System.Windows.Media;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Diagnostics;
+using System.Windows.Media.Imaging;
 
 namespace Checkers
 {
@@ -120,24 +121,34 @@ namespace Checkers
                 myGrid.RowDefinitions.Add(r);
             }
 
-            Color backGroundColor = new Color();
 
             for (int i = 0; i < 8; i++)
             {
                 for (int j = 0; j< 8; j++)
                 {
-                    if(i%2 == j% 2)
+                    ImageBrush brush = new ImageBrush();
+                    BitmapImage bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+
+                    if (i%2 == j% 2)
                     {
-                        backGroundColor = Color.FromRgb(216, 150, 98);
+                        //backGroundColor = Color.FromRgb(216, 150, 98);
+                        bitmap.UriSource = new Uri("../../Resource/DarkGrid.JPG", UriKind.Relative);
                     }
                     else
                     {
-                        backGroundColor = Color.FromRgb(74, 25, 18);
+                        // backGroundColor = Color.FromRgb(74, 25, 18);
+                        //bitmap.BeginInit();
+                        bitmap.UriSource = new Uri("../../Resource/LightGrid.JPG", UriKind.Relative);
                     }
+                    brush.ImageSource = bitmap;
+
                     Button checkerboxButton = new Button();
                     checkerboxButton.SetValue(Grid.RowProperty, i);
                     checkerboxButton.SetValue(Grid.ColumnProperty, j);
-                    checkerboxButton.Background = new SolidColorBrush(backGroundColor);
+                    checkerboxButton.Background = brush;
                     checkerboxButton.Tag = i.ToString() + " " + j.ToString();
                     checkerboxButton.Click += (s, e) => {
                         string coor = (string)((Button)s).Tag;
@@ -149,7 +160,7 @@ namespace Checkers
                     double ellipSize = (size / 8) * 0.8;
 
 
-                        if (myboard[i, j] != 0)
+                    if (myboard[i, j] != 0)
                     {
                         Border OuterBorder = new Border();
                         OuterBorder.Width = ellipSize;
@@ -190,11 +201,13 @@ namespace Checkers
                         }
                         checkerboxButton.Content = OuterBorder;
                     }
+                    bitmap.EndInit();
 
                     myGrid.Children.Add(checkerboxButton);
                 }
             }
-            if(playerId == 1)
+
+            if (playerId == 1)
             {
                 //flip the board 180 degrees 
                 RotateTransform myRotateTransform = new RotateTransform(180, 0.5, 0.5);
