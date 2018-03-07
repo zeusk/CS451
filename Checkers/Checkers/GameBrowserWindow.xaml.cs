@@ -21,7 +21,7 @@ namespace Checkers
     public partial class GameBrowserWindow : Page
     {
         //private int playerId = 1;
-        private GameClient gc = GameClient.getInstance();
+        private GameClient gc = GameClient.GetInstance();
         public static int playerId;
 
         public GameBrowserWindow()
@@ -35,7 +35,7 @@ namespace Checkers
         //Generate list of players
         protected void generateListOfPlayers()
         {
-            List<String> listOfPlayers = gc.listPlayers();
+            List<String> listOfPlayers = gc.ListPlayers();
             //List<String> listOfPlayers = new List<string>();
             //listOfPlayers.Add("Andy");
             //listOfPlayers.Add("Marry");
@@ -56,7 +56,7 @@ namespace Checkers
         //generate list of games
         protected void generateListOfGames()
         {
-            List<GameState> allGames = gc.listGames();
+            List<GameState> allGames = gc.ListGames();
             //List<GameState> allGames = new List<GameState>();
 
             foreach (GameState gs in allGames)
@@ -81,7 +81,7 @@ namespace Checkers
             joinButton.Click += (s, e) => {
                 //Go to the main game page
                 playerId = 2;
-                gc.joinGame(gs);
+                gc.JoinGame(gs);
                 NavigationService.Navigate(new Uri("CheckerBoardWindow.xaml", UriKind.Relative));
             };
             joinButton.HorizontalAlignment = HorizontalAlignment.Left;
@@ -116,7 +116,7 @@ namespace Checkers
         {
             playerId = 1;
             //Go to the main game page
-            gc.joinGame();
+            gc.JoinGame();
             NavigationService.Navigate(new Uri("CheckerBoardWindow.xaml", UriKind.Relative));
         }
     }

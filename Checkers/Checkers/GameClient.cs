@@ -2,349 +2,256 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
-using System.Windows.Navigation;
 
 namespace Checkers
 {
     public class GameClient
     {
         private readonly Boolean testLocal = true;
-   
         private Boolean inGame = false;
         private Boolean isConnected = false;
 
-        private String userId;
-        private IPEndPoint remote;
-        private Socket client;
-        private byte[] r_buff = new byte[16384];
-
-        private GameState game = null;
 
         private static GameClient gcInstance = null;
-
-        public static GameClient init()
+        public static GameClient GetInstance()
         {
-            // TODO
-
-            return GameClient.getInstance();
+            if (gcInstance == null)
+                gcInstance = new GameClient();
+            return gcInstance;
         }
 
-        public static GameClient getInstance()
+
+        private GameState game = null;
+        public GameState GetGameState()
         {
-            if (GameClient.gcInstance == null)
-                GameClient.gcInstance = new GameClient();
-            return GameClient.gcInstance;
+            return game;
         }
+
+
+        private String userId = null;
+        private Socket client = null;
+        private IPEndPoint remote = null;
+
+        private void Init(String netAddress, String userName)
+        {
+            userId = userName;
+            remote = new IPEndPoint(IPAddress.Parse(netAddress), 9001);
+            client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        }
+
+        private void DisInit()
+        {
+            client = null;
+            remote = null;
+            userId = null;
+        }
+
+
+        private string SendRecv(string s)
+        {
+            String r = "";
+            int    r_sz;
+            byte[] r_buff = new byte[8192];
+            byte[] s_buff = Encoding.ASCII.GetBytes(userId + ": " + s + "<EOT>");
+
+            Debug.WriteLine($"GameClient::sendRecv()+ " + s);
+            try {
+                client.Connect(remote);
+                client.Send(s_buff);
+
+                while (true) {
+                    r_sz = client.Receive(r_buff);
+                    r += Encoding.ASCII.GetString(r_buff, 0, r_sz);
+                    if (r.IndexOf("<EOT>") > -1)
+                        break;
+                }
+            } catch (Exception e) {
+                Debug.WriteLine($"GameClient::sendRecv() EXCEPTION\n" + e);
+            } finally {
+                client.Shutdown(SocketShutdown.Both);
+                client.Close();
+            }
+            Debug.WriteLine($"GameClient::sendRecv()- " + r);
+
+            return r;
+        }
+
 
         public int Connect(String netAddress, String userName)
         {
             if (testLocal)
                 return 0;
-
-            if (isConnected)
+            if (!isConnected)
             {
-                userId = userName;
-                remote = new IPEndPoint(IPAddress.Parse(netAddress), 8080);
-                client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                Init(netAddress, userName);
 
-                try
+                String r = SendRecv("HELLO");
+                if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
-                    int r_sz;
-                    String r;
-
-                    client.Connect(remote);
-                    client.Send(Encoding.ASCII.GetBytes(userId + ": HELLO<EOT>"));
-
-                    r_sz = client.Receive(r_buff);
-                    r = Encoding.ASCII.GetString(r_buff, 0, r_sz);
-
-                    if (r.StartsWith("S: WELCOME", StringComparison.OrdinalIgnoreCase))
-                    {
-                        isConnected = true;
-                        return 0;
-                    }
-                    else if (r.StartsWith("S: E:USER EXISTS", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return -2;
-                    }
+                    isConnected = true;
+                    return 0;
                 }
-                catch (Exception e) { Console.WriteLine(e.ToString()); }
+                if (r.StartsWith("USER EXISTS", StringComparison.OrdinalIgnoreCase))
+                    return -2;
             }
 
             return -1;
         }
 
-        public int disconnect()
+        public int Disconnect()
         {
             if (testLocal)
                 return 0;
-
             if (!isConnected)
                 return -1;
 
-            try
-            {
-                client.Shutdown(SocketShutdown.Both);
-                client.Close();
-                isConnected = false;
-            }
-            catch (Exception e) { Console.Write(e.ToString()); }
+            DisInit();
 
             return 0;
         }
 
-        public List<String> listPlayers()
+
+        public List<String> ListPlayers()
         {
-            List<String> ret = null;
-
             if (testLocal)
-            {
-                ret = new List<String>();
-
-                ret.Add("testPlayer1");
-                ret.Add("Shantanu");
-                ret.Add("Vivian");
-                ret.Add("Guruansh");
-
-                return ret;
-            }
+                return new List<String>{ "Shantanu", "Vivian", "Guruansh" };
 
             if (isConnected)
             {
-                try
+                String r = SendRecv("LIST PLAYERS");
+                if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
-                    int r_sz;
-                    String r;
-
-                    client.Send(Encoding.ASCII.GetBytes(userId + ": LIST PLAYERS<EOT>"));
-
-                    r_sz = client.Receive(r_buff);
-                    r = Encoding.ASCII.GetString(r_buff, 0, r_sz);
-
-                    if (r.StartsWith("S: OKAY", StringComparison.OrdinalIgnoreCase))
-                    {
-                        r = Encoding.ASCII.GetString(r_buff, 8, r_sz);
-                        ret = r.Split('|').ToList();
-                    }
+                    r = r.Substring(5, r.IndexOf("<EOT>") - 5); Debug.WriteLine(r);
+                    return r.Split('~').ToList();
                 }
-                catch (Exception e) { Console.WriteLine(e.ToString()); }
             }
 
-            return ret;
+            return null;
         }
 
-        public List<GameState> listGames()
+        public List<GameState> ListGames()
         {
-            List<GameState> ret = null;
-
             if (testLocal)
-            {
-                ret = new List<GameState>();
-                return ret;
-            }
-
+                return new List<GameState>();
             if (isConnected)
             {
-                try
+                String r = SendRecv("LIST GAMES");
+                if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
-                    int r_sz;
-                    String r;
-
-                    client.Send(Encoding.ASCII.GetBytes(userId + ": LIST GAMES"));
-
-                    r_sz = client.Receive(r_buff);
-                    r = Encoding.ASCII.GetString(r_buff, 0, r_sz);
-
-                    if (r.StartsWith("S: OKAY", StringComparison.OrdinalIgnoreCase))
-                    {
-                        r = Encoding.ASCII.GetString(r_buff, 8, r_sz);
-                        ret = r.Split('|').Select(gString => GameState.fromString(gString)).ToList();
-                    }
+                    r = r.Substring(5, r.IndexOf("<EOT>") - 5); Debug.WriteLine(r);
+                    return r.Split('~').Select(gString => GameState.fromString(gString)).ToList();
                 }
-                catch (Exception e) { Console.WriteLine(e.ToString()); }
             }
 
-            return ret;
+            return null;
         }
 
-        public int joinGame()
+
+        public int JoinGame()
         {
             if (testLocal)
             {
-                this.game = new GameState(userId);
+                game = new GameState(userId);
                 return 0;
             }
-
             if (isConnected && !inGame)
             {
-                try
+                game = new GameState(userId);
+                String r = SendRecv("NEW " + game.ToString());
+                if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
-                    int r_sz;
-                    String r;
-
-                    // TODO: OtherPlayerName
-                    client.Send(Encoding.ASCII.GetBytes(userId + ": NEW"));
-
-                    r_sz = client.Receive(r_buff);
-                    r = Encoding.ASCII.GetString(r_buff, 0, r_sz);
-
-                    if (r.StartsWith("S: OKAY", StringComparison.OrdinalIgnoreCase))
-                    {
-                        r = Encoding.ASCII.GetString(r_buff, 8, r_sz);
-                        this.game = new GameState(userId);
-                        inGame = true;
-                        return 0;
-                    }
+                    inGame = true;
+                    return 0;
                 }
-                catch (Exception e) { Console.WriteLine(e.ToString()); }
             }
 
             return -1;
         }
 
-        public int joinGame(GameState remote)
+        public int JoinGame(GameState remote)
         {
             if (testLocal)
             {
-                this.game = remote;
+                game = remote;
                 return 0;
             }
-
             if (isConnected && !inGame)
             {
-                try
+                String r = SendRecv("JOIN " + remote.player1Name);
+                if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
-                    int r_sz;
-                    String r;
-
-                    // TODO: OtherPlayerName
-                    client.Send(Encoding.ASCII.GetBytes(userId + ": JOIN " + remote.player1Name));
-
-                    r_sz = client.Receive(r_buff);
-                    r = Encoding.ASCII.GetString(r_buff, 0, r_sz);
-
-                    if (r.StartsWith("S: OKAY", StringComparison.OrdinalIgnoreCase))
-                    {
-                        r = Encoding.ASCII.GetString(r_buff, 8, r_sz);
-                        this.game = GameState.fromString(r);
-                        inGame = true;
-                        return 0;
-                    }
+                    r = r.Substring(5, r.IndexOf("<EOT>") - 5); Debug.WriteLine(r);
+                    game = GameState.fromString(r);
+                    inGame = true;
+                    return 0;
                 }
-                catch (Exception e) { Console.WriteLine(e.ToString()); }
             }
 
             return -1;
         }
 
-        public int quitGame()
+        public int QuitGame()
         {
             if (testLocal)
             {
-                this.game = null;
-                this.inGame = false;
+                game = null;
+                inGame = false;
                 return 0;
             }
-
             if (isConnected && inGame)
             {
-                try
+                String r = SendRecv("QUIT");
+                if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
-                    int r_sz;
-                    String r;
-
-                    // TODO: OtherPlayerName
-                    client.Send(Encoding.ASCII.GetBytes(userId + ": QUIT"));
-
-                    r_sz = client.Receive(r_buff);
-                    r = Encoding.ASCII.GetString(r_buff, 0, r_sz);
-
-                    if (r.StartsWith("S: OKAY", StringComparison.OrdinalIgnoreCase))
-                    {
-                        this.game = null;
-                        this.inGame = false;
-
-                        return 0;
-                    }
+                    game = null;
+                    inGame = false;
+                    return 0;
                 }
-                catch (Exception e) { Console.WriteLine(e.ToString()); }
             }
 
             return -1;
         }
 
-        public GameState getGameState()
-        {
-            return this.game;
-        }
 
-        public int sendState(GameState game)
+        public int SendState(GameState game)
         {
             if (testLocal)
             {
                 this.game = game;
                 return 0;
             }
-
             if (isConnected && inGame)
             {
-                try
+                String r = SendRecv("SEND " + GameState.toString(game));
+                if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
-                    int r_sz;
-                    String r;
-
-                    // TODO: OtherPlayerName
-                    client.Send(Encoding.ASCII.GetBytes(userId + ": SEND " + GameState.toString(game)));
-
-                    r_sz = client.Receive(r_buff);
-                    r = Encoding.ASCII.GetString(r_buff, 0, r_sz);
-
-                    if (r.StartsWith("S: OKAY", StringComparison.OrdinalIgnoreCase))
-                    {
-                        this.game = game;
-                        return 0;
-                    }
-
-                    return -1;
+                    this.game = game;
+                    return 0;
                 }
-                catch (Exception e) { Console.WriteLine(e.ToString()); }
             }
 
             return -1;
         }
 
-        public int receiveState(GameState game)
+        public int ReceiveState(GameState game)
         {
             if (testLocal)
             {
                 this.game = game;
                 return 0;
             }
-
             if (isConnected && inGame)
             {
-                try
+                String r = SendRecv("RECV");
+                if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
-                    int r_sz;
-                    String r;
-
-                    // TODO: OtherPlayerName
-                    client.Send(Encoding.ASCII.GetBytes(userId + ": RECV "));
-
-                    r_sz = client.Receive(r_buff);
-                    r = Encoding.ASCII.GetString(r_buff, 0, r_sz);
-
-                    if (r.StartsWith("S: OKAY", StringComparison.OrdinalIgnoreCase))
-                    {
-                        r = Encoding.ASCII.GetString(r_buff, 8, r_sz);
-                        this.game = GameState.fromString(r);
-                    }
+                    r = r.Substring(5, r.IndexOf("<EOT>") - 5); Debug.WriteLine(r);
+                    this.game = GameState.fromString(r);
+                    return 0;
                 }
-                catch (Exception e) { Console.WriteLine(e.ToString()); }
             }
 
             return -1;

@@ -32,8 +32,7 @@ namespace Checkers
             enteredUserName.Text = userName;
             connectionPopup.IsOpen = true;
 
-            GameClient.init();
-            gc = GameClient.getInstance();
+            gc = GameClient.GetInstance();
         }
 
         protected void connectUserToServer(object sender, RoutedEventArgs e)

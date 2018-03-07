@@ -65,6 +65,11 @@ namespace Checkers
             return this._checkerBoard.getBoard();
         }
 
+        public string toString()
+        {
+            return GameState.toString(this);
+        }
+
         public static String toString(GameState gs)
         {
             List<String> output = new List<String>();
