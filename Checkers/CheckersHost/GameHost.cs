@@ -91,8 +91,12 @@ namespace CheckersHost
                     //Send(handler, content);
 
                     String[] frag = content.Substring(0, content.IndexOf("<EOT>")).Split(": ");
+                    String cmd = frag[1].Substring(0, 4);
+                    String arg;
 
-                    HandleCmd(handler, frag[0], frag[1]);
+                    try { arg = frag[1].Substring(5); } catch (ArgumentOutOfRangeException) { arg = ""; }
+
+                    HandleCmd(handler, frag[0], cmd, arg);
                 }
                 else // Not all data received. Get more.
                 {
@@ -124,10 +128,55 @@ namespace CheckersHost
             { Console.WriteLine(e.ToString()); }
         }
 
-        private static void HandleCmd(Socket handler, String userId, String userCd)
+        private static void HandleCmd(Socket handler, String userId, String userCmd, String userArg)
         {
-            Console.WriteLine($"Serving {userId} for {userCd}");
-            Send(handler, userId);
+            Console.WriteLine($"Serving {userId} for {userCmd} with args '{userArg}'");
+
+            switch (userCmd)
+            {
+                case "UREG":
+                    {
+
+                    }
+                    break;
+                case "LSPL":
+                    {
+
+                    }
+                    break;
+                case "LSGS":
+                    {
+
+                    }
+                    break;
+                case "NEWG":
+                    {
+
+                    }
+                    break;
+                case "JOIN":
+                    {
+
+                    }
+                    break;
+                case "QUIT":
+                    {
+
+                    }
+                    break;
+                case "SEND":
+                    {
+
+                    }
+                    break;
+                case "RECV":
+                    {
+
+                    }
+                    break;
+            }
+
+            Send(handler, "OKAY ");
         }
     }
 }

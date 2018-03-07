@@ -32,7 +32,6 @@ namespace Checkers
 
 
         private String userId = null;
-        private Socket client = null;
         private IPEndPoint remote = null;
 
         private int Init(String netAddress, String userName)
@@ -54,7 +53,6 @@ namespace Checkers
 
                 userId = userName;
                 remote = new IPEndPoint(IPAddress.Parse(netAddress), port);
-                client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             } catch (Exception e) { Debug.WriteLine(e.ToString()); return -1; }
 
             return 0;
@@ -62,7 +60,6 @@ namespace Checkers
 
         private void DisInit()
         {
-            client = null;
             remote = null;
             userId = null;
         }
@@ -74,9 +71,12 @@ namespace Checkers
             int    r_sz;
             byte[] r_buff = new byte[8192];
             byte[] s_buff = Encoding.ASCII.GetBytes(userId + ": " + s + "<EOT>");
+            Socket client = null;
 
             Debug.WriteLine($"GameClient::sendRecv()+ {s}");
             try {
+                client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
                 client.Connect(remote);
                 client.Send(s_buff);
 
@@ -112,7 +112,7 @@ namespace Checkers
                     case -1: return -1; // unknown error
                 }
 
-                String r = SendRecv("HELLO");
+                String r = SendRecv("UREG"); // UserRegister
                 if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
                     isConnected = true;
@@ -145,12 +145,13 @@ namespace Checkers
 
             if (isConnected)
             {
-                String r = SendRecv("LIST PLAYERS");
+                String r = SendRecv("LSPL"); // ListPlayers
                 if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
-                {
-                    r = r.Substring(5);
-                    return r.Split('~').ToList();
-                }
+                    return r
+                        .Substring(5)
+                        .Split('~')
+                        .Where(p => !string.IsNullOrEmpty(p))
+                        .ToList();
             }
 
             return null;
@@ -162,12 +163,14 @@ namespace Checkers
                 return new List<GameState>();
             if (isConnected)
             {
-                String r = SendRecv("LIST GAMES");
+                String r = SendRecv("LSGS"); // ListGames
                 if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
-                {
-                    r = r.Substring(5);
-                    return r.Split('~').Select(gString => GameState.fromString(gString)).ToList();
-                }
+                    return r
+                        .Substring(5)
+                        .Split('~')
+                        .Where(g => !string.IsNullOrEmpty(g))
+                        .Select(g => GameState.fromString(g))
+                        .ToList();
             }
 
             return null;
@@ -184,7 +187,7 @@ namespace Checkers
             if (isConnected && !inGame)
             {
                 game = new GameState(userId);
-                String r = SendRecv("NEW " + game.ToString());
+                String r = SendRecv("NEWG " + game.ToString());
                 if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
                     inGame = true;
@@ -207,8 +210,7 @@ namespace Checkers
                 String r = SendRecv("JOIN " + remote.player1Name);
                 if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
-                    r = r.Substring(5);
-                    game = GameState.fromString(r);
+                    game = GameState.fromString(r.Substring(5));
                     inGame = true;
                     return 0;
                 }
@@ -272,8 +274,7 @@ namespace Checkers
                 String r = SendRecv("RECV");
                 if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
-                    r = r.Substring(5);
-                    this.game = GameState.fromString(r);
+                    this.game = GameState.fromString(r.Substring(5));
                     return 0;
                 }
             }
