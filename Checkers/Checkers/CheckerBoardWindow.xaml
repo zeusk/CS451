@@ -5,48 +5,31 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Checkers"
         mc:Ignorable="d"
-        Background="White"
         ShowsNavigationUI="False"
-        Title="CheckerBoardWindow" Height="350" Width="525">
-    <Page.Resources>
-        <Style x:Key="ButtonStyle" TargetType="{x:Type Button}">
-            <Setter Property="Background" Value="Black"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        Height="500" Width="850"
+        Title="CheckerBoardWindow">
+    <Page.Background>
+        <ImageBrush ImageSource= "Resource/WoodDark.jpg" />
+    </Page.Background>
 
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Grid >
-                            <Ellipse Fill="Red" Width="{TemplateBinding Property=Width}" Height="{TemplateBinding Property=Width}"></Ellipse>
-                            <ContentPresenter VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                          HorizontalAlignment="{TemplateBinding HorizontalAlignment}"/>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </Page.Resources>
     <Grid>
+        <!--Close game button-->
+        <Button Style="{DynamicResource closeButtonTemplate}" Content="X" Click="CloseGame"/>
+
         <!--Connected to Text-->
-        <TextBox x:Name="connectedToText" BorderThickness="0" Background="Transparent" IsReadOnly="True"
-             Text="Connected to:" Foreground="Black"  FontSize="15" FontFamily="Comic Sans MS" 
-                 FontWeight="Bold" Margin="25,71,355,219" />
+        <TextBlock x:Name="connectedToText" Style="{DynamicResource textBlockTemplate}" Text="Connected to:" FontSize="25" Margin="25,71,575,398" />
         <!--Connected player-->
-        <TextBox x:Name="connectedPlayerName" Background="Transparent" IsReadOnly="True" Foreground="Black"  FontSize="15" FontFamily="Comic Sans MS" 
-                 FontWeight="Bold" BorderThickness="0" Margin="25,102,355,188" />
+        <TextBlock x:Name="connectedPlayerName" Style="{DynamicResource textBlockTemplate}" FontSize="15" Margin="25,102,575,351" />
 
         <!--Turn to move-->
-        <StackPanel Margin="25,154,313,104">
-            <TextBox x:Name="turnToMoveText" Background="Transparent" IsReadOnly="True" Foreground="Black"  FontSize="15" FontFamily="Comic Sans MS" 
-                 Text="It's your turn to move" BorderThickness="0"  FontWeight="Bold" />
-            <Grid HorizontalAlignment="Left">
-                <Ellipse Name="playerColorCircle" Width="15" Height="15" Stroke="Black"  StrokeThickness="1"/>
+        <StackPanel Margin="25,154,575,104">
+            <TextBlock x:Name="turnToMoveText" Style="{DynamicResource textBlockTemplate}" FontSize="25" Text="It's your turn to move" />
+            <Grid HorizontalAlignment="Center">
+                <Ellipse Name="playerColorCircle" Width="40" Height="40" Stroke="SaddleBrown"  StrokeThickness="3"/>
             </Grid>
         </StackPanel>
 
-        <Grid Name="dynamicGrid" Height="240" Width="240" Margin="249,25,35,61">
-        </Grid>
+        <Grid Name="dynamicGrid" Margin="373,38,79,43" />
 
     </Grid>
 </Page>

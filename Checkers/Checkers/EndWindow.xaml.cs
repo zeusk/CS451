@@ -35,11 +35,6 @@ namespace Checkers
             }
         }
 
-        void NavigationService_LoadCompleted(object sender, NavigationEventArgs e)
-        {
-            Debug.Write("gc is here");
-        }
-
 
         public void NavigateToGameBrowserWindow(object sender, RoutedEventArgs e)
         {

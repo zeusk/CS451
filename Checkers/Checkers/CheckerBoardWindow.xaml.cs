@@ -21,15 +21,17 @@ namespace Checkers
         private static GameClient gc = GameClient.getInstance();
         private static List<int> movePair = new List<int>();
         private static List<int> chosenPiece = new List<int>();
-        private static Color currentPlayerColor = new Color();
+        private static int boardSize = 400;
+        private static LinearGradientBrush redGradient = new LinearGradientBrush();
+        private static LinearGradientBrush blackGradient = new LinearGradientBrush();
+
         public static CheckerBoardWindow Instance { get; private set; }
 
         public CheckerBoardWindow()
         {
             InitializeComponent();
             Instance = this;
-            refreshBoard(generateCheckerBoardUI(240, gc.getGameState(), GameBrowserWindow.playerId));
-            currentPlayerColor = getColorForPlayer(GameBrowserWindow.playerId);
+            refreshBoard(generateCheckerBoardUI(boardSize, gc.getGameState(), GameBrowserWindow.playerId));
 
             if (GameBrowserWindow.playerId == 1)
             {
@@ -41,50 +43,70 @@ namespace Checkers
                 turnToMoveText.Visibility = Visibility.Hidden;
                 playerColorCircle.Visibility = Visibility.Hidden;
             }
-            playerColorCircle.Fill = new SolidColorBrush(currentPlayerColor);
+            playerColorCircle.Fill = getColorForPlayer(GameBrowserWindow.playerId);
+
+            redGradient.StartPoint = new Point(0.5, 0);
+            redGradient.EndPoint = new Point(0.5, 1);
+            GradientStop redStart = new GradientStop();
+            redStart.Offset = 0.0;
+            redStart.Color = Color.FromRgb(220, 141, 124);
+            GradientStop redMiddle = new GradientStop();
+            redMiddle.Offset = 0.2;
+            redMiddle.Color = Color.FromRgb(177, 8, 1);
+            GradientStop redStop = new GradientStop();
+            redStop.Offset = 0.7;
+            redStop.Color = Color.FromRgb(131, 22, 2);
+            redGradient.GradientStops.Add(redStart);
+            redGradient.GradientStops.Add(redMiddle);
+            redGradient.GradientStops.Add(redStop);
+
+            blackGradient.StartPoint = new Point(0.5, 0);
+            blackGradient.EndPoint = new Point(0.5, 1);
+            GradientStop blackStart = new GradientStop();
+            blackStart.Offset = 0.0;
+            blackStart.Color = Color.FromRgb(139, 141, 136);
+            GradientStop blackMiddle = new GradientStop();
+            blackMiddle.Offset = 0.2;
+            blackMiddle.Color = Color.FromRgb(43, 43, 45);
+            GradientStop blackStop = new GradientStop();
+            blackStop.Offset = 0.7;
+            blackStop.Color = Color.FromRgb(68, 67, 63);
+            blackGradient.GradientStops.Add(blackStart);
+            blackGradient.GradientStops.Add(blackMiddle);
+            blackGradient.GradientStops.Add(blackStop);
 
             //Set player info on UI
             connectedPlayerName.Text = opponentName;
 
         }
 
-        void NavigationService_LoadCompleted(object sender, NavigationEventArgs e)
-        {
-            gc = (GameClient)e.ExtraData;
-            Debug.Write("gc is here");
-        }
-
-        private static Color getColorForPlayer(int id)
+        private static LinearGradientBrush getColorForPlayer(int id)
         {
             if (id == 1)
             {
-                return (Colors.Red);
+                return redGradient;
             }
             else
             {
-                return (Colors.White);
+                return blackGradient;
             }
         }
 
-        public static Grid generateCheckerBoardUI(int size, GameState gs, int playerId)
+        public static Border generateCheckerBoardUI(int size, GameState gs, int playerId)
         {
             Grid myGrid = new Grid();
-            myGrid.Height = size;
-            myGrid.Width = size;
+            double gridSize = size*0.99;
+            myGrid.HorizontalAlignment = HorizontalAlignment.Center;
+            myGrid.VerticalAlignment = VerticalAlignment.Center;
             int[,] myboard = gs.getBoard();
-            //int [,] myboard = new int[,] { { 0,1,0,1,0,1,0,1}, {1,0,1,0,1,0,1,0}, 
-              //  { 0, 1, 0, 1, 0, 1, 0, 1 }, {0,0,0,0,0,0,0,0}, { 0, 0, 0, 0, 0, 0, 0, 0 },
-                //{2,0,2,0,2,0,2,0}, { 0, 2, 0, 2, 0, 2, 0, 2 }, {2,0,2,0,2,0,2,0} };
-
-            // Create Columns
             List<ColumnDefinition> gridCols = new List<ColumnDefinition>();
             List<RowDefinition> gridRows = new List<RowDefinition>();
             for (int i = 0; i< 8; i++)
             {
                 ColumnDefinition gridCol1 = new ColumnDefinition();
-                gridCol1.Width = new GridLength(size/8);
+                gridCol1.Width = new GridLength(gridSize / 8);
                 RowDefinition gridRow1 = new RowDefinition();
-                gridRow1.Height = new GridLength(size/8);
+                gridRow1.Height = new GridLength(gridSize / 8);
                 gridCols.Add(gridCol1);
                 gridRows.Add(gridRow1);
             }
@@ -106,11 +128,11 @@ namespace Checkers
                 {
                     if(i%2 == j% 2)
                     {
-                        backGroundColor = Colors.Wheat;
+                        backGroundColor = Color.FromRgb(216, 150, 98);
                     }
                     else
                     {
-                        backGroundColor = Colors.Green;
+                        backGroundColor = Color.FromRgb(74, 25, 18);
                     }
                     Button checkerboxButton = new Button();
                     checkerboxButton.SetValue(Grid.RowProperty, i);
@@ -126,8 +148,8 @@ namespace Checkers
                     };
                     double ellipSize = (size / 8) * 0.8;
 
-                   
-                    if(myboard[i, j] != 0)
+
+                        if (myboard[i, j] != 0)
                     {
                         Border OuterBorder = new Border();
                         OuterBorder.Width = ellipSize;
@@ -136,33 +158,36 @@ namespace Checkers
                         if (myboard[i, j] == 1)
                         {
                             //player 1, regular
-                            OuterBorder.Background = new SolidColorBrush(Colors.Red);
-                            OuterBorder.BorderBrush = new SolidColorBrush(Colors.Black);
-                            OuterBorder.BorderThickness = new Thickness(ellipSize / 20);
+                            OuterBorder.Background = redGradient;
+                            OuterBorder.BorderThickness = new Thickness(0);
                         }
                         else if (myboard[i, j] == 3)
                         {
                             //player 1, kinged
-                            OuterBorder.Background = new SolidColorBrush(Colors.Red);
-                            OuterBorder.BorderBrush = new SolidColorBrush(Colors.Yellow);
+                            OuterBorder.Background = redGradient;
+                            OuterBorder.BorderBrush = new SolidColorBrush(Colors.Wheat);
                             OuterBorder.BorderThickness = new Thickness(ellipSize / 10);
                         }
                         else if (myboard[i, j] == 2)
                         {
                             //player 2, regular
-                            OuterBorder.Background = new SolidColorBrush(Colors.White);
-                            OuterBorder.BorderBrush = new SolidColorBrush(Colors.Black);
-                            OuterBorder.BorderThickness = new Thickness(ellipSize / 20);
+                            OuterBorder.Background = blackGradient;
+                            OuterBorder.BorderThickness = new Thickness(0);
                         }
                         else if (myboard[i, j] == 4)
                         {
                             //player 2, kinged
-                            OuterBorder.Background = new SolidColorBrush(Colors.White);
-                            OuterBorder.BorderBrush = new SolidColorBrush(Colors.Yellow);
+                            OuterBorder.Background = blackGradient;
+                            OuterBorder.BorderBrush = new SolidColorBrush(Colors.Wheat);
                             OuterBorder.BorderThickness = new Thickness(ellipSize / 10);
                         }
                         OuterBorder.CornerRadius = new CornerRadius(20);
                         OuterBorder.HorizontalAlignment = HorizontalAlignment.Center;
+                        if(playerId == 1)
+                        {
+                            RotateTransform myRotateTransform = new RotateTransform(180, 0.5, 0.5);
+                            OuterBorder.LayoutTransform = myRotateTransform;
+                        }
                         checkerboxButton.Content = OuterBorder;
                     }
 
@@ -175,7 +200,13 @@ namespace Checkers
                 RotateTransform myRotateTransform = new RotateTransform(180, 0.5, 0.5);
                 myGrid.LayoutTransform = myRotateTransform;
             }
-            return myGrid;
+            Border gridBorder = new Border();
+            gridBorder.BorderBrush = new SolidColorBrush(Color.FromRgb(102, 51, 0));
+            gridBorder.Height = size;
+            gridBorder.Width = size;
+            gridBorder.BorderThickness = new Thickness(5);
+            gridBorder.Child = myGrid;
+            return gridBorder;
         }
 
         protected static void addMove(int i, int j, CheckerBoard cb)
@@ -209,7 +240,7 @@ namespace Checkers
                         return;
                     }
                    
-                    refreshBoard(generateCheckerBoardUI(240, gc.getGameState(), GameBrowserWindow.playerId));
+                    refreshBoard(generateCheckerBoardUI(boardSize, gc.getGameState(), GameBrowserWindow.playerId));
                     if (gc.getGameState().getResult() != -1)
                     {
                         //Game end, go to end window
@@ -223,7 +254,7 @@ namespace Checkers
                             //----------------------------------------
                             //------------------------------------------
                             GameBrowserWindow.playerId = 3 - GameBrowserWindow.playerId;
-                            Instance.playerColorCircle.Fill = new SolidColorBrush(getColorForPlayer(GameBrowserWindow.playerId));
+                            Instance.playerColorCircle.Fill = getColorForPlayer(GameBrowserWindow.playerId);
                             //----------------------------------------------
                             //--------------------------------------------
 
@@ -238,7 +269,7 @@ namespace Checkers
                             }
                             else
                             {
-                                refreshBoard(generateCheckerBoardUI(240, gc.getGameState(), GameBrowserWindow.playerId));
+                                refreshBoard(generateCheckerBoardUI(boardSize, gc.getGameState(), GameBrowserWindow.playerId));
                                 if (gc.getGameState().getResult() != -1)
                                 {
                                     //Game end, go to end window
@@ -258,20 +289,20 @@ namespace Checkers
             }            
         }
 
-        private static void refreshBoard(Grid newG)
+        private static void refreshBoard(Border newG)
         {
             Instance.dynamicGrid.Children.Clear();
             Instance.dynamicGrid.Children.Add(newG);
         }
 
+        private void CloseGame(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
         protected void navigateToEndWindow()
         {
             NavigationService.Navigate(new Uri("EndWindow.xaml", UriKind.Relative), gc);
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 }

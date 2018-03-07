@@ -5,35 +5,34 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Checkers"
         mc:Ignorable="d"
-        Background="White"
         ShowsNavigationUI="False"
-        Title="GameBrowserWindow" Height="350" Width="525">
+        Height="500" Width="850"
+        Title="GameBrowserWindow" >
+    <Page.Background>
+        <ImageBrush ImageSource= "Resource/WoodDark.jpg"/>
+    </Page.Background>
     <Grid>
-
+        <!--Close game button-->
+        <Button Style="{DynamicResource closeButtonTemplate}" Content="X" Click="CloseGame"/>
         <!--List of players title-->
-        <TextBox x:Name="listOfPlayersTitle" Background="Transparent"  IsReadOnly="True"
-             Text="List of players" Foreground="Black"  FontSize="20" TextAlignment="Center" FontFamily="Comic Sans MS" 
-                 FontWeight="Bold" Margin="52,10,280,278" />
+        <TextBlock Style="{DynamicResource textBlockTemplate}" Text="List of players"  FontSize="35" Margin="52,10,432,423" />
 
         <!--List of games title-->
-        <TextBox x:Name="listOfGamesTitle" Background="Transparent"  IsReadOnly="True"
-        	Text="List of Games" Foreground="Black"  FontSize="20" TextAlignment="Center" FontFamily="Comic Sans MS" 
-        	FontWeight="Bold" Margin="297,10,35,278" />
+        <TextBlock Style="{DynamicResource textBlockTemplate}"  Text="List of Games" FontSize="35" Margin="423,10,35,423" />
 
         <!--Dynamic name of players-->
-        <StackPanel x:Name="listOfPlayersPanel" Margin="52,77,279.8,72">
+        <StackPanel x:Name="listOfPlayersPanel" Margin="52,77,432,72">
 
         </StackPanel>
 
         <!--Dynamic name of games-->
-        <StackPanel x:Name="listOfGamesPanel"  Margin="297,77,34.8,72">
+        <StackPanel x:Name="listOfGamesPanel"  Margin="423,77,35,72">
         </StackPanel>
 
 
         <!--Start game button-->
-        <Button  Background="White" Content="Start a new game" FontSize="20"  Margin="176,304,150.8,10" Click="startNewGame"/>
-
-
+        <Button Content="Start a new game" FontSize="30" Width="300" Height="50" Style="{DynamicResource buttonTemplate}" 
+                Click="startNewGame" Margin="275,428,275,22" />
 
     </Grid>
 </Page>

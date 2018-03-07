@@ -5,38 +5,42 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Checkers"
         mc:Ignorable="d"
-        Background="White"
         ShowsNavigationUI="False"
-        Title="Checker" Height="350" Width="525">
-    <Grid>
-        <!--<DockPanel>
-            <Frame x:Name="_mainFrame" />
-        </DockPanel>-->
+        Title="Checker" Height="500" Width="850">
+    <Page.Background>
+        <ImageBrush ImageSource= "Resource/WoodDark.jpg"  />
+    </Page.Background>
+    
+    <Grid >
+
+        <!--Close game button-->
+        <Button Style="{DynamicResource closeButtonTemplate}" Content="X" Click="CloseGame"/>
+        
         <!--Game Title-->
-        <TextBox x:Name="gameTitle" Background="Transparent" BorderThickness="0" IsReadOnly="True"
-             Text="Chckers" Foreground="Black"  FontSize="58" TextAlignment="Center" FontFamily="Comic Sans MS" 
-                 FontWeight="Bold" Margin="0,48,0,188"  />
+        <TextBlock  Text="Chckers" Style="{DynamicResource textBlockTemplate}" HorizontalAlignment="Center" FontSize="100" />
 
         <!--Connecting user alert-->
-        <TextBox x:Name="connectingToServerText" Background="Transparent" BorderThickness="0" IsReadOnly="True" Visibility="Hidden"
-             Text="Connecting to the server..." Foreground="Black"  FontSize="30" TextAlignment="Center" FontFamily="Comic Sans MS" 
-                 FontStyle="Italic" Margin="20,189,0,47" Grid.ColumnSpan="4" />
+        <TextBlock x:Name="connectingToServerText" Style="{DynamicResource textBlockTemplate}" Visibility="Visible" Text="Connecting to the server..."  FontSize="35"
+                 FontStyle="Italic" Margin="0,433,0,0" />
 
         <!--Pop up window-->
-        <Popup Name="connectionPopup" Placement="Mouse" HorizontalOffset="-100" VerticalOffset="-100"  IsOpen="True" >
-            <StackPanel Background="LightGray" Height="117" Width="304">
-                <TextBlock Name="popupText"  FontSize="16"  Margin="0,0,0,0" Text="Please enter you IP address and user name"/>
-                <StackPanel Orientation="Horizontal" Margin="30, 10, 0, 0" >
-                    <TextBlock x:Name="popupIPAddress"  FontSize="16" Text="IP Address :" FontWeight="Bold"  Height="25" />
-                    <TextBox Name="enteredUserIPAddress" HorizontalAlignment="Left" Height="25" TextWrapping="Wrap"  Width="120" Margin="25,0,0, 0"  />
+        <Popup Name="connectionPopup" Placement="Mouse" HorizontalOffset="-100" AllowsTransparency="True" VerticalOffset="-100"  IsOpen="True" >
+            <Border Background="SaddleBrown" BorderThickness="0" CornerRadius="20">
+                <StackPanel Background="Transparent" Height="117" Width="304">
+                    <TextBlock Name="popupText" Style="{DynamicResource textBlockTemplate}"  FontSize="13" Text="  Please enter you IP address and user name"/>
+                    <StackPanel Orientation="Horizontal" Margin="30, 10, 0, 0" >
+                        <TextBlock x:Name="popupIPAddress" Style="{DynamicResource textBlockTemplate}" FontSize="16" Text="IP Address :" Height="25" />
+                        <TextBox Name="enteredUserIPAddress" Foreground="SaddleBrown" BorderThickness="0" FontFamily="Comic Sans MS" 
+                                 Background="Wheat" HorizontalAlignment="Left" Height="22" TextWrapping="Wrap"   Width="120" Margin="25,0,0, 0"  />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="30, 0, 0, 0">
+                        <TextBlock x:Name="popupUserName" Style="{DynamicResource textBlockTemplate}" FontSize="16" Text="User Name:"  Height="25" />
+                        <TextBox Name="enteredUserName"  Background="Wheat" Foreground="SaddleBrown" BorderThickness="0" 
+                                 FontFamily="Comic Sans MS"  HorizontalAlignment="Left" Height="22" TextWrapping="Wrap"  Width="120" Margin="32.5,0,0, 0" />
+                    </StackPanel>
+                    <Button Content="OK" Style="{DynamicResource buttonTemplate}" Margin="230,10,10,0" Click="connectUserToServer"/>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="30, 0, 0, 0">
-                    <TextBlock x:Name="popupUserName"  FontSize="16" Text="User Name:" FontWeight="Bold"  Height="25" />
-                    <TextBox Name="enteredUserName" HorizontalAlignment="Left" Height="25" TextWrapping="Wrap"  Width="120" Margin="25,0,0, 0" />
-                </StackPanel>
-                <Button Background="White" Content="Ok" Height="22" Width="50"  Margin="230, 10, 0, 0" Click="connectUserToServer"/>
-            </StackPanel>
+            </Border>
         </Popup>
-
     </Grid>
 </Page>

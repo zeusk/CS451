@@ -20,8 +20,8 @@ namespace Checkers
     public partial class StartWindow : Page
     {
         //Retrieve user name from local disc
-        private string userName = "Mike";
-        //private string userName = Settings.getUserNameFromLocalDisc();
+        //private string userName = "Mike";
+        private string userName = Settings.getUserNameFromLocalDisc();
         private GameClient gc;
 
         public StartWindow()
@@ -74,6 +74,11 @@ namespace Checkers
         protected void navigateToGameBrowserWindow()
         {
              NavigationService.Navigate(new Uri("GameBrowserWindow.xaml", UriKind.Relative));
+        }
+
+        private void CloseGame(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
         }
     }
 }
