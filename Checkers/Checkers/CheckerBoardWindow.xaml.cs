@@ -178,6 +178,18 @@ namespace Checkers
             return myGrid;
         }
 
+        protected static void sendMove(GameState newS)
+        {
+            Task<int> taskSendState = Task<int>.Factory.StartNew(() => gc.SendState(newS));
+            taskSendState.Wait();
+            if (taskSendState.Result != 0)
+            {
+                MessageBox.Show("Failed updating move");
+                movePair.Clear();
+                return;
+            }
+        }
+
         protected static void addMove(int i, int j, CheckerBoard cb)
         {
             if (movePair.Count == 0 )
@@ -199,20 +211,11 @@ namespace Checkers
                 }
                 else
                 {
-                    
-                    Task<int> taskSendState = Task<int>.Factory.StartNew(() => gc.SendState(newS));
-                    taskSendState.Wait();
-                    if (taskSendState.Result != 0)
-                    {
-                        MessageBox.Show("Failed updating move");
-                        movePair.Clear();
-                        return;
-                    }
-                   
                     refreshBoard(generateCheckerBoardUI(240, gc.GetGameState(), GameBrowserWindow.playerId));
                     if (gc.GetGameState().getResult() != -1)
                     {
                         //Game end, go to end window
+                        sendMove(newS);
                         Instance.navigateToEndWindow();
                     }
                     else
@@ -220,6 +223,7 @@ namespace Checkers
                         int dist = (Math.Abs(movePair[2] - movePair[0]) + Math.Abs(movePair[3] - movePair[1]));
                         if (dist <= 2 || !gc.GetGameState().checkAvailableJump(movePair[2], movePair[3], GameBrowserWindow.playerId))
                         {
+                            sendMove(newS);
                             //----------------------------------------
                             //------------------------------------------
                             GameBrowserWindow.playerId = 3 - GameBrowserWindow.playerId;
