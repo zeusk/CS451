@@ -37,15 +37,12 @@ namespace Checkers
 
             foreach (string name in listOfPlayers)
             {
-                TextBox player = new TextBox();
-
-                player.Width = 100;
-                player.Height = 30;
-                player.FontSize = 15;
-                player.HorizontalAlignment = HorizontalAlignment.Left;
-                player.BorderThickness = new Thickness(0);
-                player.Text = name;
-
+                TextBlock player = new TextBlock();
+                player.Width = 150;
+                player.Height = 40;
+                player.FontSize = 20;
+                player.Style = Application.Current.Resources["textBlockTemplate"] as Style;
+                player.Text = name; 
                 listOfPlayersPanel.Children.Add(player);
             }
         }
@@ -64,15 +61,16 @@ namespace Checkers
         protected StackPanel generateGameOverview(GameState gs)
         {
             StackPanel game = new StackPanel();
-            game.Width = 200;
-            game.Height = 60;
+            game.Width = 300;
+            game.Height = 100;
 
             //create the join button 
             Button joinButton = new Button();
 
             joinButton.Content = "Join";
-            joinButton.Width = 40;
-            joinButton.Height = 20;
+            joinButton.Height = 60;
+            joinButton.Width = 70;
+            joinButton.Style = Application.Current.Resources["buttonTemplate"] as Style; ;
             joinButton.Click += (s, e) => {
                 gc.JoinGame(gs);
                 NavigationService.Navigate(new Uri("CheckerBoardWindow.xaml", UriKind.Relative));
@@ -80,16 +78,16 @@ namespace Checkers
             joinButton.HorizontalAlignment = HorizontalAlignment.Left;
 
             //gnerate the overview of the board
-            Grid mygame = CheckerBoardWindow.generateCheckerBoardUI(60, gs);
+            Grid mygame = CheckerBoardWindow.generateCheckerBoardUI(90, gs);
 
             mygame.HorizontalAlignment = HorizontalAlignment.Center;
 
             TextBox player = new TextBox();
 
             player.Text = gs.player1Name; // string.IsNullOrEmpty(gs.player1Name) ? gs.player2Name : gs.player1Name;
-            player.Width = 80;
-            player.Height = 20;
-            player.BorderThickness = new Thickness(0);
+            player.Width = 100;
+            player.Height = 60;
+            player.Style = Application.Current.Resources["textBlockTemplate"] as Style;
             player.HorizontalAlignment = HorizontalAlignment.Right;
 
             //Add all elements to the stack panel
@@ -99,6 +97,11 @@ namespace Checkers
             game.Children.Add(player);
 
             return game;
+        }
+
+        private void CloseGame(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
         }
 
         //Start a new game

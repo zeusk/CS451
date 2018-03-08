@@ -64,5 +64,10 @@ namespace Checkers
         {
              NavigationService.Navigate(new Uri("GameBrowserWindow.xaml", UriKind.Relative));
         }
+
+        private void CloseGame(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
     }
 }

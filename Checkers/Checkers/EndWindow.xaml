@@ -5,23 +5,25 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Checkers"
         mc:Ignorable="d"
-        Background="White"
         ShowsNavigationUI="False"
-        Title="EndWindow" Height="350" Width="525">
+      Height="500" Width="850"
+      Title="EndWindow" >
+    <Page.Background>
+        <ImageBrush ImageSource= "Resource/WoodDark.jpg" />
+    </Page.Background>
     <Grid>
 
+        <!--Close game button-->
+        <Button Style="{DynamicResource closeButtonTemplate}" Content="X" Click="CloseGame"/>
         <!--Game Result-->
-        <TextBox x:Name="gameResultWon" Background="Transparent" BorderThickness="0" IsReadOnly="True" Visibility="Hidden"
-             Text="You won!" Foreground="Black"  FontSize="58" TextAlignment="Center" FontFamily="Comic Sans MS" 
-                 FontWeight="Bold" Margin="0,48,0,188"  />
-        <TextBox x:Name="gameResultLost" Background="Transparent" BorderThickness="0" IsReadOnly="True" Visibility="Hidden"
-             Text="You lost" Foreground="Black"  FontSize="58" TextAlignment="Center" FontFamily="Comic Sans MS" 
-                 FontWeight="Bold" Margin="0,48,0,188"  />
-        
-        <!--The continue game button-->
-        <Button  Background="White" Content="Continue" Height="50" Width="150" FontSize="30"  Margin="84,201,285,70" Click="NavigateToGameBrowserWindow"/>
-        <Button  Background="White" Content="End" Height="50" Width="150" FontSize="30"  Margin="291,201,78,70" Click="CloseGame"/>
+        <TextBlock x:Name="gameResultWon" Style="{DynamicResource textBlockTemplate}" Visibility="Hidden" Text="You won!" FontSize="78" Margin="0,48,0,188"  />
 
+        <TextBlock x:Name="gameResultLost" Style="{DynamicResource textBlockTemplate}" Text="You lost" Visibility="Hidden" FontSize="78" Margin="0,48,0,188"  />
+
+        <!--The continue game button-->
+        <Button Content="Continue"  Height="70" Style="{DynamicResource buttonTemplate}" FontSize="45"  Width="200"  Margin="161,290,489,130" Click="NavigateToGameBrowserWindow"/>
+
+        <Button Content="End"  Height="70" FontSize="45" Style="{DynamicResource buttonTemplate}"  Width="200" Click="CloseGame" Margin="496,295,154,135"/>
 
     </Grid>
 </Page>
