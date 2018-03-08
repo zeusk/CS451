@@ -275,7 +275,7 @@ namespace Checkers
         {
             if (gc.inGame)
                 gc.QuitGame();
-
+            gc.Disconnect();
             Application.Current.Shutdown();
         }
 

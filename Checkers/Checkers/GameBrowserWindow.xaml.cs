@@ -78,7 +78,7 @@ namespace Checkers
 
         protected void joinGame(GameState gs)
         {
-            dispatcherTimer.Stop();
+            dispatcherTimer.Stop(); // TODO: Restart timer if we come back to this page
             int r = gs == null ? gc.JoinGame() : gc.JoinGame(gs);
             NavigationService.Navigate(new Uri("CheckerBoardWindow.xaml", UriKind.Relative));
         }
@@ -127,6 +127,7 @@ namespace Checkers
 
         private void CloseGame(object sender, RoutedEventArgs e)
         {
+            gc.Disconnect();
             Application.Current.Shutdown();
         }
 
