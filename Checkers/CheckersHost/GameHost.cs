@@ -135,8 +135,6 @@ namespace CheckersHost
         // * When two players fill game, remove it from visible list
         // * When one player quits, end game || add it back to visible list
         // * when both players quit, end game
-        // * Recycle user names
-        // * remove userId from gamestate string when player quits
         private static void HandleCmd(Socket handler, String userId, String userCmd, String userArg)
         {
             String resp = "UNKN";
@@ -152,6 +150,28 @@ namespace CheckersHost
                             players.Add(userId);
                             resp = "OKAY";
                         }
+                    } break;
+                case "EXIT":
+                    {
+                        gameObject jGame;
+
+                        try {
+                            jGame = games.Single(g => g.gameState.IndexOf(userArg) >= 0);
+
+                            string[] frags = jGame.gameState.Split("|");
+
+                            if (frags[2].Equals(userId))
+                                frags[2] = "";
+                            if (frags[1].Equals(userId))
+                                frags[1] = ""; // TODO: Destroy game?
+                            if (frags[0].Equals(userId))
+                                frags[0] = frags[1].Equals(userId) ? frags[2] : frags[1]; // End move
+
+                            inGame.Remove(userId);
+                            jGame.gameState = string.Join("|", frags);
+                        } catch (Exception) { }
+
+                        players.Remove(userId);
                     } break;
                 case "LSPL":
                     {
@@ -191,7 +211,23 @@ namespace CheckersHost
                     } break;
                 case "QUIT":
                     {
+                        gameObject jGame;
+
+                        try {
+                            jGame = games.Single(g => g.gameState.IndexOf(userArg) >= 0);
+                        } catch (Exception e) { resp = "E: Failed to find game " + e.ToString(); break; }
+
+                        string[] frags = jGame.gameState.Split("|");
+
+                        if (frags[2].Equals(userId))
+                            frags[2] = "";
+                        if (frags[1].Equals(userId))
+                            frags[1] = ""; // TODO: Destroy game?
+                        if (frags[0].Equals(userId))
+                            frags[0] = frags[1].Equals(userId) ? frags[2] : frags[1]; // End move
+
                         inGame.Remove(userId);
+                        jGame.gameState = string.Join("|", frags);
 
                         resp = "OKAY";
                     } break;
