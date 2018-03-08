@@ -10,7 +10,7 @@ namespace Checkers
 {
     public class GameClient
     {
-        public readonly Boolean testLocal = true;
+        public readonly Boolean testLocal = false;
         private Boolean _inGame = false;
         private Boolean _isConnected = false;
 
@@ -245,7 +245,7 @@ namespace Checkers
 
         public int SendState()
         {
-            return ReceiveState(GetGameState());
+            return SendState(GetGameState());
         }
 
         public int SendState(GameState game)

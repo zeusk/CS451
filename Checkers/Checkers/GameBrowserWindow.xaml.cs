@@ -29,7 +29,7 @@ namespace Checkers
 
             dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
             dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 2);
             dispatcherTimer.Start();
         }
 
@@ -108,7 +108,7 @@ namespace Checkers
 
             mygame.HorizontalAlignment = HorizontalAlignment.Center;
 
-            TextBox player = new TextBox();
+            TextBlock player = new TextBlock();
 
             player.Text = string.IsNullOrEmpty(gs.player1Name) ? gs.player2Name : gs.player1Name;
             player.Width = 100;

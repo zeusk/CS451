@@ -21,14 +21,11 @@ public class StateObject
 public class gameObject
 {
     public UInt64 gameId;
-    public UInt64 gameVer;
-
     public string gameState;
 
     public gameObject(UInt64 id, string state)
     {
         gameId = id;
-        gameVer = 0;
         gameState = state;
     }
 }
@@ -62,13 +59,8 @@ namespace CheckersHost
                 listener.Listen(127);
 
                 for (; allDone.Reset(); allDone.WaitOne())
-                {
-                    Console.WriteLine("Waiting for a connection...");
                     listener.BeginAccept(new AsyncCallback(AcceptCallback), listener);
-                }
-            }
-            catch (Exception e)
-            { Console.WriteLine(e.ToString()); }
+            } catch (Exception e) { Console.WriteLine(e.ToString()); }
 
             Console.WriteLine("\nPress ENTER to continue...");
             Console.Read();
@@ -100,8 +92,6 @@ namespace CheckersHost
                 if (content.IndexOf("<EOT>") < 0)
                     handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
                 else {
-                    Console.WriteLine($"RCVD {content.Length} bytes from socket\nData: {content}");
-
                     String[] frag = content.Substring(0, content.IndexOf("<EOT>")).Split(": ");
                     String cmd = frag[1].Substring(0, 4);
                     String arg;
@@ -111,7 +101,8 @@ namespace CheckersHost
                     } catch (ArgumentOutOfRangeException) { arg = ""; }
 
                     try {
-                        HandleCmd(handler, frag[0], cmd, arg);
+                        lock (lockObj)
+                            HandleCmd(handler, frag[0], cmd, arg);
                     } catch (Exception e) { Send(handler, $"E: {e.ToString()}"); }
                 }
             }
@@ -130,8 +121,6 @@ namespace CheckersHost
                 Socket handler = (Socket) ar.AsyncState;
                 int bytesSent = handler.EndSend(ar);
 
-                Console.WriteLine($"SENT {bytesSent} bytes to client");
-
                 handler.Shutdown(SocketShutdown.Both);
                 handler.Close();
             } catch (Exception e) { Console.WriteLine(e.ToString()); }
@@ -141,7 +130,7 @@ namespace CheckersHost
         private static List<String> players = new List<String>();
         private static List<gameObject> games = new List<gameObject>();
         private static Dictionary<String, UInt64> inGame = new Dictionary<String, UInt64>();
-
+        private static object lockObj = new object();
         // TODO
         // * When two players fill game, remove it from visible list
         // * When one player quits, end game || add it back to visible list
@@ -150,28 +139,27 @@ namespace CheckersHost
         // * remove userId from gamestate string when player quits
         private static void HandleCmd(Socket handler, String userId, String userCmd, String userArg)
         {
-            Console.WriteLine($"Serving {userId} for {userCmd} with args '{userArg}'");
+            String resp = "UNKN";
 
             switch (userCmd)
             {
                 case "UREG":
                     {
                         if (players.Any(u => u.Equals(userId, StringComparison.OrdinalIgnoreCase)))
-                            Send(handler, "USER EXISTS");
+                            resp = "USER EXISTS";
                         else
                         {
                             players.Add(userId);
-
-                            Send(handler, "OKAY");
+                            resp = "OKAY";
                         }
                     } break;
                 case "LSPL":
                     {
-                        Send(handler, "OKAY " + string.Join('~', players));
+                        resp = "OKAY " + string.Join('~', players);
                     } break;
                 case "LSGS":
                     {
-                        Send(handler, "OKAY " + string.Join('~', games.Select(g => g.gameState)));
+                        resp = "OKAY " + string.Join('~', games.Select(g => g.gameState));
                     } break;
                 case "NEWG":
                     {
@@ -181,7 +169,7 @@ namespace CheckersHost
                         games.Add(nGame);
                         inGame.Add(userId, gId);
 
-                        Send(handler, "OKAY ");
+                        resp = "OKAY";
                     } break;
                 case "JOIN":
                     {
@@ -189,24 +177,23 @@ namespace CheckersHost
 
                         try {
                             jGame = games.Single(g => g.gameState.IndexOf(userArg) >= 0);
-                        } catch (Exception e) { Send(handler, $"E: Failed to find game {e.ToString()}"); return; }
-
-                        inGame.Add(userId, jGame.gameId);
+                        } catch (Exception e) { resp = "E: Failed to find game " + e.ToString(); break; }
 
                         string[] frags = jGame.gameState.Split("|");
 
                         if (string.IsNullOrEmpty(frags[2]))
                         {
                             frags[2] = userId;
+                            inGame.Add(userId, jGame.gameId);
                             jGame.gameState = string.Join("|", frags);
-                            Send(handler, "OKAY " + jGame.gameState);
-                        }
+                            resp = "OKAY " + jGame.gameState;
+                        } else resp = "WARN Game is full";
                     } break;
                 case "QUIT":
                     {
                         inGame.Remove(userId);
 
-                        Send(handler, "OKAY");
+                        resp = "OKAY";
                     } break;
                 case "SEND":
                     {
@@ -215,36 +202,29 @@ namespace CheckersHost
 
                         try {
                             iGame = games.Single(g => g.gameId == iGameIdx);
-                        } catch (Exception e) { Send(handler, $"E: Failed to find game {e.ToString()}"); return; }
+                        } catch (Exception e) { resp = "E: Failed to find game " + e.ToString(); break; }
 
-                        iGame.gameVer++;
                         iGame.gameState = userArg;
 
-                        Send(handler, "OKAY "  + iGame.gameVer.ToString());
+                        resp = "OKAY";
                     } break;
                 case "RECV":
                     {
                         UInt64 iGameIdx = inGame[userId];
-                        UInt64 iGameVer = UInt64.Parse(userArg);
                         gameObject iGame;
 
-                        try
-                        {
+                        try {
                             iGame = games.Single(g => g.gameId == iGameIdx);
-                        }
-                        catch (Exception e) { Send(handler, $"E: Failed to find game {e.ToString()}"); return; }
+                        } catch (Exception e) { resp = "E: Failed to find game " + e.ToString(); break; }
 
-                        // TODO: Use semaphore/ManualResetEvent
-                        while (iGameVer == iGame.gameVer)
-                            Thread.Sleep(25);
-
-                        Send(handler, "OKAY " + iGame.gameVer.ToString() + " " + iGame.gameState);
-                    } break;
-                default:
-                    {
-                        Send(handler, "UNKN");
+                        resp = "OKAY " + iGame.gameState;
                     } break;
             }
+
+            Console.WriteLine($"{userId}: {userCmd} {userArg}");
+            Console.WriteLine($"SERV: {userCmd} for {userId}: {resp}");
+
+            Send(handler, resp);
         }
     }
 }

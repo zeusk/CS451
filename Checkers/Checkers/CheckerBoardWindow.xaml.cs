@@ -40,7 +40,7 @@ namespace Checkers
 
             recvTimer = new System.Windows.Threading.DispatcherTimer();
             recvTimer.Tick += new EventHandler(GetMove);
-            recvTimer.Interval = TimeSpan.FromMilliseconds(20);
+            recvTimer.Interval = TimeSpan.FromMilliseconds(166);
             recvTimer.Start();
         }
 
