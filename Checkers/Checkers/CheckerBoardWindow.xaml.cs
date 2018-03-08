@@ -165,8 +165,20 @@ namespace Checkers
                 MessageBox.Show("Failed updating move");
         }
 
+        protected static int GetMove(GameState newS)
+        {
+            Task<int> taskReceiveState = Task<int>.Factory.StartNew(() => gc.ReceiveState(newS));
+            taskReceiveState.Wait();
+            return taskReceiveState.Result;
+        }
+
+        // addMove is called within a lambda from onClick
+        // if addMove blocks, does the UI block?
         protected static void addMove(int i, int j, CheckerBoard cb)
         {
+            if (!Util.isMyTurn())
+                return; // TODO: let user know it isn't their move to make?
+
             if (movePair.Count == 0 )
             {
                 movePair.Add(i);
@@ -197,6 +209,7 @@ namespace Checkers
                         if (dist <= 2 || !gc.GetGameState().checkAvailableJump(movePair[2], movePair[3], Util.myPlayerNum()))
                         {
                             SendMove(newS);
+
                             //----------------------------------------
                             //------------------------------------------
                             Util.SetMyName(Util.GetOpponentName());
@@ -206,9 +219,8 @@ namespace Checkers
 
                             Instance.turnToMoveText.Visibility = Visibility.Hidden;
                             Instance.playerColorCircle.Visibility = Visibility.Hidden;
-                            Task<int> taskReceiveState = Task<int>.Factory.StartNew(() => gc.ReceiveState(newS));
-                            taskReceiveState.Wait();
-                            if (taskReceiveState.Result != 0)
+
+                            if (GetMove(newS) != 0)
                             {
                                 //The other player drop, go to end window
                                 Instance.navigateToEndWindow();

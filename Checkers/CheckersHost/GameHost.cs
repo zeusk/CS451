@@ -21,18 +21,15 @@ public class StateObject
 public class gameObject
 {
     public UInt64 gameId;
+    public UInt64 gameVer;
+
     public string gameState;
-
-    public uint gameMoves;
-
-    public ManualResetEvent p1Done;
-    public ManualResetEvent p2Move;
 
     public gameObject(UInt64 id, string state)
     {
         gameId = id;
+        gameVer = 0;
         gameState = state;
-        gameMoves = 0;
     }
 }
 
@@ -206,8 +203,21 @@ namespace CheckersHost
                     {
                         UInt64 iGameIdx = inGame[userId];
                         gameObject iGame;
-                        String[] frag = userArg.Split(' ');
 
+                        try {
+                            iGame = games.Single(g => g.gameId == iGameIdx);
+                        } catch (Exception e) { Send(handler, $"E: Failed to find game {e.ToString()}"); return; }
+
+                        iGame.gameVer++;
+                        iGame.gameState = userArg;
+
+                        Send(handler, "OKAY "  + iGame.gameVer.ToString());
+                    } break;
+                case "RECV":
+                    {
+                        UInt64 iGameIdx = inGame[userId];
+                        UInt64 iGameVer = UInt64.Parse(userArg);
+                        gameObject iGame;
 
                         try
                         {
@@ -215,13 +225,11 @@ namespace CheckersHost
                         }
                         catch (Exception e) { Send(handler, $"E: Failed to find game {e.ToString()}"); return; }
 
-                        iGame.gameState = frag[1];
+                        // TODO: Use semaphore/ManualResetEvent
+                        while (iGameVer == iGame.gameVer)
+                            Thread.Sleep(25);
 
-                        Send(handler, "OKAY");
-                    } break;
-                case "RECV":
-                    {
-                        Send(handler, "UNKN");
+                        Send(handler, "OKAY " + iGame.gameVer.ToString() + " " + iGame.gameState);
                     } break;
                 default:
                     {
