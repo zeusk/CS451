@@ -30,35 +30,8 @@ namespace Checkers
             InitializeComponent();
             Instance = this;
 
-            redGradient.StartPoint = new Point(0.5, 0);
-            redGradient.EndPoint = new Point(0.5, 1);
-            GradientStop redStart = new GradientStop();
-            redStart.Offset = 0.0;
-            redStart.Color = Color.FromRgb(220, 141, 124);
-            GradientStop redMiddle = new GradientStop();
-            redMiddle.Offset = 0.2;
-            redMiddle.Color = Color.FromRgb(177, 8, 1);
-            GradientStop redStop = new GradientStop();
-            redStop.Offset = 0.7;
-            redStop.Color = Color.FromRgb(131, 22, 2);
-            redGradient.GradientStops.Add(redStart);
-            redGradient.GradientStops.Add(redMiddle);
-            redGradient.GradientStops.Add(redStop);
-
-            blackGradient.StartPoint = new Point(0.5, 0);
-            blackGradient.EndPoint = new Point(0.5, 1);
-            GradientStop blackStart = new GradientStop();
-            blackStart.Offset = 0.0;
-            blackStart.Color = Color.FromRgb(139, 141, 136);
-            GradientStop blackMiddle = new GradientStop();
-            blackMiddle.Offset = 0.2;
-            blackMiddle.Color = Color.FromRgb(43, 43, 45);
-            GradientStop blackStop = new GradientStop();
-            blackStop.Offset = 0.7;
-            blackStop.Color = Color.FromRgb(68, 67, 63);
-            blackGradient.GradientStops.Add(blackStart);
-            blackGradient.GradientStops.Add(blackMiddle);
-            blackGradient.GradientStops.Add(blackStop);
+            SetGradient(redGradient, Color.FromRgb(220, 141, 124), Color.FromRgb(177, 8, 1), Color.FromRgb(131, 22, 2));
+            SetGradient(blackGradient, Color.FromRgb(139, 141, 136), Color.FromRgb(43, 43, 45), Color.FromRgb(68, 67, 63));
 
             if (gc.testLocal)
                 gc.GetGameState().player2Name = "testLocalPlayer";
@@ -69,6 +42,15 @@ namespace Checkers
             recvTimer.Tick += new EventHandler(GetMove);
             recvTimer.Interval = TimeSpan.FromMilliseconds(20);
             recvTimer.Start();
+        }
+
+        private static void SetGradient(LinearGradientBrush brush, Color s, Color m, Color e)
+        {
+            brush.StartPoint = new Point(0.5, 0);
+            brush.EndPoint = new Point(0.5, 1);
+            brush.GradientStops.Add(new GradientStop { Offset = 0.0, Color = s });
+            brush.GradientStops.Add(new GradientStop { Offset = 0.2, Color = m });
+            brush.GradientStops.Add(new GradientStop { Offset = 0.7, Color = e });
         }
 
         private static LinearGradientBrush getColorForPlayer()
@@ -212,12 +194,17 @@ namespace Checkers
                 Instance.navigateToEndWindow();
         }
 
+        private static bool canInteract()
+        {
+            return (Util.isMyTurn() && !string.IsNullOrEmpty(Util.GetOpponentName()));
+        }
+
         // addMove is called within a lambda from onClick
         // if addMove blocks, does the UI block?
         protected static void addMove(int i, int j, CheckerBoard cb)
         {
-            if (!Util.isMyTurn())
-                return;
+            if (!canInteract())
+                return; // TODO: warn user it's not their turn or wait for opponent?
 
             if (movePair.Count == 0)
             {
@@ -240,7 +227,7 @@ namespace Checkers
                     if (!peiceJumped || !gc.GetGameState().checkAvailableJump(movePair[2], movePair[3], Util.myPlayerNum()))
                         gc.GetGameState().endTurn();
 
-                    Instance.refreshBoard(generateCheckerBoardUI(boardSize, gc.GetGameState(), Util.isMyTurn()));
+                    Instance.refreshBoard(generateCheckerBoardUI(boardSize, gc.GetGameState(), canInteract()));
                     WaitForTask(Task<int>.Factory.StartNew(() => gc.SendState()));
 
                     if (!Util.isMyTurn())
@@ -253,11 +240,11 @@ namespace Checkers
 
         private void GetMove(object sender, EventArgs e)
         {
-            if (Util.isMyTurn() && !string.IsNullOrEmpty(Util.GetOpponentName()))
+            if (canInteract())
                 recvTimer.Stop();
 
             WaitForTask(Task<int>.Factory.StartNew(() => gc.ReceiveState(gc.GetGameState())));
-            Instance.refreshBoard(generateCheckerBoardUI(boardSize, gc.GetGameState(), Util.isMyTurn()));
+            Instance.refreshBoard(generateCheckerBoardUI(boardSize, gc.GetGameState(), canInteract()));
         }
 
         private void refreshBoard(Border newG)
