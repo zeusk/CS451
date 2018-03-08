@@ -31,8 +31,7 @@ namespace Checkers
         {
             InitializeComponent();
             Instance = this;
-            refreshBoard(generateCheckerBoardUI(boardSize, gc.getGameState(), GameBrowserWindow.playerId));
-            currentPlayerColor = getColorForPlayer();
+            refreshBoard(generateCheckerBoardUI(boardSize, gc.GetGameState()));
 
             if (Util.amPlayer1())
             {
@@ -44,7 +43,7 @@ namespace Checkers
                 turnToMoveText.Visibility = Visibility.Hidden;
                 playerColorCircle.Visibility = Visibility.Hidden;
             }
-            playerColorCircle.Fill = getColorForPlayer(GameBrowserWindow.playerId);
+            playerColorCircle.Fill = getColorForPlayer();
 
             redGradient.StartPoint = new Point(0.5, 0);
             redGradient.EndPoint = new Point(0.5, 1);
@@ -87,7 +86,7 @@ namespace Checkers
                 return blackGradient;
         }
 
-        public static Grid generateCheckerBoardUI(int size, GameState gs)
+        public static Border generateCheckerBoardUI(int size, GameState gs)
         {
             Grid myGrid = new Grid();
             double gridSize = size*0.99;
@@ -185,7 +184,7 @@ namespace Checkers
                         }
                         OuterBorder.CornerRadius = new CornerRadius(20);
                         OuterBorder.HorizontalAlignment = HorizontalAlignment.Center;
-                        if(playerId == 1)
+                        if (Util.amPlayer1(gs))
                         {
                             RotateTransform myRotateTransform = new RotateTransform(180, 0.5, 0.5);
                             OuterBorder.LayoutTransform = myRotateTransform;
@@ -266,6 +265,8 @@ namespace Checkers
                         int dist = (Math.Abs(movePair[2] - movePair[0]) + Math.Abs(movePair[3] - movePair[1]));
                         if (dist <= 2 || !gc.GetGameState().checkAvailableJump(movePair[2], movePair[3], Util.myPlayerNum()))
                         {
+                            gc.GetGameState().endTurn();
+
                             SendMove(newS);
 
                             //----------------------------------------

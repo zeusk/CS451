@@ -78,7 +78,7 @@ namespace Checkers
             joinButton.HorizontalAlignment = HorizontalAlignment.Left;
 
             //gnerate the overview of the board
-            Grid mygame = CheckerBoardWindow.generateCheckerBoardUI(90, gs);
+            Border mygame = CheckerBoardWindow.generateCheckerBoardUI(90, gs);
 
             mygame.HorizontalAlignment = HorizontalAlignment.Center;
 
