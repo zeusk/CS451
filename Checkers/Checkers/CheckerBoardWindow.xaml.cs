@@ -55,7 +55,7 @@ namespace Checkers
 
         private static LinearGradientBrush getColorForPlayer()
         {
-            if (Util.amPlayer1())
+            if (Util.GetPlayer1Name().Equals(Util.GetPlayerTurnName()))
                 return redGradient;
             else
                 return blackGradient;
@@ -240,11 +240,11 @@ namespace Checkers
 
         private void GetMove(object sender, EventArgs e)
         {
-            if (canInteract())
-                recvTimer.Stop();
-
             WaitForTask(Task<int>.Factory.StartNew(() => gc.ReceiveState(gc.GetGameState())));
             Instance.refreshBoard(generateCheckerBoardUI(boardSize, gc.GetGameState(), canInteract()));
+
+            if (canInteract())
+                recvTimer.Stop();
         }
 
         private void refreshBoard(Border newG)

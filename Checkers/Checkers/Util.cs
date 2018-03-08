@@ -43,6 +43,16 @@ namespace Checkers
             return gs.playerTurn.Equals(GetMyName());
         }
 
+        public static string GetPlayerTurnName()
+        {
+            return GetPlayerTurnName(GetGameState());
+        }
+
+        public static string GetPlayerTurnName(GameState gs)
+        {
+            return gs.playerTurn;
+        }
+
         public static string GetPlayer1Name()
         {
             return GetPlayer1Name(GetGameState());
