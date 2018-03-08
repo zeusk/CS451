@@ -18,12 +18,12 @@ namespace Checkers
     {
         //Check whether the user won or lost
         private bool currentPlayerWon;
-        private GameClient gc = GameClient.getInstance();
+        private GameClient gc = GameClient.GetInstance();
 
         public EndWindow()
         {
             InitializeComponent();
-            currentPlayerWon = (gc.getGameState().getResult() == GameBrowserWindow.playerId);
+            currentPlayerWon = (gc.GetGameState().getResult() == GameBrowserWindow.playerId);
 
             //Generate the text to indicate won or lost
             if (currentPlayerWon)

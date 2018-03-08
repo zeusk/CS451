@@ -65,6 +65,13 @@ namespace Checkers
             return this._checkerBoard.getBoard();
         }
 
+        public override string ToString() => toString(); // override base method that prints [Class GameState]
+
+        public string toString()
+        {
+            return GameState.toString(this);
+        }
+
         public static String toString(GameState gs)
         {
             List<String> output = new List<String>();

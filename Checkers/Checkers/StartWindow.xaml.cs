@@ -20,20 +20,21 @@ namespace Checkers
     public partial class StartWindow : Page
     {
         //Retrieve user name from local disc
-        //private string userName = "Mike";
-        private string userName = Settings.getUserNameFromLocalDisc();
+        private string userName;
+
         private GameClient gc;
 
         public StartWindow()
         {
             InitializeComponent();
 
+            userName = Util.GetUserName();
+
             //Set the user name field for popup window
             enteredUserName.Text = userName;
             connectionPopup.IsOpen = true;
 
-            GameClient.init();
-            gc = GameClient.getInstance();
+            gc = GameClient.GetInstance();
         }
 
         protected void connectUserToServer(object sender, RoutedEventArgs e)
@@ -47,27 +48,26 @@ namespace Checkers
             string ipAddress = enteredUserIPAddress.Text;
             userName = enteredUserName.Text;
 
+            Util.SetUserName(userName);
+
             //Connect to the server
             Task<int> taskConnect = Task<int>.Factory.StartNew( () => this.gc.Connect(ipAddress, userName) );
+
             taskConnect.Wait();
-            int isConnected = taskConnect.Result;
-            if (isConnected == -1)
-            //if ( isConnected != 0 && isConnected != -1)
+
+            if (taskConnect.Result == 0)
             {
-                MessageBox.Show("Connection failed. Please try again.");
-                connectionPopup.IsOpen = true;
-            }else if(isConnected == -2)
-            {
+                navigateToGameBrowserWindow(); // Continue if successfully connected to host
+            } else if (taskConnect.Result == -2) {
                 MessageBox.Show("User name taken. Please try again.");
                 connectionPopup.IsOpen = true;
+            } else if (taskConnect.Result == -3) {
+                MessageBox.Show("Invalid IP address. Please try again.");
+                connectionPopup.IsOpen = true;
+            } else {
+                MessageBox.Show("Connection failed.");
+                connectionPopup.IsOpen = true;
             }
-            else
-            {
-                //Go to next page if success
-                navigateToGameBrowserWindow();
-            }
-            
-            
         }
 
 

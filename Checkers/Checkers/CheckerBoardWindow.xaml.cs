@@ -19,7 +19,7 @@ namespace Checkers
         //The player the the user is currently playing against
         //private string opponentName = GameBrowserWindow.playerId==1?GameState.player1Name:GameState.player2Name;
         private string opponentName = "oppo";
-        private static GameClient gc = GameClient.getInstance();
+        private static GameClient gc = GameClient.GetInstance();
         private static List<int> movePair = new List<int>();
         private static List<int> chosenPiece = new List<int>();
         private static int boardSize = 400;
@@ -222,6 +222,18 @@ namespace Checkers
             return gridBorder;
         }
 
+        protected static void sendMove(GameState newS)
+        {
+            Task<int> taskSendState = Task<int>.Factory.StartNew(() => gc.SendState(newS));
+            taskSendState.Wait();
+            if (taskSendState.Result != 0)
+            {
+                MessageBox.Show("Failed updating move");
+                movePair.Clear();
+                return;
+            }
+        }
+
         protected static void addMove(int i, int j, CheckerBoard cb)
         {
             if (movePair.Count == 0 )
@@ -235,7 +247,7 @@ namespace Checkers
                 movePair.Add(i);
                 movePair.Add(j);
                 Debug.WriteLine($"second click-- " + movePair[0] + " "+ movePair[1] + " " +  movePair[2]+ " "+ movePair[3]);
-                GameState newS = gc.getGameState().applyMove(movePair, GameBrowserWindow.playerId);
+                GameState newS = gc.GetGameState().applyMove(movePair, GameBrowserWindow.playerId);
 
                 if (newS == null)
                 {
@@ -243,27 +255,21 @@ namespace Checkers
                 }
                 else
                 {
-                    
-                    Task<int> taskSendState = Task<int>.Factory.StartNew(() => gc.sendState(newS));
-                    taskSendState.Wait();
-                    if (taskSendState.Result != 0)
-                    {
-                        MessageBox.Show("Failed updating move");
-                        movePair.Clear();
-                        return;
-                    }
-                   
-                    refreshBoard(generateCheckerBoardUI(boardSize, gc.getGameState(), GameBrowserWindow.playerId));
-                    if (gc.getGameState().getResult() != -1)
+
+                    refreshBoard(generateCheckerBoardUI(boardSize, gc.GetGameState(), GameBrowserWindow.playerId));
+                    if (gc.GetGameState().getResult() != -1)
+
                     {
                         //Game end, go to end window
+                        sendMove(newS);
                         Instance.navigateToEndWindow();
                     }
                     else
                     {
                         int dist = (Math.Abs(movePair[2] - movePair[0]) + Math.Abs(movePair[3] - movePair[1]));
-                        if (dist <= 2 || !gc.getGameState().checkAvailableJump(movePair[2], movePair[3], GameBrowserWindow.playerId))
+                        if (dist <= 2 || !gc.GetGameState().checkAvailableJump(movePair[2], movePair[3], GameBrowserWindow.playerId))
                         {
+                            sendMove(newS);
                             //----------------------------------------
                             //------------------------------------------
                             GameBrowserWindow.playerId = 3 - GameBrowserWindow.playerId;
@@ -273,7 +279,7 @@ namespace Checkers
 
                             Instance.turnToMoveText.Visibility = Visibility.Hidden;
                             Instance.playerColorCircle.Visibility = Visibility.Hidden;
-                            Task<int> taskReceiveState = Task<int>.Factory.StartNew(() => gc.receiveState(newS));
+                            Task<int> taskReceiveState = Task<int>.Factory.StartNew(() => gc.ReceiveState(newS));
                             taskReceiveState.Wait();
                             if (taskReceiveState.Result != 0)
                             {
@@ -284,6 +290,7 @@ namespace Checkers
                             {
                                 refreshBoard(generateCheckerBoardUI(boardSize, gc.getGameState(), GameBrowserWindow.playerId));
                                 if (gc.getGameState().getResult() != -1)
+
                                 {
                                     //Game end, go to end window
                                     Instance.navigateToEndWindow();
