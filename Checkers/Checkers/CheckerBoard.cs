@@ -571,7 +571,7 @@ namespace Checkers
 
         public bool checkBackwardJumpPossible(int[] pos, int player)
         {
-            if (board[pos[0], pos[1]] != 3 || board[pos[0], pos[1]] != 4)
+            if (board[pos[0], pos[1]] != 3 && board[pos[0], pos[1]] != 4)
                 return false;
             bool leftJump = false;
             bool rightJump = false;
@@ -613,6 +613,8 @@ namespace Checkers
 
         public bool checkBackwardPossible(int[] pos, int player)
         {
+            if (board[pos[0], pos[1]] != 3 && board[pos[0], pos[1]] != 4)
+                return false;
             bool leftBackward = false;
             bool rightBackward = false;
 
