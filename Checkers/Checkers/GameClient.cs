@@ -31,7 +31,6 @@ namespace Checkers
         }
 
 
-        private String userId = null;
         private IPEndPoint remote = null;
 
         private int Init(String netAddress)
@@ -51,7 +50,6 @@ namespace Checkers
                 if (!Util.ValidateIPv4(netAddress))
                     return -2;
 
-                userId = Util.GetMyName();
                 remote = new IPEndPoint(IPAddress.Parse(netAddress), port);
             } catch (Exception e) { Debug.WriteLine(e.ToString()); return -1; }
 
@@ -61,7 +59,6 @@ namespace Checkers
         private void DisInit()
         {
             remote = null;
-            userId = null;
         }
 
 
@@ -70,7 +67,7 @@ namespace Checkers
             String r = "";
             int    r_sz;
             byte[] r_buff = new byte[8192];
-            byte[] s_buff = Encoding.ASCII.GetBytes(userId + ": " + s + "<EOT>");
+            byte[] s_buff = Encoding.ASCII.GetBytes(Util.GetMyName() + ": " + s + "<EOT>");
             Socket client = null;
 
             Debug.WriteLine($"GameClient::sendRecv()+ {s}");
@@ -180,14 +177,13 @@ namespace Checkers
 
         public int JoinGame()
         {
+            game = new GameState(Util.GetMyName());
+
             if (testLocal)
-            {
-                game = new GameState(userId);
                 return 0;
-            }
+
             if (isConnected && !inGame)
             {
-                game = new GameState(userId);
                 String r = SendRecv("NEWG " + game.toString());
                 if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {

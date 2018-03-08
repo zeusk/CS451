@@ -129,21 +129,6 @@ namespace Checkers
             return _checkerBoard.checkAnyJumpPossiblePiece(pos,playerID);
         }
 
-        public bool amPlayer1(string name)
-        {
-            return _player1Name.Equals(name);
-        }
-
-        public bool amPlayer2(string name)
-        {
-            return _player2Name.Equals(name); // TODO: Redundant really, !amPlayer1()
-        }
-
-        public bool isMyTurn(string name)
-        {
-            return _playerTurn.Equals(name);
-        }
-
         public void endTurn()
         {
             _playerTurn = _playerTurn.Equals(_player1Name) ? _player2Name : _player1Name;

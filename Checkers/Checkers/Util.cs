@@ -8,14 +8,14 @@ namespace Checkers
 {
     class Util
     {
-        private static String userName = null;
+        private static string userName = null;
 
-        public static void SetMyName(String uName)
+        public static void SetMyName(string uName)
         {
             userName = uName; // TODO: Save to disk
         }
 
-        public static String GetMyName()
+        public static string GetMyName()
         {
             if (userName == null)
                 userName = "Mike"; // TODO: Read from disk
@@ -80,7 +80,7 @@ namespace Checkers
 
         public static bool amPlayer1(GameState gs)
         {
-            return gs.amPlayer1(GetMyName());
+            return gs.player1Name.Equals(GetMyName());
         }
 
         public static GameState GetGameState()
