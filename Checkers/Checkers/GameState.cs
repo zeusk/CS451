@@ -111,7 +111,7 @@ namespace Checkers
                     int[] pos = new int[2];
                     pos[0] = i;
                     pos[1] = j;
-                    ret.cb.placePiece(pos, Int32.Parse(ls[2 + ((i * 8) + j)])); 
+                    ret.cb.placePiece(pos, Int32.Parse(ls[3 + ((i * 8) + j)])); 
                 }
             }
 

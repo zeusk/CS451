@@ -181,6 +181,9 @@ namespace Checkers
         {
             game = new GameState(Util.GetMyName());
 
+            // Use this format to load a gameState:
+            // game = GameState.fromString("Mike|Mike|testLocalPlayer|0|1|0|0|0|1|0|1|1|0|1|0|1|0|1|0|0|1|0|1|0|0|0|0|0|0|0|0|0|0|1|0|0|2|0|2|0|0|0|0|2|0|0|0|0|0|2|0|0|0|0|2|0|2|0|2|2|0|3|0|0|0|2|0");
+
             if (testLocal)
                 return 0;
 
