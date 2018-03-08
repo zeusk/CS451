@@ -46,21 +46,22 @@ namespace Checkers
             Util.SetMyName(enteredUserName.Text);
 
             // Connect to the server
-            Task<int> taskConnect = Task<int>.Factory.StartNew( () => GameClient.GetInstance().Connect(ipAddress) );
+            Task<int> taskConnect = Task<int>.Factory.StartNew( () => GameClient.GetInstance().Connect(ipAddress));
 
             taskConnect.Wait();
 
             if (taskConnect.Result == 0)
-            {
                 navigateToGameBrowserWindow(); // Continue if successfully connected to host
-            } else if (taskConnect.Result == -2) {
-                MessageBox.Show("User name taken. Please try again.");
-                connectionPopup.IsOpen = true;
-            } else if (taskConnect.Result == -3) {
-                MessageBox.Show("Invalid IP address. Please try again.");
-                connectionPopup.IsOpen = true;
-            } else {
-                MessageBox.Show("Connection failed.");
+            else {
+                connectingToServerText.Visibility = Visibility.Hidden;
+
+                if (taskConnect.Result == -2)
+                    MessageBox.Show("User name taken. Please try again.");
+                else if (taskConnect.Result == -3)
+                    MessageBox.Show("Invalid IP address. Please try again.");
+                else
+                    MessageBox.Show("Connection failed.");
+
                 connectionPopup.IsOpen = true;
             }
         }

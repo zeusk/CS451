@@ -21,14 +21,33 @@ namespace Checkers
     public partial class GameBrowserWindow : Page
     {
         private GameClient gc = GameClient.GetInstance();
+        System.Windows.Threading.DispatcherTimer dispatcherTimer;
 
         public GameBrowserWindow()
         {
             InitializeComponent();
 
+            dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+            dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
+            dispatcherTimer.Start();
+        }
+
+        protected void updateGUI()
+        {
+            listOfPlayersPanel.Children.Clear();
             generateListOfPlayers();
+            listOfGamesPanel.Children.Clear();
             generateListOfGames();
         }
+
+        void dispatcherTimer_Tick(object sender, EventArgs e)
+        {
+            dispatcherTimer.Stop();
+            updateGUI();
+            dispatcherTimer.Start();
+        }
+
 
         //Generate list of players
         protected void generateListOfPlayers()
@@ -41,8 +60,8 @@ namespace Checkers
                 player.Width = 150;
                 player.Height = 40;
                 player.FontSize = 20;
+                player.Text = name;
                 player.Style = Application.Current.Resources["textBlockTemplate"] as Style;
-                player.Text = name; 
                 listOfPlayersPanel.Children.Add(player);
             }
         }
@@ -55,6 +74,13 @@ namespace Checkers
 
             foreach (GameState gs in allGames)
                 listOfGamesPanel.Children.Add(generateGameOverview(gs));
+        }
+
+        protected void joinGame(GameState gs)
+        {
+            dispatcherTimer.Stop();
+            int r = gs == null ? gc.JoinGame() : gc.JoinGame(gs);
+            NavigationService.Navigate(new Uri("CheckerBoardWindow.xaml", UriKind.Relative));
         }
 
         //Generate game overview
@@ -70,10 +96,10 @@ namespace Checkers
             joinButton.Content = "Join";
             joinButton.Height = 60;
             joinButton.Width = 70;
-            joinButton.Style = Application.Current.Resources["buttonTemplate"] as Style; ;
+            joinButton.Style = Application.Current.Resources["buttonTemplate"] as Style;
+            joinButton.Tag = gs;
             joinButton.Click += (s, e) => {
-                gc.JoinGame(gs);
-                NavigationService.Navigate(new Uri("CheckerBoardWindow.xaml", UriKind.Relative));
+                joinGame((GameState) ((Button) s).Tag);
             };
             joinButton.HorizontalAlignment = HorizontalAlignment.Left;
 
@@ -105,11 +131,6 @@ namespace Checkers
         }
 
         //Start a new game
-        protected void startNewGame(object sender, RoutedEventArgs e)
-        {
-            //Go to the main game page
-            gc.JoinGame();
-            NavigationService.Navigate(new Uri("CheckerBoardWindow.xaml", UriKind.Relative));
-        }
+        protected void startNewGame(object sender, RoutedEventArgs e) => joinGame(null);
     }
 }

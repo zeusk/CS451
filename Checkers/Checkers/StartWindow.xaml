@@ -20,13 +20,13 @@
         <TextBlock  Text="Chckers" Style="{DynamicResource textBlockTemplate}" HorizontalAlignment="Center" FontSize="100" />
 
         <!--Connecting user alert-->
-        <TextBlock x:Name="connectingToServerText" Style="{DynamicResource textBlockTemplate}" Visibility="Visible" Text="Connecting to the server..."  FontSize="35"
+        <TextBlock x:Name="connectingToServerText" Style="{DynamicResource textBlockTemplate}" Visibility="Hidden" Text="Connecting to the server..."  FontSize="35"
                  FontStyle="Italic" Margin="0,433,0,0" />
 
         <!--Pop up window-->
         <Popup Name="connectionPopup" Placement="Mouse" HorizontalOffset="-100" AllowsTransparency="True" VerticalOffset="-100"  IsOpen="True" >
-            <Border Background="SaddleBrown" BorderThickness="0" CornerRadius="20">
-                <StackPanel Background="Transparent" Height="117" Width="304">
+            <Border Background="SaddleBrown" BorderThickness="1" BorderBrush="Peru" CornerRadius="20">
+                <StackPanel Background="Transparent" Margin="5,10" Height="117" Width="304">
                     <TextBlock Name="popupText" Style="{DynamicResource textBlockTemplate}"  FontSize="13" Text="  Please enter you IP address and user name"/>
                     <StackPanel Orientation="Horizontal" Margin="30, 10, 0, 0" >
                         <TextBlock x:Name="popupIPAddress" Style="{DynamicResource textBlockTemplate}" FontSize="16" Text="IP Address :" Height="25" />
