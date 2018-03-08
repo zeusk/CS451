@@ -17,7 +17,6 @@ namespace Checkers
     {
         //The player the the user is currently playing against
         //private string opponentName = GameBrowserWindow.playerId==1?GameState.player1Name:GameState.player2Name;
-        private string opponentName = "oppo";
         private static GameClient gc = GameClient.GetInstance();
         private static List<int> movePair = new List<int>();
         private static List<int> chosenPiece = new List<int>();
@@ -28,10 +27,11 @@ namespace Checkers
         {
             InitializeComponent();
             Instance = this;
-            refreshBoard(generateCheckerBoardUI(240, gc.GetGameState(), GameBrowserWindow.playerId));
-            currentPlayerColor = getColorForPlayer(GameBrowserWindow.playerId);
 
-            if (GameBrowserWindow.playerId == 1)
+            refreshBoard(generateCheckerBoardUI(240, gc.GetGameState()));
+            currentPlayerColor = getColorForPlayer();
+
+            if (Util.amPlayer1())
             {
                 turnToMoveText.Visibility = Visibility.Visible;
                 playerColorCircle.Visibility = Visibility.Visible;
@@ -43,38 +43,23 @@ namespace Checkers
             }
             playerColorCircle.Fill = new SolidColorBrush(currentPlayerColor);
 
-            //Set player info on UI
-            connectedPlayerName.Text = opponentName;
-
+            connectedPlayerName.Text = Util.GetOpponentName();
         }
 
-        void NavigationService_LoadCompleted(object sender, NavigationEventArgs e)
+        private static Color getColorForPlayer()
         {
-            gc = (GameClient)e.ExtraData;
-            Debug.Write("gc is here");
-        }
-
-        private static Color getColorForPlayer(int id)
-        {
-            if (id == 1)
-            {
+            if (Util.amPlayer1())
                 return (Colors.Red);
-            }
             else
-            {
                 return (Colors.White);
-            }
         }
 
-        public static Grid generateCheckerBoardUI(int size, GameState gs, int playerId)
+        public static Grid generateCheckerBoardUI(int size, GameState gs)
         {
             Grid myGrid = new Grid();
             myGrid.Height = size;
             myGrid.Width = size;
             int[,] myboard = gs.getBoard();
-            //int [,] myboard = new int[,] { { 0,1,0,1,0,1,0,1}, {1,0,1,0,1,0,1,0}, 
-              //  { 0, 1, 0, 1, 0, 1, 0, 1 }, {0,0,0,0,0,0,0,0}, { 0, 0, 0, 0, 0, 0, 0, 0 },
-                //{2,0,2,0,2,0,2,0}, { 0, 2, 0, 2, 0, 2, 0, 2 }, {2,0,2,0,2,0,2,0} };
 
             // Create Columns
             List<ColumnDefinition> gridCols = new List<ColumnDefinition>();
@@ -90,13 +75,9 @@ namespace Checkers
             }
             
             foreach(ColumnDefinition c in gridCols)
-            {
                 myGrid.ColumnDefinitions.Add(c);
-            }
             foreach (RowDefinition r in gridRows)
-            {
                 myGrid.RowDefinitions.Add(r);
-            }
 
             Color backGroundColor = new Color();
 
@@ -105,13 +86,10 @@ namespace Checkers
                 for (int j = 0; j< 8; j++)
                 {
                     if(i%2 == j% 2)
-                    {
                         backGroundColor = Colors.Wheat;
-                    }
                     else
-                    {
                         backGroundColor = Colors.Green;
-                    }
+
                     Button checkerboxButton = new Button();
                     checkerboxButton.SetValue(Grid.RowProperty, i);
                     checkerboxButton.SetValue(Grid.ColumnProperty, j);
@@ -119,14 +97,14 @@ namespace Checkers
                     checkerboxButton.Tag = i.ToString() + " " + j.ToString();
                     checkerboxButton.Click += (s, e) => {
                         string coor = (string)((Button)s).Tag;
-                        Debug.WriteLine(coor);
+
                         int row = Int32.Parse(coor.Split(' ')[0]);
                         int col = Int32.Parse(coor.Split(' ')[1]);
+
                         addMove(row, col, gs.cb);
                     };
                     double ellipSize = (size / 8) * 0.8;
 
-                   
                     if(myboard[i, j] != 0)
                     {
                         Border OuterBorder = new Border();
@@ -169,25 +147,22 @@ namespace Checkers
                     myGrid.Children.Add(checkerboxButton);
                 }
             }
-            if(playerId == 1)
+
+            if (Util.amPlayer1(gs))
             {
-                //flip the board 180 degrees 
                 RotateTransform myRotateTransform = new RotateTransform(180, 0.5, 0.5);
-                myGrid.LayoutTransform = myRotateTransform;
+                myGrid.LayoutTransform = myRotateTransform; // flip the board 180 degrees
             }
+
             return myGrid;
         }
 
-        protected static void sendMove(GameState newS)
+        protected static void SendMove(GameState newS)
         {
             Task<int> taskSendState = Task<int>.Factory.StartNew(() => gc.SendState(newS));
             taskSendState.Wait();
             if (taskSendState.Result != 0)
-            {
                 MessageBox.Show("Failed updating move");
-                movePair.Clear();
-                return;
-            }
         }
 
         protected static void addMove(int i, int j, CheckerBoard cb)
@@ -196,38 +171,36 @@ namespace Checkers
             {
                 movePair.Add(i);
                 movePair.Add(j);
-                Debug.WriteLine($"first click --"+ i+ " "+ j);
+                Debug.WriteLine($"first click --" + i + " " + j);
             }
             else if(movePair.Count == 2)
             {
                 movePair.Add(i);
                 movePair.Add(j);
-                Debug.WriteLine($"second click-- " + movePair[0] + " "+ movePair[1] + " " +  movePair[2]+ " "+ movePair[3]);
-                GameState newS = gc.GetGameState().applyMove(movePair, GameBrowserWindow.playerId);
+                Debug.WriteLine($"second click-- " + movePair[0] + " " + movePair[1] + " " +  movePair[2]+ " " + movePair[3]);
+                GameState newS = gc.GetGameState().applyMove(movePair, Util.myPlayerNum());
 
                 if (newS == null)
-                {
                     MessageBox.Show("Your move was not valid");
-                }
                 else
                 {
-                    refreshBoard(generateCheckerBoardUI(240, gc.GetGameState(), GameBrowserWindow.playerId));
+                    refreshBoard(generateCheckerBoardUI(240, gc.GetGameState()));
                     if (gc.GetGameState().getResult() != -1)
                     {
                         //Game end, go to end window
-                        sendMove(newS);
+                        SendMove(newS);
                         Instance.navigateToEndWindow();
                     }
                     else
                     {
                         int dist = (Math.Abs(movePair[2] - movePair[0]) + Math.Abs(movePair[3] - movePair[1]));
-                        if (dist <= 2 || !gc.GetGameState().checkAvailableJump(movePair[2], movePair[3], GameBrowserWindow.playerId))
+                        if (dist <= 2 || !gc.GetGameState().checkAvailableJump(movePair[2], movePair[3], Util.myPlayerNum()))
                         {
-                            sendMove(newS);
+                            SendMove(newS);
                             //----------------------------------------
                             //------------------------------------------
-                            GameBrowserWindow.playerId = 3 - GameBrowserWindow.playerId;
-                            Instance.playerColorCircle.Fill = new SolidColorBrush(getColorForPlayer(GameBrowserWindow.playerId));
+                            Util.SetMyName(Util.GetOpponentName());
+                            Instance.playerColorCircle.Fill = new SolidColorBrush(getColorForPlayer());
                             //----------------------------------------------
                             //--------------------------------------------
 
@@ -242,7 +215,7 @@ namespace Checkers
                             }
                             else
                             {
-                                refreshBoard(generateCheckerBoardUI(240, gc.GetGameState(), GameBrowserWindow.playerId));
+                                refreshBoard(generateCheckerBoardUI(240, gc.GetGameState()));
                                 if (gc.GetGameState().getResult() != -1)
                                 {
                                     //Game end, go to end window
@@ -258,6 +231,7 @@ namespace Checkers
                     }
                     
                 }
+
                 movePair.Clear();
             }            
         }

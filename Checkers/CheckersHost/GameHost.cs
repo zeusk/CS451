@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -16,32 +18,45 @@ public class StateObject
     public StringBuilder sb = new StringBuilder();
 }
 
+public class gameObject
+{
+    public UInt64 gameId;
+    public string gameState;
+
+    public uint gameMoves;
+
+    public ManualResetEvent p1Done;
+    public ManualResetEvent p2Move;
+
+    public gameObject(UInt64 id, string state)
+    {
+        gameId = id;
+        gameState = state;
+        gameMoves = 0;
+    }
+}
+
 namespace CheckersHost
 {
-    class GameHost
+    public static class GameHost
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             int p = 9001;
             if (args.Length > 0)
                 p = Int32.Parse(args[0]);
 
-            try { new GameHost(p).Run(); }
-            catch (Exception e) { Debug.WriteLine(e.ToString()); Console.WriteLine(e.ToString()); }
-        }
-
-        private readonly int port;
-        public GameHost(int p)
-        {
-            port = p;
+            try {
+                GameHost.Run(p);
+            } catch (Exception e) { Debug.WriteLine(e.ToString()); }
         }
 
         public static ManualResetEvent allDone = new ManualResetEvent(false);
 
-        public void Run()
+        public static void Run(int p)
         {
             byte[] bytes = new Byte[8192];
-            IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Any, port);
+            IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Any, p);
             Socket listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
             try
@@ -85,22 +100,22 @@ namespace CheckersHost
                 state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
                 content = state.sb.ToString();
 
-                if (content.IndexOf("<EOT>") > -1)
-                {
-                    Console.WriteLine($"RECV {content.Length} bytes from socket\nData: {content}");
-                    //Send(handler, content);
+                if (content.IndexOf("<EOT>") < 0)
+                    handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
+                else {
+                    Console.WriteLine($"RCVD {content.Length} bytes from socket\nData: {content}");
 
                     String[] frag = content.Substring(0, content.IndexOf("<EOT>")).Split(": ");
                     String cmd = frag[1].Substring(0, 4);
                     String arg;
 
-                    try { arg = frag[1].Substring(5); } catch (ArgumentOutOfRangeException) { arg = ""; }
+                    try {
+                        arg = frag[1].Substring(5);
+                    } catch (ArgumentOutOfRangeException) { arg = ""; }
 
-                    HandleCmd(handler, frag[0], cmd, arg);
-                }
-                else // Not all data received. Get more.
-                {
-                    handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
+                    try {
+                        HandleCmd(handler, frag[0], cmd, arg);
+                    } catch (Exception e) { Send(handler, $"E: {e.ToString()}"); }
                 }
             }
         }
@@ -114,19 +129,21 @@ namespace CheckersHost
 
         private static void SendCallback(IAsyncResult ar)
         {
-            try
-            {
-                Socket handler = (Socket)ar.AsyncState;
+            try {
+                Socket handler = (Socket) ar.AsyncState;
                 int bytesSent = handler.EndSend(ar);
 
                 Console.WriteLine($"SENT {bytesSent} bytes to client");
 
                 handler.Shutdown(SocketShutdown.Both);
                 handler.Close();
-            }
-            catch (Exception e)
-            { Console.WriteLine(e.ToString()); }
+            } catch (Exception e) { Console.WriteLine(e.ToString()); }
         }
+
+        private static UInt64 gIndex = 0;
+        private static List<String> players = new List<String>();
+        private static List<gameObject> games = new List<gameObject>();
+        private static Dictionary<String, UInt64> inGame = new Dictionary<String, UInt64>();
 
         private static void HandleCmd(Socket handler, String userId, String userCmd, String userArg)
         {
@@ -136,47 +153,81 @@ namespace CheckersHost
             {
                 case "UREG":
                     {
+                        if (players.Any(u => u.Equals(userId, StringComparison.OrdinalIgnoreCase)))
+                            Send(handler, "USER EXISTS");
+                        else
+                        {
+                            players.Add(userId);
 
-                    }
-                    break;
+                            Send(handler, "OKAY");
+                        }
+                    } break;
                 case "LSPL":
                     {
-
-                    }
-                    break;
+                        Send(handler, "OKAY " + string.Join('~', players));
+                    } break;
                 case "LSGS":
                     {
-
-                    }
-                    break;
+                        Send(handler, "OKAY " + string.Join('~', games.Select(g => g.gameState)));
+                    } break;
                 case "NEWG":
                     {
+                        UInt64 gId = gIndex++;
+                        gameObject nGame = new gameObject(gId, userArg);
 
-                    }
-                    break;
+                        games.Add(nGame);
+                        inGame.Add(userId, gId);
+
+                        Send(handler, "OKAY ");
+                    } break;
                 case "JOIN":
                     {
+                        gameObject jGame;
 
-                    }
-                    break;
+                        try {
+                            jGame = games.Single(g => g.gameState.IndexOf(userArg) >= 0);
+                        } catch (Exception e) { Send(handler, $"E: Failed to find game {e.ToString()}"); return; }
+
+                        inGame.Add(userId, jGame.gameId);
+
+                        // TODO: add userId to gamestate string
+
+                        Send(handler, "OKAY " + jGame.gameState);
+                    } break;
                 case "QUIT":
                     {
+                        // TODO: remove userId from gamestate string
 
-                    }
-                    break;
+                        inGame.Remove(userId);
+
+                        Send(handler, "OKAY");
+                    } break;
                 case "SEND":
                     {
+                        UInt64 iGameIdx = inGame[userId];
+                        gameObject iGame;
+                        String[] frag = userArg.Split(' ');
 
-                    }
-                    break;
+
+                        try
+                        {
+                            iGame = games.Single(g => g.gameId == iGameIdx);
+                        }
+                        catch (Exception e) { Send(handler, $"E: Failed to find game {e.ToString()}"); return; }
+
+                        iGame.gameState = frag[1];
+
+                        Send(handler, "OKAY");
+                    } break;
                 case "RECV":
                     {
-
-                    }
-                    break;
+                        Send(handler, "UNKN");
+                    } break;
+                default:
+                    {
+                        Send(handler, "UNKN");
+                    } break;
             }
-
-            Send(handler, "OKAY ");
         }
     }
 }

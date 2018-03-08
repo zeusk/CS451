@@ -19,39 +19,28 @@ namespace Checkers
 {
     public partial class StartWindow : Page
     {
-        //Retrieve user name from local disc
-        private string userName;
-        //private string userName = Settings.getUserNameFromLocalDisc();
-        private GameClient gc;
-
         public StartWindow()
         {
             InitializeComponent();
 
-            userName = Util.GetUserName();
-
-            //Set the user name field for popup window
-            enteredUserName.Text = userName;
+            // Set the user name field for popup window
+            enteredUserName.Text = Util.GetMyName();
             connectionPopup.IsOpen = true;
-
-            gc = GameClient.GetInstance();
         }
 
         protected void connectUserToServer(object sender, RoutedEventArgs e)
         {
             connectionPopup.IsOpen = false;
 
-            //Show the text Connecting to server
+            // Show the text Connecting to server
             connectingToServerText.Visibility = Visibility.Visible;
 
-            //Pass in user name and ip address
+            // Pass in user name and ip address
             string ipAddress = enteredUserIPAddress.Text;
-            userName = enteredUserName.Text;
+            Util.SetMyName(enteredUserName.Text);
 
-            Util.SetUserName(userName);
-
-            //Connect to the server
-            Task<int> taskConnect = Task<int>.Factory.StartNew( () => this.gc.Connect(ipAddress, userName) );
+            // Connect to the server
+            Task<int> taskConnect = Task<int>.Factory.StartNew( () => GameClient.GetInstance().Connect(ipAddress) );
 
             taskConnect.Wait();
 

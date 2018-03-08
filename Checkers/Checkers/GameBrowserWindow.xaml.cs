@@ -20,34 +20,32 @@ namespace Checkers
     /// </summary>
     public partial class GameBrowserWindow : Page
     {
-        //private int playerId = 1;
         private GameClient gc = GameClient.GetInstance();
-        public static int playerId;
 
         public GameBrowserWindow()
         {
             InitializeComponent();
+
             generateListOfPlayers();
             generateListOfGames();
         }
-
 
         //Generate list of players
         protected void generateListOfPlayers()
         {
             List<String> listOfPlayers = gc.ListPlayers();
-            //List<String> listOfPlayers = new List<string>();
-            //listOfPlayers.Add("Andy");
-            //listOfPlayers.Add("Marry");
+
             foreach (string name in listOfPlayers)
             {
                 TextBox player = new TextBox();
+
                 player.Width = 100;
                 player.Height = 30;
                 player.FontSize = 15;
                 player.HorizontalAlignment = HorizontalAlignment.Left;
                 player.BorderThickness = new Thickness(0);
-                player.Text = name; 
+                player.Text = name;
+
                 listOfPlayersPanel.Children.Add(player);
             }
         }
@@ -57,13 +55,9 @@ namespace Checkers
         protected void generateListOfGames()
         {
             List<GameState> allGames = gc.ListGames();
-            //List<GameState> allGames = new List<GameState>();
 
             foreach (GameState gs in allGames)
-            {
-                StackPanel currentGame = generateGameOverview(gs);
-                listOfGamesPanel.Children.Add(currentGame);
-            }
+                listOfGamesPanel.Children.Add(generateGameOverview(gs));
         }
 
         //Generate game overview
@@ -75,28 +69,24 @@ namespace Checkers
 
             //create the join button 
             Button joinButton = new Button();
+
             joinButton.Content = "Join";
             joinButton.Width = 40;
             joinButton.Height = 20;
             joinButton.Click += (s, e) => {
-                //Go to the main game page
-                playerId = 2;
                 gc.JoinGame(gs);
                 NavigationService.Navigate(new Uri("CheckerBoardWindow.xaml", UriKind.Relative));
             };
             joinButton.HorizontalAlignment = HorizontalAlignment.Left;
 
-
             //gnerate the overview of the board
-            Grid mygame = CheckerBoardWindow.generateCheckerBoardUI(60, gs, playerId);
+            Grid mygame = CheckerBoardWindow.generateCheckerBoardUI(60, gs);
 
             mygame.HorizontalAlignment = HorizontalAlignment.Center;
 
-            //generate the name of the player who's in the game at the moment 
-            //string playerName = gs.player1Name;
-            string playerName = "temp";
             TextBox player = new TextBox();
-            player.Text = playerName;
+
+            player.Text = gs.player1Name; // string.IsNullOrEmpty(gs.player1Name) ? gs.player2Name : gs.player1Name;
             player.Width = 80;
             player.Height = 20;
             player.BorderThickness = new Thickness(0);
@@ -114,7 +104,6 @@ namespace Checkers
         //Start a new game
         protected void startNewGame(object sender, RoutedEventArgs e)
         {
-            playerId = 1;
             //Go to the main game page
             gc.JoinGame();
             NavigationService.Navigate(new Uri("CheckerBoardWindow.xaml", UriKind.Relative));

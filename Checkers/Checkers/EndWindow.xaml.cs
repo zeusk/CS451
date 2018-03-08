@@ -23,7 +23,7 @@ namespace Checkers
         public EndWindow()
         {
             InitializeComponent();
-            currentPlayerWon = (gc.GetGameState().getResult() == GameBrowserWindow.playerId);
+            currentPlayerWon = (gc.GetGameState().getResult() == Util.myPlayerNum());
 
             //Generate the text to indicate won or lost
             if (currentPlayerWon)

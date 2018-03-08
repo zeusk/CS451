@@ -10,7 +10,7 @@ namespace Checkers
 {
     public class GameClient
     {
-        private readonly Boolean testLocal = false;
+        private readonly Boolean testLocal = true;
         private Boolean inGame = false;
         private Boolean isConnected = false;
 
@@ -34,7 +34,7 @@ namespace Checkers
         private String userId = null;
         private IPEndPoint remote = null;
 
-        private int Init(String netAddress, String userName)
+        private int Init(String netAddress)
         {
             int port = 9001;
 
@@ -51,7 +51,7 @@ namespace Checkers
                 if (!Util.ValidateIPv4(netAddress))
                     return -2;
 
-                userId = userName;
+                userId = Util.GetMyName();
                 remote = new IPEndPoint(IPAddress.Parse(netAddress), port);
             } catch (Exception e) { Debug.WriteLine(e.ToString()); return -1; }
 
@@ -100,16 +100,17 @@ namespace Checkers
         }
 
 
-        public int Connect(String netAddress, String userName)
+        public int Connect(String netAddress)
         {
             if (testLocal)
                 return 0;
             if (!isConnected)
             {
-                switch (Init(netAddress, userName))
+                switch (Init(netAddress))
                 {
+                    case 0: break;
                     case -2: return -3; // invalid IP
-                    case -1: return -1; // unknown error
+                    default: return -1; // unknown error
                 }
 
                 String r = SendRecv("UREG"); // UserRegister
