@@ -147,6 +147,7 @@ namespace CheckersHost
         // * When one player quits, end game || add it back to visible list
         // * when both players quit, end game
         // * Recycle user names
+        // * remove userId from gamestate string when player quits
         private static void HandleCmd(Socket handler, String userId, String userCmd, String userArg)
         {
             Console.WriteLine($"Serving {userId} for {userCmd} with args '{userArg}'");
@@ -192,14 +193,17 @@ namespace CheckersHost
 
                         inGame.Add(userId, jGame.gameId);
 
-                        // TODO: add userId to gamestate string
+                        string[] frags = jGame.gameState.Split("|");
 
-                        Send(handler, "OKAY " + jGame.gameState);
+                        if (string.IsNullOrEmpty(frags[2]))
+                        {
+                            frags[2] = userId;
+                            jGame.gameState = string.Join("|", frags);
+                            Send(handler, "OKAY " + jGame.gameState);
+                        }
                     } break;
                 case "QUIT":
                     {
-                        // TODO: remove userId from gamestate string
-
                         inGame.Remove(userId);
 
                         Send(handler, "OKAY");
