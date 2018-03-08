@@ -10,10 +10,12 @@ namespace Checkers
 {
     public class GameClient
     {
-        private readonly Boolean testLocal = true;
-        private Boolean inGame = false;
-        private Boolean isConnected = false;
+        public readonly Boolean testLocal = true;
+        private Boolean _inGame = false;
+        private Boolean _isConnected = false;
 
+        public Boolean inGame { get { return _inGame; } }
+        public Boolean isConnected { get { return _isConnected; } }
 
         private static GameClient gcInstance = null;
         public static GameClient GetInstance()
@@ -113,7 +115,7 @@ namespace Checkers
                 String r = SendRecv("UREG"); // UserRegister
                 if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
-                    isConnected = true;
+                    _isConnected = true;
                     return 0;
                 }
                 if (r.StartsWith("USER EXISTS", StringComparison.OrdinalIgnoreCase))
@@ -187,7 +189,7 @@ namespace Checkers
                 String r = SendRecv("NEWG " + game.toString());
                 if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
-                    inGame = true;
+                    _inGame = true;
                     return 0;
                 }
             }
@@ -208,7 +210,7 @@ namespace Checkers
                 if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
                     game = GameState.fromString(r.Substring(5));
-                    inGame = true;
+                    _inGame = true;
                     return 0;
                 }
             }
@@ -221,7 +223,7 @@ namespace Checkers
             if (testLocal)
             {
                 game = null;
-                inGame = false;
+                _inGame = false;
                 return 0;
             }
             if (isConnected && inGame)
@@ -230,7 +232,7 @@ namespace Checkers
                 if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
                     game = null;
-                    inGame = false;
+                    _inGame = false;
                     return 0;
                 }
             }
@@ -238,6 +240,10 @@ namespace Checkers
             return -1;
         }
 
+        public int SendState()
+        {
+            return ReceiveState(GetGameState());
+        }
 
         public int SendState(GameState game)
         {
@@ -257,6 +263,11 @@ namespace Checkers
             }
 
             return -1;
+        }
+
+        public int ReceiveState()
+        {
+            return SendState(GetGameState());
         }
 
         public int ReceiveState(GameState game)

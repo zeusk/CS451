@@ -142,6 +142,11 @@ namespace CheckersHost
         private static List<gameObject> games = new List<gameObject>();
         private static Dictionary<String, UInt64> inGame = new Dictionary<String, UInt64>();
 
+        // TODO
+        // * When two players fill game, remove it from visible list
+        // * When one player quits, end game || add it back to visible list
+        // * when both players quit, end game
+        // * Recycle user names
         private static void HandleCmd(Socket handler, String userId, String userCmd, String userArg)
         {
             Console.WriteLine($"Serving {userId} for {userCmd} with args '{userArg}'");

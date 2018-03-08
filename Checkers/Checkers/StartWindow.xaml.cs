@@ -30,6 +30,12 @@ namespace Checkers
 
         protected void connectUserToServer(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(enteredUserName.Text))
+            {
+                MessageBox.Show("Invalid username. Please try again.");
+                return;
+            }
+
             connectionPopup.IsOpen = false;
 
             // Show the text Connecting to server

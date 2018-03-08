@@ -16,20 +16,21 @@
         <!--Close game button-->
         <Button Style="{DynamicResource closeButtonTemplate}" Content="X" Click="CloseGame"/>
 
-        <!--Connected to Text-->
-        <TextBlock x:Name="connectedToText" Style="{DynamicResource textBlockTemplate}" Text="Connected to:" FontSize="25" Margin="25,71,575,398" />
-        <!--Connected player-->
-        <TextBlock x:Name="connectedPlayerName" Style="{DynamicResource textBlockTemplate}" FontSize="15" Margin="25,102,575,351" />
 
-        <!--Turn to move-->
-        <StackPanel Margin="25,154,575,104">
-            <TextBlock x:Name="turnToMoveText" Style="{DynamicResource textBlockTemplate}" FontSize="25" Text="It's your turn to move" />
-            <Grid HorizontalAlignment="Center">
-                <Ellipse Name="playerColorCircle" Width="40" Height="40" Stroke="SaddleBrown"  StrokeThickness="3"/>
-            </Grid>
+        <StackPanel Margin="61,83,489.286,386" Orientation="Horizontal">
+            <!--Connected to Text-->
+            <TextBlock x:Name="connectedToText" Style="{DynamicResource textBlockTemplate}" Text="Opponent: " FontSize="20"  />
+            <!--Connected player-->
+            <TextBlock x:Name="connectedPlayerName" Style="{DynamicResource textBlockTemplate}" FontSize="20" />
         </StackPanel>
 
-        <Grid Name="dynamicGrid" Margin="373,38,79,43" />
+        <!--Turn to move-->
+        <StackPanel Margin="61,290,489.286,149" Orientation="Horizontal">
+            <Ellipse Name="playerColorCircle" Width="25" Height="25" Stroke="SaddleBrown"  StrokeThickness="3"/>
+            <TextBlock x:Name="turnToMoveText" Style="{DynamicResource textBlockTemplate}" FontSize="20" Margin="8,12,0,0"/>
+        </StackPanel>
+
+        <Grid Name="dynamicGrid" Margin="395,41,56.286,40" />
 
     </Grid>
 </Page>

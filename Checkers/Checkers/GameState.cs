@@ -52,6 +52,10 @@ namespace Checkers
             {
                 return _player2Name;
             }
+            set
+            {
+                _player2Name = value;
+            }
         }
 
         private string _playerTurn;
@@ -132,6 +136,9 @@ namespace Checkers
         public void endTurn()
         {
             _playerTurn = _playerTurn.Equals(_player1Name) ? _player2Name : _player1Name;
+
+            if (GameClient.GetInstance().testLocal)
+                Util.SetMyName(Util.GetOpponentName());
         }
     }
 }

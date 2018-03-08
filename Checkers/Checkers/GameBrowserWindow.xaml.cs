@@ -78,13 +78,13 @@ namespace Checkers
             joinButton.HorizontalAlignment = HorizontalAlignment.Left;
 
             //gnerate the overview of the board
-            Border mygame = CheckerBoardWindow.generateCheckerBoardUI(90, gs);
+            Border mygame = CheckerBoardWindow.generateCheckerBoardUI(90, gs, false);
 
             mygame.HorizontalAlignment = HorizontalAlignment.Center;
 
             TextBox player = new TextBox();
 
-            player.Text = gs.player1Name; // string.IsNullOrEmpty(gs.player1Name) ? gs.player2Name : gs.player1Name;
+            player.Text = string.IsNullOrEmpty(gs.player1Name) ? gs.player2Name : gs.player1Name;
             player.Width = 100;
             player.Height = 60;
             player.Style = Application.Current.Resources["textBlockTemplate"] as Style;
