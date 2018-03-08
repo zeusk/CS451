@@ -139,6 +139,7 @@ namespace Checkers
                 }
                 else if (moveType == 5 || moveType == 6)
                 {
+
                     board[newPosition[0], newPosition[1]] = board[oldPosition[0], oldPosition[1]];
                     board[oldPosition[0], oldPosition[1]] = 0;
                     return true;
@@ -194,9 +195,17 @@ namespace Checkers
                 return validateForwardJumpRight(now, prev, player, board[prev[0], prev[1]]);
             }
             else if (moveType == 5 && pieceKing)
+            {
+                if (checkAnyJumpPossible(player))
+                    return false;
                 return validateBackwardLeft(now, prev, player, board[prev[0], prev[1]]);
+            }
             else if (moveType == 6 && pieceKing)
+            {
+                if (checkAnyJumpPossible(player))
+                    return false;
                 return validateBackwardRight(now, prev, player, board[prev[0], prev[1]]);
+            }
             else if (moveType == 7 && pieceKing)
                 return validateBackwardJumpLeft(now, prev, player, board[prev[0], prev[1]]);
             else if (moveType == 8 && pieceKing)
