@@ -35,8 +35,8 @@ namespace Checkers
             }
         }
 
-
-        public void NavigateToGameBrowserWindow(object sender, RoutedEventArgs e)
+        //Go back to the gamebrowser window
+        protected void navigateToGameBrowserWindow(object sender, RoutedEventArgs e)
         {
             NavigationService.Navigate(new Uri("GameBrowserWindow.xaml", UriKind.Relative));
         }

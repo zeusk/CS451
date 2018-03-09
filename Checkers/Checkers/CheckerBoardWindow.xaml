@@ -26,8 +26,8 @@
 
         <!--Turn to move-->
         <StackPanel Margin="61,290,489.286,149" Orientation="Horizontal">
-            <Ellipse Name="playerColorCircle" Width="25" Height="25" Stroke="SaddleBrown"  StrokeThickness="3"/>
-            <TextBlock x:Name="turnToMoveText" Style="{DynamicResource textBlockTemplate}" FontSize="20" Margin="8,12,0,0"/>
+            <Border Name="playerColorCircle" Width="25" Height="25" BorderBrush="SaddleBrown" VerticalAlignment="Center" CornerRadius="7" BorderThickness="3"/>
+            <TextBlock x:Name="turnToMoveText" Style="{DynamicResource textBlockTemplate}" Margin="10,0,0,0" FontSize="20" VerticalAlignment="Center" />
         </StackPanel>
 
         <Grid Name="dynamicGrid" Margin="395,41,56.286,40" />

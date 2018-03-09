@@ -23,5 +23,14 @@ namespace Checkers
         {
             InitializeComponent();
         }
+
+        //Make the window draggable
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
+        {
+            base.OnMouseLeftButtonDown(e);
+
+            // Begin dragging the window
+            this.DragMove();
+        }
     }
 }
