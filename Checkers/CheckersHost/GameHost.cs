@@ -201,13 +201,19 @@ namespace CheckersHost
 
                         string[] frags = jGame.gameState.Split("|");
 
-                        if (string.IsNullOrEmpty(frags[2]))
-                        {
+                        if (string.IsNullOrEmpty(frags[0]))
+                            frags[0] = userId;
+                        if (string.IsNullOrEmpty(frags[1])) {
+                            frags[1] = userId;
+                            inGame.Add(userId, jGame.gameId);
+                            resp = "OKAY " + jGame.gameState;
+                        } else if (string.IsNullOrEmpty(frags[2])) {
                             frags[2] = userId;
                             inGame.Add(userId, jGame.gameId);
-                            jGame.gameState = string.Join("|", frags);
                             resp = "OKAY " + jGame.gameState;
                         } else resp = "WARN Game is full";
+
+                        jGame.gameState = string.Join("|", frags);
                     } break;
                 case "QUIT":
                     {
@@ -218,13 +224,13 @@ namespace CheckersHost
                         } catch (Exception e) { resp = "E: Failed to find game " + e.ToString(); break; }
 
                         string[] frags = jGame.gameState.Split("|");
-
-                        if (frags[2].Equals(userId))
-                            frags[2] = "";
+                        
+                        if (frags[0].Equals(userId))
+                            frags[0] = ""; // End move
                         if (frags[1].Equals(userId))
                             frags[1] = ""; // TODO: Destroy game?
-                        if (frags[0].Equals(userId))
-                            frags[0] = frags[1].Equals(userId) ? frags[2] : frags[1]; // End move
+                        if (frags[2].Equals(userId))
+                            frags[2] = "";
 
                         inGame.Remove(userId);
                         jGame.gameState = string.Join("|", frags);

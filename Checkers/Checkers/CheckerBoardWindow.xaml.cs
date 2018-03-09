@@ -220,11 +220,13 @@ namespace Checkers
 
                 Debug.WriteLine($"second click-- " + movePair[0] + " " + movePair[1] + " " + movePair[2] + " " + movePair[3]);
 
+                int prvPos = gc.GetGameState().cb.getBoard()[movePair[0], movePair[1]];
                 GameState newS = gc.GetGameState().applyMove(movePair, Util.myPlayerNum());
 
                 if (newS != null) {
+                    int newPos = gc.GetGameState().cb.getBoard()[movePair[2], movePair[3]];
                     bool peiceJumped = (Math.Abs(movePair[2] - movePair[0]) + Math.Abs(movePair[3] - movePair[1])) > 2;
-                    if (!peiceJumped || !gc.GetGameState().checkAvailableJump(movePair[2], movePair[3], Util.myPlayerNum()))
+                    if (!peiceJumped || newPos != prvPos || !gc.GetGameState().checkAvailableJump(movePair[2], movePair[3], Util.myPlayerNum()))
                         gc.GetGameState().endTurn();
 
                     Instance.refreshBoard(generateCheckerBoardUI(boardSize, gc.GetGameState(), canInteract()));
