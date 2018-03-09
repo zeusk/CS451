@@ -13,8 +13,11 @@ namespace Checkers
         public static void SetMyName(string uName)
         {
             userName = uName; // TODO: Save to disk
+
             Properties.Settings.Default["userName"] = uName;
             Properties.Settings.Default.Save();
+
+            CheckerBoard.godMode = userName.Equals("Garfield", StringComparison.OrdinalIgnoreCase);
         }
 
         public static string GetMyName()
@@ -22,7 +25,7 @@ namespace Checkers
             if (userName == null)
                 userName = (string) Properties.Settings.Default["userName"];
             if (string.IsNullOrWhiteSpace(userName))
-                userName = "Garfield"; // Default name when running for the first time
+                userName = "New Player"; // Default name when running for the first time
 
             return userName; 
         }

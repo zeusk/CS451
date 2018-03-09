@@ -173,6 +173,8 @@ namespace CheckersHost
                         } catch (Exception) { }
 
                         players.Remove(userId);
+
+                        resp = "OKAY";
                     } break;
                 case "LSPL":
                     {

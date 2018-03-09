@@ -9,6 +9,7 @@ namespace Checkers
 {
     public class CheckerBoard
     {
+        public static Boolean godMode = false;
         private int[,] board;
 
         public CheckerBoard()
@@ -155,7 +156,7 @@ namespace Checkers
 
         public bool validateMove(int[] prev, int[] now, int player)
         {
-            if (!(board[prev[0], prev[1]] == player || board[prev[0], prev[1]] == player + 2))
+            if (!godMode && (!(board[prev[0], prev[1]] == player || board[prev[0], prev[1]] == player + 2)))
                 return false;
             //Determine Piece Type
             bool pieceKing = isKing(board[prev[0], prev[1]]);
@@ -181,21 +182,21 @@ namespace Checkers
             {
                 return validateForwardJumpRight(now, prev, player, board[prev[0], prev[1]]);
             }
-            else if (moveType == 5 && pieceKing)
+            else if (moveType == 5 && (godMode || pieceKing))
             {
                 if (checkAnyJumpPossible(player))
                     return false;
                 return validateBackwardLeft(now, prev, player, board[prev[0], prev[1]]);
             }
-            else if (moveType == 6 && pieceKing)
+            else if (moveType == 6 && (godMode || pieceKing))
             {
                 if (checkAnyJumpPossible(player))
                     return false;
                 return validateBackwardRight(now, prev, player, board[prev[0], prev[1]]);
             }
-            else if (moveType == 7 && pieceKing)
+            else if (moveType == 7 && (godMode || pieceKing))
                 return validateBackwardJumpLeft(now, prev, player, board[prev[0], prev[1]]);
-            else if (moveType == 8 && pieceKing)
+            else if (moveType == 8 && (godMode || pieceKing))
                 return validateBackwardJumpRight(now, prev, player, board[prev[0], prev[1]]);
 
             else
