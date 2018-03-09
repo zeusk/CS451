@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DraggablePopup.cs" />
     <Compile Include="Util.cs" />
     <Page Include="CheckerBoardWindow.xaml">
       <SubType>Designer</SubType>
@@ -95,7 +96,6 @@
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
-
     <Compile Include="StartWindow.xaml.cs">
       <DependentUpon>StartWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -140,6 +140,11 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resource\LightGrid.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resource\DarkPopUpBackground.JPG">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

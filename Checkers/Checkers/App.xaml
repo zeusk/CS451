@@ -16,13 +16,14 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
-                            <Border CornerRadius="5" Background="Peru" BorderBrush="Wheat"  BorderThickness="2">
+                            <Border Name="border" CornerRadius="5" Background="Peru" BorderBrush="Wheat"  BorderThickness="2">
                                 <ContentPresenter  Margin="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
 
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="Peru"/>
+                                    <Setter TargetName="border" Property="Background" Value="SaddleBrown" />
+                                    <Setter Property="Foreground" Value="Peru"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>

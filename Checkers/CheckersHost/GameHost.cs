@@ -270,8 +270,20 @@ namespace CheckersHost
                     } break;
             }
 
-            Console.WriteLine($"{userId}: {userCmd} {userArg}");
-            Console.WriteLine($"SERV: {userCmd} for {userId}: {resp}");
+            switch (userCmd)
+            {
+                case "RECV":
+                case "LSPL":
+                case "LSGS":
+                {
+
+                } break;
+                default:
+                {
+                    Console.WriteLine($"{userId}: {userCmd} {userArg}");
+                    Console.WriteLine($"SERV: {userCmd} for {userId}: {resp}");
+                } break;
+            }
 
             Send(handler, resp);
         }

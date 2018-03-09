@@ -21,7 +21,7 @@
         <TextBlock x:Name="gameResultLost" Style="{DynamicResource textBlockTemplate}" Text="You lost" Visibility="Hidden" FontSize="78" Margin="0,48,0,188"  />
 
         <!--The continue game button-->
-        <Button Content="Continue"  Height="70" Style="{DynamicResource buttonTemplate}" FontSize="45"  Width="200"  Margin="161,290,489,130" Click="NavigateToGameBrowserWindow"/>
+        <Button Content="Continue"  Height="70" Style="{DynamicResource buttonTemplate}" FontSize="45"  Width="200"  Margin="161,290,489,130" Click="navigateToGameBrowserWindow"/>
 
         <Button Content="End"  Height="70" FontSize="45" Style="{DynamicResource buttonTemplate}"  Width="200" Click="CloseGame" Margin="496,295,154,135"/>
 
