@@ -100,6 +100,74 @@ namespace CheckersUnitTests
             return pos;
         }
 
+        private List<int> genCoords(int x1, int y1, int x2, int y2)
+        {
+            List<int> pos = new List<int>();
+            pos.Add(x1);
+            pos.Add(y1);
+            pos.Add(x2);
+            pos.Add(y2);
+            return pos;
+        }
+
+        [Test]
+        public void ApplyForwardRight()
+        {
+            board = new CheckerBoard();
+            Assert.IsTrue(board.applyMove(genCoords(2, 1, 3, 0), 1),
+                "Forward Right Move Not Being Applied Correctly For Player 1");
+
+            Assert.IsTrue(board.applyMove(genCoords(5, 0, 4, 1), 2),
+                "Forward Right Move Not Being Applied Correctly For Player 2");
+        }
+
+        [Test]
+        public void ApplyForwardLeftJump()
+        {
+            board = new CheckerBoard(true);
+            
+            board.placePiece(genPos(0,0), 1);
+            board.placePiece(genPos(1,1), 2);
+            Assert.IsTrue(board.applyMove(genCoords(0, 0, 2, 2), 1), "Jump Left not Executing Correctly for Player 1");
+
+            board = new CheckerBoard(true);
+            board.placePiece(genPos(1, 1), 1);
+            board.placePiece(genPos(2, 2), 2);
+            Assert.IsTrue(board.applyMove(genCoords(2, 2, 0, 0), 2), "Jump Left not Executing Correctly for Player 2");
+        }
+
+        [Test]
+        public void ApplyForwardRightJump()
+        {
+            board = new CheckerBoard(true);
+
+            board.placePiece(genPos(0, 2), 1);
+            board.placePiece(genPos(1, 1), 2);
+            Assert.IsTrue(board.applyMove(genCoords(0, 2, 2, 0), 1), "Jump Right not Executing Correctly for Player 1");
+
+            board = new CheckerBoard(true);
+            board.placePiece(genPos(1, 1), 1);
+            board.placePiece(genPos(2, 0), 2);
+            Assert.IsTrue(board.applyMove(genCoords(2, 0, 0, 2), 2), "Jump Left not Executing Correctly for Player 2");
+        }
+
+        [Test]
+        public void ApplyBackwardLeftJump()
+        {
+            board = new CheckerBoard(true);
+
+            board.placePiece(genPos(0, 2), 1);
+            board.placePiece(genPos(1, 1), 2);
+            Assert.IsTrue(board.applyMove(genCoords(0, 2, 2, 0), 1), "Jump Right not Executing Correctly for Player 1");
+
+            board = new CheckerBoard(true);
+            board.placePiece(genPos(1, 1), 1);
+            board.placePiece(genPos(2, 0), 2);
+            Assert.IsTrue(board.applyMove(genCoords(2, 0, 0, 2), 2), "Jump Left not Executing Correctly for Player 2");
+        }
+
+
+        /*
         [Test]
         public void CheckValidationForwardLeft()
         {
@@ -113,9 +181,25 @@ namespace CheckersUnitTests
             prev = genPos(5, 2);
             now = genPos(4, 1);
             Assert.IsTrue(board.validateForwardLeft(now, prev, 2, 2), "Forward Validation not validating valid move for Player 2");
-            prev = genPos(1, 0);
         }
-        
+
+        [Test]
+        public void CheckValidationForwardRight()
+        {
+            board = new CheckerBoard();
+            var prev = genPos(2, 1);
+            var now = genPos(3, 0);
+            Assert.IsTrue(board.validateForwardRight(now, prev, 1, 1), "Forward Right Validation not validating valid move for Player 1");
+            prev = genPos(1, 0);
+            now = genPos(2, 1);
+            Assert.IsFalse(board.validateForwardRight(now, prev, 1, 1), "Forward Right Validation is validating invalid move for Player 1");
+            prev = genPos(5, 0);
+            now = genPos(4, 1);
+            Assert.IsTrue(board.validateForwardRight(now, prev, 2, 2), "Forward Right Validation not validating valid move for Player 2"); 
+        }
+        */
+
+
         public static void Main()
         {
             //Placeholder
