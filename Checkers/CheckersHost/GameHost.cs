@@ -131,10 +131,7 @@ namespace CheckersHost
         private static List<gameObject> games = new List<gameObject>();
         private static Dictionary<String, UInt64> inGame = new Dictionary<String, UInt64>();
         private static object lockObj = new object();
-        // TODO
-        // * When two players fill game, remove it from visible list
-        // * When one player quits, end game || add it back to visible list
-        // * when both players quit, end game
+
         private static void HandleCmd(Socket handler, String userId, String userCmd, String userArg)
         {
             String resp = "UNKN";
@@ -163,12 +160,16 @@ namespace CheckersHost
                             if (frags[2].Equals(userId))
                                 frags[2] = "";
                             if (frags[1].Equals(userId))
-                                frags[1] = ""; // TODO: Destroy game?
+                                frags[1] = "";
                             if (frags[0].Equals(userId))
-                                frags[0] = frags[1].Equals(userId) ? frags[2] : frags[1]; // End move
+                                frags[0] = "";
+
+                            if (string.IsNullOrWhiteSpace(frags[1]) && string.IsNullOrWhiteSpace(frags[2]))
+                                games.Remove(jGame);
+                            else
+                                jGame.gameState = string.Join("|", frags);
 
                             inGame.Remove(userId);
-                            jGame.gameState = string.Join("|", frags);
                         } catch (Exception) { }
 
                         players.Remove(userId);
@@ -226,14 +227,18 @@ namespace CheckersHost
                         string[] frags = jGame.gameState.Split("|");
                         
                         if (frags[0].Equals(userId))
-                            frags[0] = ""; // End move
+                            frags[0] = "";
                         if (frags[1].Equals(userId))
-                            frags[1] = ""; // TODO: Destroy game?
+                            frags[1] = "";
                         if (frags[2].Equals(userId))
                             frags[2] = "";
 
+                        if (string.IsNullOrWhiteSpace(frags[1]) && string.IsNullOrWhiteSpace(frags[2]))
+                            games.Remove(jGame);
+                        else
+                            jGame.gameState = string.Join("|", frags);
+
                         inGame.Remove(userId);
-                        jGame.gameState = string.Join("|", frags);
 
                         resp = "OKAY";
                     } break;
