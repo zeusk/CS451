@@ -75,14 +75,6 @@ namespace Checkers
         {
             return this.board;
         }
-        private int[] parseMove(String mv)
-        {
-            String[] pos = mv.Split(',');
-            int[] cleanPos = new int[2];
-            cleanPos[0] = Int32.Parse(pos[0]);
-            cleanPos[1] = Int32.Parse(pos[1]);
-            return cleanPos;
-        }
 
         public bool applyMove(List<int> coords, int player)
         {
@@ -204,7 +196,7 @@ namespace Checkers
             return false;
         }
 
-        public bool isKing(int piece)
+        private bool isKing(int piece)
         {
             if (piece == 3 || piece == 4)
                 return true;
@@ -220,7 +212,7 @@ namespace Checkers
         // 6 - Backward Right
         // 7 - Backward Jump Left
         // 8 - Backward Jump Right
-        public int getMoveType(int[] now, int[] prev, int player)
+        private int getMoveType(int[] now, int[] prev, int player)
         {
             int[] fl = genLeftForwardPos(prev, player);
             int[] fr = genRightForwardPos(prev, player);
@@ -267,7 +259,7 @@ namespace Checkers
             return false;
         }
 
-        public bool areEqualPos(int[] a, int[] b)
+        private bool areEqualPos(int[] a, int[] b)
         {
             if (a[0] == b[0] && a[1] == b[1])
                 return true;
@@ -390,7 +382,7 @@ namespace Checkers
             return backwardRight;
         }
 
-        public bool noPiecesLeft(int player)
+        private bool noPiecesLeft(int player)
         {
             return allAvailablePieces(player).Count() == 0;
 
@@ -428,14 +420,14 @@ namespace Checkers
             return kings;
         }
 
-        public bool checkValidPosition(int[] pos)
+        private bool checkValidPosition(int[] pos)
         {
             if (pos[0] < 0 || pos[0] > 7 || pos[1] < 0 || pos[1] > 7)
                 return false;
             else
                 return true;
         }
-        public int[] genLeftForwardJumpPos(int[] pos, int player)
+        private int[] genLeftForwardJumpPos(int[] pos, int player)
         {
             int[] leftJumpPos = new int[2];
             if (player == 1)
@@ -450,7 +442,7 @@ namespace Checkers
             }
             return leftJumpPos;
         }
-        public int[] genLeftBackwardJumpPos(int[] pos, int player)
+        private int[] genLeftBackwardJumpPos(int[] pos, int player)
         {
             int[] leftJumpPos = new int[2];
             if (player == 1)
@@ -465,7 +457,7 @@ namespace Checkers
             }
             return leftJumpPos;
         }
-        public int[] genRightForwardJumpPos(int[] pos, int player)
+        private int[] genRightForwardJumpPos(int[] pos, int player)
         {
             int[] rightJumpPos = new int[2];
             if (player == 1)
@@ -481,7 +473,7 @@ namespace Checkers
             return rightJumpPos;
         }
 
-        public int[] genRightBackwardJumpPos(int[] pos, int player)
+        private int[] genRightBackwardJumpPos(int[] pos, int player)
         {
             int[] rightJumpPos = new int[2];
             if (player == 1)
@@ -497,7 +489,7 @@ namespace Checkers
             return rightJumpPos;
         }
 
-        public int[] genLeftForwardPos(int[] pos, int player)
+        private int[] genLeftForwardPos(int[] pos, int player)
         {
             int[] leftForwardPos = new int[2];
 
@@ -514,7 +506,7 @@ namespace Checkers
             return leftForwardPos;
         }
 
-        public int[] genRightForwardPos(int[] pos, int player)
+        private int[] genRightForwardPos(int[] pos, int player)
         {
             int[] rightForwardPos = new int[2];
 
@@ -547,7 +539,7 @@ namespace Checkers
             return leftBackwardPos;
         }
 
-        public int[] genRightBackwardPos(int[] pos, int player)
+        private int[] genRightBackwardPos(int[] pos, int player)
         {
             int[] rightBackwardPos = new int[2];
             if (player == 1)
