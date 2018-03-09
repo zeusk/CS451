@@ -38,7 +38,7 @@ namespace Checkers
 
         public void NavigateToGameBrowserWindow(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new Uri("GameBrowserWindow.xaml", UriKind.Relative));
+            MainWindow.MainFrame.NavigationService.Navigate(new Uri("GameBrowserWindow.xaml", UriKind.Relative));
         }
 
         //exit the game

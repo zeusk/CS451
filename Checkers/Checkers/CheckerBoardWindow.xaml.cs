@@ -271,7 +271,8 @@ namespace Checkers
 
         protected void navigateToEndWindow()
         {
-            NavigationService.Navigate(new Uri("EndWindow.xaml", UriKind.Relative), gc);
+            MainWindow.MainFrame.NavigationService.Navigate(new Uri("EndWindow.xaml", UriKind.Relative), gc);
+            
         }
     }
 }

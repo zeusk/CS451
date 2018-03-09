@@ -72,6 +72,8 @@ namespace Checkers
         {
             List<GameState> allGames = gc.ListGames();
 
+            allGames = allGames.Where(g => string.IsNullOrEmpty(g.player1Name) || string.IsNullOrEmpty(g.player2Name)).ToList();
+
             foreach (GameState gs in allGames)
                 listOfGamesPanel.Children.Add(generateGameOverview(gs));
         }
@@ -80,7 +82,7 @@ namespace Checkers
         {
             dispatcherTimer.Stop(); // TODO: Restart timer if we come back to this page
             int r = gs == null ? gc.JoinGame() : gc.JoinGame(gs);
-            NavigationService.Navigate(new Uri("CheckerBoardWindow.xaml", UriKind.Relative));
+            MainWindow.MainFrame.NavigationService.Navigate(new Uri("CheckerBoardWindow.xaml", UriKind.Relative));
         }
 
         //Generate game overview

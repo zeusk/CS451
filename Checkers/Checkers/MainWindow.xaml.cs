@@ -10,6 +10,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace Checkers
@@ -19,9 +20,14 @@ namespace Checkers
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static Frame MainFrame = new Frame();
+
         public MainWindow()
         {
             InitializeComponent();
+            MainFrame.NavigationUIVisibility = NavigationUIVisibility.Hidden;
+            MainFrame.Source = new Uri("StartWindow.xaml", UriKind.Relative );
+            this.Content = MainFrame;
         }
     }
 }

@@ -12,6 +12,4 @@
         ResizeMode="NoResize"
         Height="500" Width="850">
 
-    <Frame NavigationUIVisibility="Hidden"  Source="StartWindow.xaml">
-    </Frame>
 </Window>

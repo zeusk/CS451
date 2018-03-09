@@ -10,13 +10,16 @@ namespace Checkers
 {
     public class GameClient
     {
-        public readonly Boolean testLocal = true;
+        // If we don't have a server up and want to test UI/game logic
+        public readonly Boolean testLocal = false;
         private Boolean _inGame = false;
         private Boolean _isConnected = false;
 
+        // Public facing getters
         public Boolean inGame { get { return _inGame; } }
         public Boolean isConnected { get { return _isConnected; } }
 
+        // Singleton Instance
         private static GameClient gcInstance = null;
         public static GameClient GetInstance()
         {
@@ -25,16 +28,17 @@ namespace Checkers
             return gcInstance;
         }
 
-
+        // Track which game we are currently playing in
         private GameState game = null;
         public GameState GetGameState()
         {
             return game;
         }
 
-
+        // IP Address of the remote host
         private IPEndPoint remote = null;
 
+        // Validate the address and create the endpoint
         private int Init(String netAddress)
         {
             int port = 9001;
@@ -63,7 +67,8 @@ namespace Checkers
             remote = null;
         }
 
-
+        // The meaty part of the file,
+        // This function brokers a network request that sends the string s and returns the response as a string
         private string SendRecv(string s)
         {
             String r = "";
@@ -75,11 +80,11 @@ namespace Checkers
             Debug.WriteLine($"GameClient::sendRecv()+ {s}");
             try {
                 client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
+                // Create a new socket, connect to remote endpoint and send our data
                 client.Connect(remote);
                 client.Send(s_buff);
 
-                do {
+                do { // read from socket till End Of Transmission
                     r_sz = client.Receive(r_buff);
                     r += Encoding.ASCII.GetString(r_buff, 0, r_sz);
                 } while (r.IndexOf("<EOT>") < 0);
@@ -90,7 +95,7 @@ namespace Checkers
             } finally {
                 try {
                     client.Shutdown(SocketShutdown.Both);
-                    client.Close();
+                    client.Close(); // Close the connection and freeup the client socket
                 } catch (Exception e) { Debug.WriteLine(e.ToString()); }
             }
             Debug.WriteLine($"GameClient::sendRecv()- {r}");
@@ -98,7 +103,7 @@ namespace Checkers
             return r;
         }
 
-
+        // Connect to host and register this userName
         public int Connect(String netAddress)
         {
             if (testLocal)
@@ -176,20 +181,21 @@ namespace Checkers
             return null;
         }
 
-
+        // Create a new game
         public int JoinGame()
         {
             game = new GameState(Util.GetMyName());
 
-            // Use this format to load a gameState:
-            // game = GameState.fromString("Mike|Mike|testLocalPlayer|0|1|0|0|0|1|0|1|1|0|1|0|1|0|1|0|0|1|0|1|0|0|0|0|0|0|0|0|0|0|1|0|0|2|0|2|0|0|0|0|2|0|0|0|0|0|2|0|0|0|0|2|0|2|0|2|2|0|3|0|0|0|2|0");
+            // Use this format to load a gameState: (Also make sure you start game as the player1Name or bad things WILL happen)
+            // game = GameState.fromString("Mike|Mike||0|1|0|0|0|1|0|1|1|0|1|0|1|0|1|0|0|1|0|1|0|0|0|0|0|0|0|0|0|0|1|0|0|2|0|2|0|0|0|0|2|0|0|0|0|0|2|0|0|0|0|2|0|2|0|2|2|0|3|0|0|0|2|0");
+            // game = GameState.fromString("Mike|Mike||3|0|0|0|0|0|0|0|0|4|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0");
 
             if (testLocal)
                 return 0;
 
             if (isConnected && !inGame)
             {
-                String r = SendRecv("NEWG " + game.toString());
+                String r = SendRecv("NEWG " + game.toString()); // NewGame
                 if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
                     _inGame = true;
@@ -209,7 +215,7 @@ namespace Checkers
             }
             if (isConnected && !inGame)
             {
-                String r = SendRecv("JOIN " + remote.player1Name);
+                String r = SendRecv("JOIN " + remote.player1Name); // Join
                 if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
                     game = GameState.fromString(r.Substring(5));
@@ -231,7 +237,7 @@ namespace Checkers
             }
             if (isConnected && inGame)
             {
-                String r = SendRecv("QUIT");
+                String r = SendRecv("QUIT"); // Quit and disconnect from game
                 if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
                     game = null;
@@ -258,7 +264,7 @@ namespace Checkers
             }
             if (isConnected && inGame)
             {
-                String r = SendRecv("SEND " + GameState.toString(game));
+                String r = SendRecv("SEND " + GameState.toString(game)); // Send GameState
                 if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
                     this.game = game;
@@ -283,7 +289,7 @@ namespace Checkers
             }
             if (isConnected && inGame)
             {
-                String r = SendRecv("RECV");
+                String r = SendRecv("RECV"); // Receive state
                 if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
                     this.game = GameState.fromString(r.Substring(5));
