@@ -19,7 +19,7 @@
                             <Border CornerRadius="5" Background="Peru" BorderBrush="Wheat"  BorderThickness="2">
                                 <ContentPresenter  Margin="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
-                            
+
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter Property="Background" Value="Peru"/>
@@ -68,7 +68,7 @@
                 <Setter Property="MaxHeight" Value="300"/>
                 <Setter Property="MaxWidth" Value="500"/>
             </Style>
-              
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

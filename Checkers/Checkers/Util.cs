@@ -13,12 +13,16 @@ namespace Checkers
         public static void SetMyName(string uName)
         {
             userName = uName; // TODO: Save to disk
+            Properties.Settings.Default["userName"] = uName;
+            Properties.Settings.Default.Save();
         }
 
         public static string GetMyName()
         {
             if (userName == null)
-                userName = "Mike"; // TODO: Read from disk
+                userName = (string) Properties.Settings.Default["userName"];
+            if (string.IsNullOrWhiteSpace(userName))
+                userName = "Garfield"; // Default name when running for the first time
 
             return userName; 
         }

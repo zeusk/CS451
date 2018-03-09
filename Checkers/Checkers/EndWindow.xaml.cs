@@ -44,6 +44,10 @@ namespace Checkers
         //exit the game
         protected void CloseGame(object sender, RoutedEventArgs e)
         {
+            if (gc.inGame)
+                gc.QuitGame();
+            gc.Disconnect();
+            Properties.Settings.Default.Save();
             Application.Current.Shutdown();
         }
     }

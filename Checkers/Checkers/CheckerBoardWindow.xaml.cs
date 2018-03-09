@@ -265,6 +265,7 @@ namespace Checkers
             if (gc.inGame)
                 gc.QuitGame();
             gc.Disconnect();
+            Properties.Settings.Default.Save();
             Application.Current.Shutdown();
         }
 

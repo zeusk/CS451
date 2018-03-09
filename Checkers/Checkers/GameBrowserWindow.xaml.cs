@@ -127,7 +127,10 @@ namespace Checkers
 
         private void CloseGame(object sender, RoutedEventArgs e)
         {
+            if (gc.inGame)
+                gc.QuitGame();
             gc.Disconnect();
+            Properties.Settings.Default.Save();
             Application.Current.Shutdown();
         }
 
