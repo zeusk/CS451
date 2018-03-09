@@ -40,7 +40,6 @@ namespace Checkers
                         board[i, j] = 0;
                 }
             }
-
         }
 
         public CheckerBoard(bool flag)
@@ -83,23 +82,8 @@ namespace Checkers
             cleanPos[1] = Int32.Parse(pos[1]);
             return cleanPos;
         }
+
         public bool applyMove(List<int> coords, int player)
-        {
-            if (applyMoveX(coords, player))
-            {
-                for (int i = 0; i < 8; i++)
-                {
-                    if (board[0, i] == 2)
-                        board[0, i] = 4;
-                    if (board[7, i] == 1)
-                        board[7, i] = 3;
-                }
-                return true;
-            }
-            else
-                return false;
-        }
-        public bool applyMoveX(List<int> coords, int player)
         {
             int[] oldPosition = new int [2];
             oldPosition[0] = coords.ElementAt(0);
@@ -117,6 +101,7 @@ namespace Checkers
                 {
                     board[newPosition[0], newPosition[1]] = board[oldPosition[0], oldPosition[1]];
                     board[oldPosition[0], oldPosition[1]] = 0;
+                    crownIfPossible(newPosition, player);
                     return true;
                 }
                 else if (moveType == 3)
@@ -126,6 +111,7 @@ namespace Checkers
                     int[] toBeJumped = genLeftForwardPos(oldPosition, player);
                     board[toBeJumped[0], toBeJumped[1]] = 0;
                     board[oldPosition[0], oldPosition[1]] = 0;
+                    crownIfPossible(newPosition, player);
                     return true;
                 }
                 else if (moveType == 4)
@@ -135,6 +121,7 @@ namespace Checkers
                     int[] toBeJumped = genRightForwardPos(oldPosition, player);
                     board[toBeJumped[0], toBeJumped[1]] = 0;
                     board[oldPosition[0], oldPosition[1]] = 0;
+                    crownIfPossible(newPosition, player);
                     return true;
                 }
                 else if (moveType == 5 || moveType == 6)
@@ -263,6 +250,22 @@ namespace Checkers
                 return -1;
 
         }
+
+        private bool crownIfPossible(int [] pos, int player)
+        {
+            if(player == 1 && pos[0] == 7)
+            {
+                board[pos[0], pos[1]] = 3;
+                return true;
+            }
+            else if (player == 2 && pos[0] == 0)
+            {
+                board[pos[0], pos[1]] = 4;
+                return true;
+            }
+            return false;
+        }
+
         public bool areEqualPos(int[] a, int[] b)
         {
             if (a[0] == b[0] && a[1] == b[1])
@@ -644,7 +647,7 @@ namespace Checkers
         }
 
         public bool checkAnyJumpPossiblePiece(int[] pos, int player)
-        {   
+        {
             return checkForwardJumpPossible(pos, player) || checkBackwardJumpPossible(pos, player);
         }
 
