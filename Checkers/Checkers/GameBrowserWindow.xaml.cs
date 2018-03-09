@@ -30,7 +30,7 @@ namespace Checkers
             //Set a timer that fresh the game lobby
             dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
             dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 2);
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 0,0, 500);
             dispatcherTimer.Start();
         }
 

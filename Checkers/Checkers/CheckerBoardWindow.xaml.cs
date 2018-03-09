@@ -299,8 +299,8 @@ namespace Checkers
         //Go to the end window
         protected void navigateToEndWindow()
         {
+            recvTimer.Stop();
             MainWindow.MainFrame.NavigationService.Navigate(new Uri("EndWindow.xaml", UriKind.Relative), gc);
-            
         }
     }
 }
