@@ -24,8 +24,11 @@
                  FontStyle="Italic" Margin="0,433,0,0" />
 
         <!--Pop up window-->
-        <Popup Name="connectionPopup" Placement="Mouse" HorizontalOffset="-100" AllowsTransparency="True" VerticalOffset="-100"  IsOpen="True" >
-            <Border Background="SaddleBrown" BorderThickness="1" BorderBrush="Peru" CornerRadius="20">
+        <local:DraggablePopup x:Name="connectionPopup" Placement="Mouse" HorizontalOffset="-100" AllowsTransparency="True" VerticalOffset="-100"  IsOpen="True" >
+            <Border BorderThickness="1"  BorderBrush="Peru" CornerRadius="20">
+                <Border.Background>
+                    <ImageBrush ImageSource= "Resource/DarkPopUpBackground.jpg"  />
+                </Border.Background>
                 <StackPanel Background="Transparent" Margin="5,10" Height="117" Width="304">
                     <TextBlock Name="popupText" Style="{DynamicResource textBlockTemplate}"  FontSize="13" Text="  Please enter you IP address and user name"/>
                     <StackPanel Orientation="Horizontal" Margin="30, 10, 0, 0" >
@@ -38,9 +41,9 @@
                         <TextBox Name="enteredUserName"  Background="Wheat" Foreground="SaddleBrown" BorderThickness="0" 
                                  FontFamily="Comic Sans MS"  HorizontalAlignment="Left" Height="22" TextWrapping="Wrap"  Width="120" Margin="32.5,0,0, 0" />
                     </StackPanel>
-                    <Button Content="OK" Style="{DynamicResource buttonTemplate}" Margin="230,10,10,0" Click="connectUserToServer"/>
+                    <Button Content="OK" Style="{DynamicResource buttonTemplate}" Margin="230,10,10,0" IsDefault="True" Click="connectUserToServer"/>
                 </StackPanel>
             </Border>
-        </Popup>
+        </local:DraggablePopup>
     </Grid>
 </Page>

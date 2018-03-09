@@ -21,13 +21,14 @@
         <TextBlock Style="{DynamicResource textBlockTemplate}"  Text="List of Games" FontSize="35" Margin="423,10,35,423" />
 
         <!--Dynamic name of players-->
-        <StackPanel x:Name="listOfPlayersPanel" Margin="52,77,432,72">
-
-        </StackPanel>
+        <ScrollViewer VerticalScrollBarVisibility="Auto"  HorizontalScrollBarVisibility="Auto" Margin="52,77,432,72">
+            <StackPanel x:Name="listOfPlayersPanel" Width="350" Height="350" />
+        </ScrollViewer>
 
         <!--Dynamic name of games-->
-        <StackPanel x:Name="listOfGamesPanel"  Margin="423,77,35,72">
-        </StackPanel>
+        <ScrollViewer VerticalScrollBarVisibility="Auto"  HorizontalScrollBarVisibility="Auto" Margin="449,77,35,72">
+            <StackPanel  Width="350" Height="350" x:Name="listOfGamesPanel" />
+        </ScrollViewer>
 
 
         <!--Start game button-->

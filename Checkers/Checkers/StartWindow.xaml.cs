@@ -66,12 +66,13 @@ namespace Checkers
             }
         }
 
-
+        //Go to the game lobby
         protected void navigateToGameBrowserWindow()
         {
             MainWindow.MainFrame.NavigationService.Navigate(new Uri("GameBrowserWindow.xaml", UriKind.Relative));
         }
 
+        //Close the application and delete player from server
         private void CloseGame(object sender, RoutedEventArgs e)
         {
             if (GameClient.GetInstance().inGame)
