@@ -19,53 +19,49 @@ namespace Checkers
 {
     public partial class StartWindow : Page
     {
-        //Retrieve user name from local disc
-        private string userName;
-
-        private GameClient gc;
-
         public StartWindow()
         {
             InitializeComponent();
 
-            userName = Util.GetUserName();
-
-            //Set the user name field for popup window
-            enteredUserName.Text = userName;
+            // Set the user name field for popup window
+            enteredUserName.Text = Util.GetMyName();
             connectionPopup.IsOpen = true;
-
-            gc = GameClient.GetInstance();
         }
 
         protected void connectUserToServer(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(enteredUserName.Text))
+            {
+                MessageBox.Show("Invalid username. Please try again.");
+                return;
+            }
+
             connectionPopup.IsOpen = false;
 
-            //Show the text Connecting to server
+            // Show the text Connecting to server
             connectingToServerText.Visibility = Visibility.Visible;
 
-            //Pass in user name and ip address
+            // Pass in user name and ip address
             string ipAddress = enteredUserIPAddress.Text;
-            userName = enteredUserName.Text;
+            Util.SetMyName(enteredUserName.Text);
 
-            Util.SetUserName(userName);
-
-            //Connect to the server
-            Task<int> taskConnect = Task<int>.Factory.StartNew( () => this.gc.Connect(ipAddress, userName) );
+            // Connect to the server
+            Task<int> taskConnect = Task<int>.Factory.StartNew( () => GameClient.GetInstance().Connect(ipAddress));
 
             taskConnect.Wait();
 
             if (taskConnect.Result == 0)
-            {
                 navigateToGameBrowserWindow(); // Continue if successfully connected to host
-            } else if (taskConnect.Result == -2) {
-                MessageBox.Show("User name taken. Please try again.");
-                connectionPopup.IsOpen = true;
-            } else if (taskConnect.Result == -3) {
-                MessageBox.Show("Invalid IP address. Please try again.");
-                connectionPopup.IsOpen = true;
-            } else {
-                MessageBox.Show("Connection failed.");
+            else {
+                connectingToServerText.Visibility = Visibility.Hidden;
+
+                if (taskConnect.Result == -2)
+                    MessageBox.Show("User name taken. Please try again.");
+                else if (taskConnect.Result == -3)
+                    MessageBox.Show("Invalid IP address. Please try again.");
+                else
+                    MessageBox.Show("Connection failed.");
+
                 connectionPopup.IsOpen = true;
             }
         }

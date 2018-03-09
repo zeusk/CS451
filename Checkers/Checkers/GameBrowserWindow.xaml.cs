@@ -20,15 +20,32 @@ namespace Checkers
     /// </summary>
     public partial class GameBrowserWindow : Page
     {
-        //private int playerId = 1;
         private GameClient gc = GameClient.GetInstance();
-        public static int playerId;
+        System.Windows.Threading.DispatcherTimer dispatcherTimer;
 
         public GameBrowserWindow()
         {
             InitializeComponent();
+
+            dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+            dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 2);
+            dispatcherTimer.Start();
+        }
+
+        protected void updateGUI()
+        {
+            listOfPlayersPanel.Children.Clear();
             generateListOfPlayers();
+            listOfGamesPanel.Children.Clear();
             generateListOfGames();
+        }
+
+        void dispatcherTimer_Tick(object sender, EventArgs e)
+        {
+            dispatcherTimer.Stop();
+            updateGUI();
+            dispatcherTimer.Start();
         }
 
 
@@ -36,17 +53,15 @@ namespace Checkers
         protected void generateListOfPlayers()
         {
             List<String> listOfPlayers = gc.ListPlayers();
-            //List<String> listOfPlayers = new List<string>();
-            //listOfPlayers.Add("Andy");
-            //listOfPlayers.Add("Marry");
+
             foreach (string name in listOfPlayers)
             {
                 TextBlock player = new TextBlock();
                 player.Width = 150;
                 player.Height = 40;
                 player.FontSize = 20;
+                player.Text = name;
                 player.Style = Application.Current.Resources["textBlockTemplate"] as Style;
-                player.Text = name; 
                 listOfPlayersPanel.Children.Add(player);
             }
         }
@@ -56,13 +71,16 @@ namespace Checkers
         protected void generateListOfGames()
         {
             List<GameState> allGames = gc.ListGames();
-            //List<GameState> allGames = new List<GameState>();
 
             foreach (GameState gs in allGames)
-            {
-                StackPanel currentGame = generateGameOverview(gs);
-                listOfGamesPanel.Children.Add(currentGame);
-            }
+                listOfGamesPanel.Children.Add(generateGameOverview(gs));
+        }
+
+        protected void joinGame(GameState gs)
+        {
+            dispatcherTimer.Stop(); // TODO: Restart timer if we come back to this page
+            int r = gs == null ? gc.JoinGame() : gc.JoinGame(gs);
+            NavigationService.Navigate(new Uri("CheckerBoardWindow.xaml", UriKind.Relative));
         }
 
         //Generate game overview
@@ -74,27 +92,25 @@ namespace Checkers
 
             //create the join button 
             Button joinButton = new Button();
+
             joinButton.Content = "Join";
             joinButton.Height = 60;
             joinButton.Width = 70;
-            joinButton.Style = Application.Current.Resources["buttonTemplate"] as Style; ;
+            joinButton.Style = Application.Current.Resources["buttonTemplate"] as Style;
+            joinButton.Tag = gs;
             joinButton.Click += (s, e) => {
-                //Go to the main game page
-                playerId = 2;
-                gc.JoinGame(gs);
-                NavigationService.Navigate(new Uri("CheckerBoardWindow.xaml", UriKind.Relative));
+                joinGame((GameState) ((Button) s).Tag);
             };
             joinButton.HorizontalAlignment = HorizontalAlignment.Left;
 
             //gnerate the overview of the board
-            Border mygame = CheckerBoardWindow.generateCheckerBoardUI(90, gs, playerId);
+            Border mygame = CheckerBoardWindow.generateCheckerBoardUI(90, gs, false);
 
             mygame.HorizontalAlignment = HorizontalAlignment.Center;
 
-            //generate the name of the player who's in the game at the moment 
-            string playerName = gs.player1Name;
             TextBlock player = new TextBlock();
-            player.Text = playerName;
+
+            player.Text = string.IsNullOrEmpty(gs.player1Name) ? gs.player2Name : gs.player1Name;
             player.Width = 100;
             player.Height = 60;
             player.Style = Application.Current.Resources["textBlockTemplate"] as Style;
@@ -111,16 +127,11 @@ namespace Checkers
 
         private void CloseGame(object sender, RoutedEventArgs e)
         {
+            gc.Disconnect();
             Application.Current.Shutdown();
         }
 
         //Start a new game
-        protected void startNewGame(object sender, RoutedEventArgs e)
-        {
-            playerId = 1;
-            //Go to the main game page
-            gc.JoinGame();
-            NavigationService.Navigate(new Uri("CheckerBoardWindow.xaml", UriKind.Relative));
-        }
+        protected void startNewGame(object sender, RoutedEventArgs e) => joinGame(null);
     }
 }

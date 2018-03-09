@@ -11,8 +11,11 @@ namespace Checkers
     {
         public GameState (string playerName)
         {
-            this.player1Name = playerName;
-            this._checkerBoard = new CheckerBoard();
+            _player1Name = playerName;
+            _player2Name = "";
+            _playerTurn  = _player1Name;
+
+            _checkerBoard = new CheckerBoard();
         }
 
         private CheckerBoard _checkerBoard;
@@ -28,6 +31,11 @@ namespace Checkers
             }
         }
 
+        public int[,] getBoard()
+        {
+            return _checkerBoard.getBoard();
+        }
+
         private string _player1Name;
         public string player1Name
         {
@@ -35,19 +43,9 @@ namespace Checkers
             {
                 return _player1Name;
             }
-            set
-            {
-                _player1Name = value;
-            }
         }
 
         private string _player2Name;
-
-        public int getResult()
-        {
-            return this._checkerBoard.getResult();
-        }
-
         public string player2Name
         {
             get
@@ -59,49 +57,62 @@ namespace Checkers
                 _player2Name = value;
             }
         }
- 
-        public int[,] getBoard()
+
+        private string _playerTurn;
+        public string playerTurn
         {
-            return this._checkerBoard.getBoard();
+            get
+            {
+                return _playerTurn;
+            }
+        }
+
+        public int getResult()
+        {
+            return _checkerBoard.getResult();
         }
 
         public override string ToString() => toString(); // override base method that prints [Class GameState]
 
         public string toString()
         {
-            return GameState.toString(this);
+            return toString(this);
         }
 
         public static String toString(GameState gs)
         {
             List<String> output = new List<String>();
-            for(int i=0; i < 8; i++)
-            {
-                for (int j = 0; j < 8; j++)
-                    output.Add(gs._checkerBoard.getBoard()[i, j].ToString());
-            }
+
+            output.Add(gs._playerTurn);
             output.Add(gs.player1Name);
             output.Add(gs.player2Name);
-            String res = String.Join("|", output);
-            return res;
+
+            for (int i = 0; i < 8; i++)
+                for (int j = 0; j < 8; j++)
+                    output.Add(gs._checkerBoard.getBoard()[i, j].ToString());
+
+            return String.Join("|", output);
         }
 
         public static GameState fromString(String gState)
         {
             GameState ret = new GameState("");
             List<String> ls = new List<String>(gState.Split('|'));
+
             ret.cb = new CheckerBoard(true);
-            for(int i = 0; i < 8; i++)
+            ret._playerTurn = ls[0];
+            ret._player1Name = ls[1];
+            ret._player2Name = ls[2];
+
+            for (int i = 0; i < 8; i++)
             {
-                for(int j = 0; j < 8; j++)
+                for (int j = 0; j < 8; j++)
                 {
                     int[] pos = new int[2];
                     pos[0] = i;
                     pos[1] = j;
-                    ret.cb.placePiece(pos, Int32.Parse(ls[i * 8 + j])); 
+                    ret.cb.placePiece(pos, Int32.Parse(ls[3 + ((i * 8) + j)])); 
                 }
-                ret.player1Name = ls[64];
-                ret.player2Name = ls[65];
             }
 
             return ret;
@@ -109,27 +120,25 @@ namespace Checkers
 
         public GameState applyMove(List<int> movePair, int playerID)
         {
-            Debug.WriteLine("before:");
-            this._checkerBoard.printBoard();
-            if (this._checkerBoard.applyMove(movePair, playerID))
-            {
-                Debug.WriteLine("valid--after:");
-                this._checkerBoard.printBoard();
-                return this;
-            }
-            else
-            {
-                Debug.WriteLine("invalid move:");
-                return null;
-            }
+            return _checkerBoard.applyMove(movePair, playerID) ? this : null;
         }
 
         public bool checkAvailableJump(int x, int y, int playerID)
         {
             int[] pos = new int[2];
+
             pos[0] = x;
             pos[1] = y;
-            return this._checkerBoard.checkAnyJumpPossiblePiece(pos,playerID);
+
+            return _checkerBoard.checkAnyJumpPossiblePiece(pos,playerID);
+        }
+
+        public void endTurn()
+        {
+            _playerTurn = _playerTurn.Equals(_player1Name) ? _player2Name : _player1Name;
+
+            if (GameClient.GetInstance().testLocal)
+                Util.SetMyName(Util.GetOpponentName());
         }
     }
 }

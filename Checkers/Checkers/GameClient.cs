@@ -10,10 +10,12 @@ namespace Checkers
 {
     public class GameClient
     {
-        private readonly Boolean testLocal = false;
-        private Boolean inGame = false;
-        private Boolean isConnected = false;
+        public readonly Boolean testLocal = true;
+        private Boolean _inGame = false;
+        private Boolean _isConnected = false;
 
+        public Boolean inGame { get { return _inGame; } }
+        public Boolean isConnected { get { return _isConnected; } }
 
         private static GameClient gcInstance = null;
         public static GameClient GetInstance()
@@ -31,10 +33,9 @@ namespace Checkers
         }
 
 
-        private String userId = null;
         private IPEndPoint remote = null;
 
-        private int Init(String netAddress, String userName)
+        private int Init(String netAddress)
         {
             int port = 9001;
 
@@ -51,7 +52,6 @@ namespace Checkers
                 if (!Util.ValidateIPv4(netAddress))
                     return -2;
 
-                userId = userName;
                 remote = new IPEndPoint(IPAddress.Parse(netAddress), port);
             } catch (Exception e) { Debug.WriteLine(e.ToString()); return -1; }
 
@@ -61,7 +61,6 @@ namespace Checkers
         private void DisInit()
         {
             remote = null;
-            userId = null;
         }
 
 
@@ -70,7 +69,7 @@ namespace Checkers
             String r = "";
             int    r_sz;
             byte[] r_buff = new byte[8192];
-            byte[] s_buff = Encoding.ASCII.GetBytes(userId + ": " + s + "<EOT>");
+            byte[] s_buff = Encoding.ASCII.GetBytes(Util.GetMyName() + ": " + s + "<EOT>");
             Socket client = null;
 
             Debug.WriteLine($"GameClient::sendRecv()+ {s}");
@@ -100,22 +99,23 @@ namespace Checkers
         }
 
 
-        public int Connect(String netAddress, String userName)
+        public int Connect(String netAddress)
         {
             if (testLocal)
                 return 0;
             if (!isConnected)
             {
-                switch (Init(netAddress, userName))
+                switch (Init(netAddress))
                 {
+                    case 0: break;
                     case -2: return -3; // invalid IP
-                    case -1: return -1; // unknown error
+                    default: return -1; // unknown error
                 }
 
                 String r = SendRecv("UREG"); // UserRegister
                 if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
-                    isConnected = true;
+                    _isConnected = true;
                     return 0;
                 }
                 if (r.StartsWith("USER EXISTS", StringComparison.OrdinalIgnoreCase))
@@ -179,18 +179,20 @@ namespace Checkers
 
         public int JoinGame()
         {
+            game = new GameState(Util.GetMyName());
+
+            // Use this format to load a gameState:
+            // game = GameState.fromString("Mike|Mike|testLocalPlayer|0|1|0|0|0|1|0|1|1|0|1|0|1|0|1|0|0|1|0|1|0|0|0|0|0|0|0|0|0|0|1|0|0|2|0|2|0|0|0|0|2|0|0|0|0|0|2|0|0|0|0|2|0|2|0|2|2|0|3|0|0|0|2|0");
+
             if (testLocal)
-            {
-                game = new GameState(userId);
                 return 0;
-            }
+
             if (isConnected && !inGame)
             {
-                game = new GameState(userId);
                 String r = SendRecv("NEWG " + game.toString());
                 if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
-                    inGame = true;
+                    _inGame = true;
                     return 0;
                 }
             }
@@ -211,7 +213,7 @@ namespace Checkers
                 if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
                     game = GameState.fromString(r.Substring(5));
-                    inGame = true;
+                    _inGame = true;
                     return 0;
                 }
             }
@@ -224,7 +226,7 @@ namespace Checkers
             if (testLocal)
             {
                 game = null;
-                inGame = false;
+                _inGame = false;
                 return 0;
             }
             if (isConnected && inGame)
@@ -233,7 +235,7 @@ namespace Checkers
                 if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
                 {
                     game = null;
-                    inGame = false;
+                    _inGame = false;
                     return 0;
                 }
             }
@@ -241,6 +243,11 @@ namespace Checkers
             return -1;
         }
 
+        public int SendState()
+        {
+            Debug.WriteLine(GetGameState().toString());
+            return SendState(GetGameState());
+        }
 
         public int SendState(GameState game)
         {
@@ -260,6 +267,11 @@ namespace Checkers
             }
 
             return -1;
+        }
+
+        public int ReceiveState()
+        {
+            return ReceiveState(GetGameState());
         }
 
         public int ReceiveState(GameState game)

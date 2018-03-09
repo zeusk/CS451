@@ -5,7 +5,6 @@ using System.Windows.Controls;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Diagnostics;
 using System.Windows.Media.Imaging;
 
@@ -16,15 +15,13 @@ namespace Checkers
     /// </summary>
     public partial class CheckerBoardWindow : Page
     {
-        //The player the the user is currently playing against
-        //private string opponentName = GameBrowserWindow.playerId==1?GameState.player1Name:GameState.player2Name;
-        private string opponentName = "oppo";
         private static GameClient gc = GameClient.GetInstance();
         private static List<int> movePair = new List<int>();
         private static List<int> chosenPiece = new List<int>();
         private static int boardSize = 400;
         private static LinearGradientBrush redGradient = new LinearGradientBrush();
         private static LinearGradientBrush blackGradient = new LinearGradientBrush();
+        private static System.Windows.Threading.DispatcherTimer recvTimer;
 
         public static CheckerBoardWindow Instance { get; private set; }
 
@@ -32,77 +29,49 @@ namespace Checkers
         {
             InitializeComponent();
             Instance = this;
-            refreshBoard(generateCheckerBoardUI(boardSize, gc.getGameState(), GameBrowserWindow.playerId));
 
-            if (GameBrowserWindow.playerId == 1)
-            {
-                turnToMoveText.Visibility = Visibility.Visible;
-                playerColorCircle.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                turnToMoveText.Visibility = Visibility.Hidden;
-                playerColorCircle.Visibility = Visibility.Hidden;
-            }
-            playerColorCircle.Fill = getColorForPlayer(GameBrowserWindow.playerId);
+            SetGradient(redGradient, Color.FromRgb(220, 141, 124), Color.FromRgb(177, 8, 1), Color.FromRgb(131, 22, 2));
+            SetGradient(blackGradient, Color.FromRgb(139, 141, 136), Color.FromRgb(43, 43, 45), Color.FromRgb(68, 67, 63));
 
-            redGradient.StartPoint = new Point(0.5, 0);
-            redGradient.EndPoint = new Point(0.5, 1);
-            GradientStop redStart = new GradientStop();
-            redStart.Offset = 0.0;
-            redStart.Color = Color.FromRgb(220, 141, 124);
-            GradientStop redMiddle = new GradientStop();
-            redMiddle.Offset = 0.2;
-            redMiddle.Color = Color.FromRgb(177, 8, 1);
-            GradientStop redStop = new GradientStop();
-            redStop.Offset = 0.7;
-            redStop.Color = Color.FromRgb(131, 22, 2);
-            redGradient.GradientStops.Add(redStart);
-            redGradient.GradientStops.Add(redMiddle);
-            redGradient.GradientStops.Add(redStop);
+            if (gc.testLocal)
+                gc.GetGameState().player2Name = "testLocalPlayer";
 
-            blackGradient.StartPoint = new Point(0.5, 0);
-            blackGradient.EndPoint = new Point(0.5, 1);
-            GradientStop blackStart = new GradientStop();
-            blackStart.Offset = 0.0;
-            blackStart.Color = Color.FromRgb(139, 141, 136);
-            GradientStop blackMiddle = new GradientStop();
-            blackMiddle.Offset = 0.2;
-            blackMiddle.Color = Color.FromRgb(43, 43, 45);
-            GradientStop blackStop = new GradientStop();
-            blackStop.Offset = 0.7;
-            blackStop.Color = Color.FromRgb(68, 67, 63);
-            blackGradient.GradientStops.Add(blackStart);
-            blackGradient.GradientStops.Add(blackMiddle);
-            blackGradient.GradientStops.Add(blackStop);
+            refreshBoard(generateCheckerBoardUI(boardSize, gc.GetGameState(), false));
 
-            //Set player info on UI
-            connectedPlayerName.Text = opponentName;
-
+            recvTimer = new System.Windows.Threading.DispatcherTimer();
+            recvTimer.Tick += new EventHandler(GetMove);
+            recvTimer.Interval = TimeSpan.FromMilliseconds(166);
+            recvTimer.Start();
         }
 
-        private static LinearGradientBrush getColorForPlayer(int id)
+        private static void SetGradient(LinearGradientBrush brush, Color s, Color m, Color e)
         {
-            if (id == 1)
-            {
-                return redGradient;
-            }
-            else
-            {
-                return blackGradient;
-            }
+            brush.StartPoint = new Point(0.5, 0);
+            brush.EndPoint = new Point(0.5, 1);
+            brush.GradientStops.Add(new GradientStop { Offset = 0.0, Color = s });
+            brush.GradientStops.Add(new GradientStop { Offset = 0.2, Color = m });
+            brush.GradientStops.Add(new GradientStop { Offset = 0.7, Color = e });
         }
 
-        public static Border generateCheckerBoardUI(int size, GameState gs, int playerId)
+        private static LinearGradientBrush getColorForPlayer()
+        {
+            if (Util.GetPlayer1Name().Equals(Util.GetPlayerTurnName()))
+                return redGradient;
+            else
+                return blackGradient;
+        }
+
+        public static Border generateCheckerBoardUI(int size, GameState gs, bool clickable)
         {
             Grid myGrid = new Grid();
-            double gridSize = size*0.99;
+            double gridSize = size * 0.99;
             myGrid.HorizontalAlignment = HorizontalAlignment.Center;
             myGrid.VerticalAlignment = VerticalAlignment.Center;
             int[,] myboard = gs.getBoard();
+
             List<ColumnDefinition> gridCols = new List<ColumnDefinition>();
             List<RowDefinition> gridRows = new List<RowDefinition>();
-            for (int i = 0; i< 8; i++)
+            for (int i = 0; i < 8; i++)
             {
                 ColumnDefinition gridCol1 = new ColumnDefinition();
                 gridCol1.Width = new GridLength(gridSize / 8);
@@ -111,20 +80,16 @@ namespace Checkers
                 gridCols.Add(gridCol1);
                 gridRows.Add(gridRow1);
             }
-            
-            foreach(ColumnDefinition c in gridCols)
-            {
+
+            foreach (ColumnDefinition c in gridCols)
                 myGrid.ColumnDefinitions.Add(c);
-            }
             foreach (RowDefinition r in gridRows)
-            {
                 myGrid.RowDefinitions.Add(r);
-            }
 
 
             for (int i = 0; i < 8; i++)
             {
-                for (int j = 0; j< 8; j++)
+                for (int j = 0; j < 8; j++)
                 {
                     ImageBrush brush = new ImageBrush();
                     BitmapImage bitmap = new BitmapImage();
@@ -132,17 +97,11 @@ namespace Checkers
                     bitmap.CacheOption = BitmapCacheOption.OnLoad;
                     bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
 
-                    if (i%2 == j% 2)
-                    {
-                        //backGroundColor = Color.FromRgb(216, 150, 98);
+                    if (i % 2 == j % 2)
                         bitmap.UriSource = new Uri("../../Resource/DarkGrid.JPG", UriKind.Relative);
-                    }
                     else
-                    {
-                        // backGroundColor = Color.FromRgb(74, 25, 18);
-                        //bitmap.BeginInit();
                         bitmap.UriSource = new Uri("../../Resource/LightGrid.JPG", UriKind.Relative);
-                    }
+
                     brush.ImageSource = bitmap;
 
                     Button checkerboxButton = new Button();
@@ -152,13 +111,15 @@ namespace Checkers
                     checkerboxButton.Tag = i.ToString() + " " + j.ToString();
                     checkerboxButton.Click += (s, e) => {
                         string coor = (string)((Button)s).Tag;
-                        Debug.WriteLine(coor);
+
                         int row = Int32.Parse(coor.Split(' ')[0]);
                         int col = Int32.Parse(coor.Split(' ')[1]);
+
                         addMove(row, col, gs.cb);
                     };
-                    double ellipSize = (size / 8) * 0.8;
+                    checkerboxButton.IsHitTestVisible = clickable;
 
+                    double ellipSize = (size / 8) * 0.8;
 
                     if (myboard[i, j] != 0)
                     {
@@ -194,7 +155,7 @@ namespace Checkers
                         }
                         OuterBorder.CornerRadius = new CornerRadius(20);
                         OuterBorder.HorizontalAlignment = HorizontalAlignment.Center;
-                        if(playerId == 1)
+                        if (Util.amPlayer1(gs))
                         {
                             RotateTransform myRotateTransform = new RotateTransform(180, 0.5, 0.5);
                             OuterBorder.LayoutTransform = myRotateTransform;
@@ -207,116 +168,103 @@ namespace Checkers
                 }
             }
 
-            if (playerId == 1)
+            if (Util.amPlayer1(gs))
             {
-                //flip the board 180 degrees 
                 RotateTransform myRotateTransform = new RotateTransform(180, 0.5, 0.5);
-                myGrid.LayoutTransform = myRotateTransform;
+                myGrid.LayoutTransform = myRotateTransform; // flip the board 180 degrees
             }
+
             Border gridBorder = new Border();
+
             gridBorder.BorderBrush = new SolidColorBrush(Color.FromRgb(102, 51, 0));
             gridBorder.Height = size;
             gridBorder.Width = size;
             gridBorder.BorderThickness = new Thickness(5);
             gridBorder.Child = myGrid;
+
             return gridBorder;
         }
 
-        protected static void sendMove(GameState newS)
+        private static void WaitForTask(Task<int> t)
         {
-            Task<int> taskSendState = Task<int>.Factory.StartNew(() => gc.SendState(newS));
-            taskSendState.Wait();
-            if (taskSendState.Result != 0)
-            {
-                MessageBox.Show("Failed updating move");
-                movePair.Clear();
-                return;
-            }
+            t.Wait();
+            if (t.Result != 0)
+                MessageBox.Show("Disconnected from server");
+            if (t.Result != 0 || gc.GetGameState().getResult() != -1)
+                Instance.navigateToEndWindow();
         }
 
+        private static bool canInteract()
+        {
+            return (Util.isMyTurn() && !string.IsNullOrEmpty(Util.GetOpponentName()));
+        }
+
+        // addMove is called within a lambda from onClick
+        // if addMove blocks, does the UI block?
         protected static void addMove(int i, int j, CheckerBoard cb)
         {
-            if (movePair.Count == 0 )
+            if (!canInteract())
+                return; // TODO: warn user it's not their turn or wait for opponent?
+
+            if (movePair.Count == 0)
             {
                 movePair.Add(i);
                 movePair.Add(j);
-                Debug.WriteLine($"first click --"+ i+ " "+ j);
+
+                Debug.WriteLine($"first click --" + i + " " + j);
             }
-            else if(movePair.Count == 2)
+            else if (movePair.Count == 2)
             {
                 movePair.Add(i);
                 movePair.Add(j);
-                Debug.WriteLine($"second click-- " + movePair[0] + " "+ movePair[1] + " " +  movePair[2]+ " "+ movePair[3]);
-                GameState newS = gc.GetGameState().applyMove(movePair, GameBrowserWindow.playerId);
 
-                if (newS == null)
-                {
-                    MessageBox.Show("Your move was not valid");
-                }
-                else
-                {
+                Debug.WriteLine($"second click-- " + movePair[0] + " " + movePair[1] + " " + movePair[2] + " " + movePair[3]);
 
-                    refreshBoard(generateCheckerBoardUI(boardSize, gc.GetGameState(), GameBrowserWindow.playerId));
-                    if (gc.GetGameState().getResult() != -1)
+                int prvPos = gc.GetGameState().cb.getBoard()[movePair[0], movePair[1]];
+                GameState newS = gc.GetGameState().applyMove(movePair, Util.myPlayerNum());
 
-                    {
-                        //Game end, go to end window
-                        sendMove(newS);
-                        Instance.navigateToEndWindow();
-                    }
-                    else
-                    {
-                        int dist = (Math.Abs(movePair[2] - movePair[0]) + Math.Abs(movePair[3] - movePair[1]));
-                        if (dist <= 2 || !gc.GetGameState().checkAvailableJump(movePair[2], movePair[3], GameBrowserWindow.playerId))
-                        {
-                            sendMove(newS);
-                            //----------------------------------------
-                            //------------------------------------------
-                            GameBrowserWindow.playerId = 3 - GameBrowserWindow.playerId;
-                            Instance.playerColorCircle.Fill = getColorForPlayer(GameBrowserWindow.playerId);
-                            //----------------------------------------------
-                            //--------------------------------------------
+                if (newS != null) {
+                    int newPos = gc.GetGameState().cb.getBoard()[movePair[2], movePair[3]];
+                    bool peiceJumped = (Math.Abs(movePair[2] - movePair[0]) + Math.Abs(movePair[3] - movePair[1])) > 2;
+                    if (!peiceJumped || newPos != prvPos || !gc.GetGameState().checkAvailableJump(movePair[2], movePair[3], Util.myPlayerNum()))
+                        gc.GetGameState().endTurn();
 
-                            Instance.turnToMoveText.Visibility = Visibility.Hidden;
-                            Instance.playerColorCircle.Visibility = Visibility.Hidden;
-                            Task<int> taskReceiveState = Task<int>.Factory.StartNew(() => gc.ReceiveState(newS));
-                            taskReceiveState.Wait();
-                            if (taskReceiveState.Result != 0)
-                            {
-                                //The other player drop, go to end window
-                                Instance.navigateToEndWindow();
-                            }
-                            else
-                            {
-                                refreshBoard(generateCheckerBoardUI(boardSize, gc.getGameState(), GameBrowserWindow.playerId));
-                                if (gc.getGameState().getResult() != -1)
+                    Instance.refreshBoard(generateCheckerBoardUI(boardSize, gc.GetGameState(), canInteract()));
+                    WaitForTask(Task<int>.Factory.StartNew(() => gc.SendState()));
 
-                                {
-                                    //Game end, go to end window
-                                    Instance.navigateToEndWindow();
-                                }
-                                else
-                                {
-                                    Instance.turnToMoveText.Visibility = Visibility.Visible;
-                                    Instance.playerColorCircle.Visibility = Visibility.Visible;
-                                }
-                            } 
-                        }
-                    }
-                    
-                }
+                    if (!Util.isMyTurn())
+                        recvTimer.Start();
+                } else MessageBox.Show("Your move was not valid");
+
                 movePair.Clear();
-            }            
+            }
         }
 
-        private static void refreshBoard(Border newG)
+        private void GetMove(object sender, EventArgs e)
         {
-            Instance.dynamicGrid.Children.Clear();
-            Instance.dynamicGrid.Children.Add(newG);
+            WaitForTask(Task<int>.Factory.StartNew(() => gc.ReceiveState(gc.GetGameState())));
+            Instance.refreshBoard(generateCheckerBoardUI(boardSize, gc.GetGameState(), canInteract()));
+
+            if (canInteract())
+                recvTimer.Stop();
+        }
+
+        private void refreshBoard(Border newG)
+        {
+            dynamicGrid.Children.Clear();
+
+            playerColorCircle.Fill = getColorForPlayer();
+            turnToMoveText.Text = Util.GetGameState().playerTurn + "'s turn";
+            connectedPlayerName.Text = string.IsNullOrEmpty(Util.GetOpponentName()) ? "Waiting to join" : Util.GetOpponentName();
+
+            dynamicGrid.Children.Add(newG);
         }
 
         private void CloseGame(object sender, RoutedEventArgs e)
         {
+            if (gc.inGame)
+                gc.QuitGame();
+            gc.Disconnect();
             Application.Current.Shutdown();
         }
 
