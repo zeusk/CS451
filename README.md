@@ -24,7 +24,8 @@ Cumulatively then, the 61% and the accompanying reasoning presented above allow 
 We used git for version control in our project. In specific, we used the GitHub service.
 
 3. Use of Static Analysis Tool
-We used Visual Studio 2017 as our Static Analysis tool. A screenshot of the result is attached to the project submission. 
+We used IntelliSense which is built into Visual Studio 2017 as our Static Analysis tool. A screenshot of the result is attached to the project submission. 
+
 
 4. Use of Code Coverage Tool
 We used dotCover, a code coverage tool provided by jetBrains, that recognizes unit tests implemented in NUnit.
