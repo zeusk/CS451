@@ -188,7 +188,7 @@ namespace Checkers
 
             // Use this format to load a gameState: (Also make sure you start game as the player1Name or bad things WILL happen)
             // game = GameState.fromString("Mike|Mike||0|1|0|0|0|1|0|1|1|0|1|0|1|0|1|0|0|1|0|1|0|0|0|0|0|0|0|0|0|0|1|0|0|2|0|2|0|0|0|0|2|0|0|0|0|0|2|0|0|0|0|2|0|2|0|2|2|0|3|0|0|0|2|0");
-            game = GameState.fromString("Mike|Mike||3|0|0|0|0|0|0|0|0|4|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0");
+            // game = GameState.fromString("Mike|Mike||3|0|3|0|0|0|0|0|0|4|0|0|0|0|0|0|3|0|3|0|3|0|0|0|3|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0");
 
             if (testLocal)
                 return 0;
