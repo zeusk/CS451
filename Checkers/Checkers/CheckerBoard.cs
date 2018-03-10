@@ -359,11 +359,11 @@ namespace Checkers
             bool backwardLeft = false;
             if (player == 1)
             {
-                backwardLeft = (now[0] - prev[0] == -1) && (now[1] - prev[1] == 1) && (board[prev[0], prev[1]] == piece);
+                backwardLeft = (now[0] - prev[0] == -1) && (now[1] - prev[1] == 1) && (board[prev[0], prev[1]] == piece) && (board[now[0], now[1]] == 0);
             }
             else if (player == 2)
             {
-                backwardLeft = (now[0] - prev[0] == 1) && (now[1] - prev[1] == -1) && (board[prev[0], prev[1]] == piece);
+                backwardLeft = (now[0] - prev[0] == 1) && (now[1] - prev[1] == -1) && (board[prev[0], prev[1]] == piece) && (board[now[0], now[1]] == 0);
             }
             return backwardLeft;
         }
@@ -373,11 +373,11 @@ namespace Checkers
             bool backwardRight = false;
             if (player == 1 && piece == 3)
             {
-                backwardRight = (now[0] - prev[0] == -1) && (now[1] - prev[1] == -1) && (board[prev[0], prev[1]] == piece);
+                backwardRight = (now[0] - prev[0] == -1) && (now[1] - prev[1] == -1) && (board[prev[0], prev[1]] == piece) && (board[now[0], now[1]] == 0);
             }
             else if (player == 2 && piece == 4)
             {
-                backwardRight = (now[0] - prev[0] == 1) && (now[1] - prev[1] == 1) && (board[prev[0], prev[1]] == piece);
+                backwardRight = (now[0] - prev[0] == 1) && (now[1] - prev[1] == 1) && (board[prev[0], prev[1]] == piece) && (board[now[0], now[1]] == 0);
             }
             return backwardRight;
         }

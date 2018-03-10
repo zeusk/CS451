@@ -6,12 +6,9 @@
         xmlns:local="clr-namespace:Checkers"
         mc:Ignorable="d"
         WindowStyle="None"   
-        WindowState="Maximized"
         AllowsTransparency="True"
         Background="Transparent"
         ResizeMode="NoResize"
         Height="500" Width="850">
 
-    <Frame NavigationUIVisibility="Hidden"  Source="StartWindow.xaml">
-    </Frame>
 </Window>

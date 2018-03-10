@@ -1,0 +1,19 @@
+Week 3: Got assigned into a group. Discussed programming language to use -- C#. 
+
+Week 4: Set up requirement docuemnt, design document, test case document on Overleaf and 
+created the C# project on GitHub
+
+Week 5: Discussed the deliverable for each component, project overview and requirement docuemnt 
+
+Week 6: Finish the requirement document and discuss the design document 
+
+Week 7: Finish the design document and finished up the client side code from Shantanu, most of back-end 
+logic from Guru, and basic UI from Vivian. 
+
+Week 8: Finish the test case document. Integrate three components and test the game locally. Make sure 
+the game logic go through for local games. 
+
+Week 9: Project upgraded to new UI. Test game playing on server. Debug all the conflicts occured while 
+integrating the components. The project is closed and released by the end of week 9. 
+
+Week 10: No editting. Project presentation on Monday. 
