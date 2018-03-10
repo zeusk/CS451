@@ -58,12 +58,6 @@ namespace Checkers
             return 0;
         }
 
-        private void DisInit()
-        {
-            remote = null;
-        }
-
-
         private string SendRecv(string s)
         {
             String r = "";
@@ -128,13 +122,25 @@ namespace Checkers
         public int Disconnect()
         {
             if (testLocal)
+            {
+                game = null;
+                _inGame = false;
                 return 0;
-            if (!isConnected)
-                return -1;
+            }
 
-            DisInit();
+            if (isConnected)
+            {
+                String r = SendRecv("EXIT");
+                if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
+                {
+                    game = null;
+                    remote = null;
+                    _inGame = false;
+                    return 0;
+                }
+            }
 
-            return 0;
+            return -1;
         }
 
 

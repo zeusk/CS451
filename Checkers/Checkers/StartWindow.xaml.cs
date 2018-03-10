@@ -74,8 +74,6 @@ namespace Checkers
 
         private void CloseGame(object sender, RoutedEventArgs e)
         {
-            if (GameClient.GetInstance().inGame)
-                GameClient.GetInstance().QuitGame();
             GameClient.GetInstance().Disconnect();
             Properties.Settings.Default.Save();
             Application.Current.Shutdown();

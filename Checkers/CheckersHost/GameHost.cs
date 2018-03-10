@@ -153,7 +153,7 @@ namespace CheckersHost
                         gameObject jGame;
 
                         try {
-                            jGame = games.Single(g => g.gameState.IndexOf(userArg) >= 0);
+                            jGame = games.Single(g => g.gameState.IndexOf(userId) >= 0);
 
                             string[] frags = jGame.gameState.Split("|");
 
@@ -223,7 +223,7 @@ namespace CheckersHost
                         gameObject jGame;
 
                         try {
-                            jGame = games.Single(g => g.gameState.IndexOf(userArg) >= 0);
+                            jGame = games.Single(g => g.gameState.IndexOf(userId) >= 0);
                         } catch (Exception e) { resp = "E: Failed to find game " + e.ToString(); break; }
 
                         string[] frags = jGame.gameState.Split("|");
