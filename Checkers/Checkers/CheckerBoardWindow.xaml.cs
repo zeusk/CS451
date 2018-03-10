@@ -112,9 +112,9 @@ namespace Checkers
                     bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
 
                     if (i % 2 == j % 2)
-                        bitmap.UriSource = new Uri("../../Resource/DarkGrid.JPG", UriKind.Relative);
+                        bitmap.UriSource = new Uri(System.IO.Directory.GetCurrentDirectory() +"/Resource/DarkGrid.JPG", UriKind.Relative);
                     else
-                        bitmap.UriSource = new Uri("../../Resource/LightGrid.JPG", UriKind.Relative);
+                        bitmap.UriSource = new Uri(System.IO.Directory.GetCurrentDirectory() + "/Resource/LightGrid.JPG", UriKind.Relative);
 
                     brush.ImageSource = bitmap;
 
