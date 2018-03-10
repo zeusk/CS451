@@ -280,7 +280,7 @@ namespace Checkers
             dynamicGrid.Children.Clear();
 
             playerColorCircle.Background = getColorForPlayer();
-            turnToMoveText.Text = Util.isMyTurn() ? "Your turn" : Util.GetOpponentName() + "'s turn";
+            turnToMoveText.Text = Util.isMyTurn() ? "Your turn" : string.IsNullOrEmpty(Util.GetOpponentName()) ? "Waiting to join" : Util.GetOpponentName() + "'s turn";
             connectedPlayerName.Text = string.IsNullOrEmpty(Util.GetOpponentName()) ? "Waiting to join" : Util.GetOpponentName();
 
             dynamicGrid.Children.Add(newG);
