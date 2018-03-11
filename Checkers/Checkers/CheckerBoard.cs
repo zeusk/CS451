@@ -7,11 +7,15 @@ using System.Threading.Tasks;
 
 namespace Checkers
 {
+    /// <summary>
+    /// Representation of game board for Checkers and implementation of game logic
+    /// </summary>
     public class CheckerBoard
     {
         public static Boolean godMode = false;
         private int[,] board;
 
+        //Default constructor to initialize board to conventional initial game setup
         public CheckerBoard()
         {
             board = new int[8, 8];
@@ -43,6 +47,7 @@ namespace Checkers
             }
         }
 
+        //Alternate constructor to setup an empty board for testing
         public CheckerBoard(bool flag)
         {
             if (flag)
@@ -57,11 +62,13 @@ namespace Checkers
             }
         }
 
+        //Place a piece on a specific 
         public void placePiece(int[] pos, int piece)
         {
             board[pos[0], pos[1]] = piece;
         }
 
+        //Print board - for debugging
         public void printBoard()
         {
             for (int i = 0; i < 8; i++)
@@ -76,6 +83,8 @@ namespace Checkers
             return this.board;
         }
 
+        //Method to apply move, given coordinates and player to move
+        //Validates Move before applying
         public bool applyMove(List<int> coords, int player)
         {
             int[] oldPosition = new int [2];
@@ -90,6 +99,7 @@ namespace Checkers
                 Console.WriteLine("Is Valid");
                 int moveType = getMoveType(newPosition, oldPosition, player);
                 Console.WriteLine($"Move Type" + moveType);
+                //Foward Left/Forward Right Move
                 if (moveType == 1 || moveType == 2)
                 {
                     board[newPosition[0], newPosition[1]] = board[oldPosition[0], oldPosition[1]];
@@ -97,6 +107,7 @@ namespace Checkers
                     crownIfPossible(newPosition, player);
                     return true;
                 }
+                //Forward Left Jump
                 else if (moveType == 3)
                 {
                     //Keep Jumping Untill All Jumps of this piece
@@ -107,9 +118,9 @@ namespace Checkers
                     crownIfPossible(newPosition, player);
                     return true;
                 }
+                //Forward Right Jump
                 else if (moveType == 4)
                 {
-                    //Keep Jumping Untill All Jumps of this piece
                     board[newPosition[0], newPosition[1]] = board[oldPosition[0], oldPosition[1]];
                     int[] toBeJumped = genRightForwardPos(oldPosition, player);
                     board[toBeJumped[0], toBeJumped[1]] = 0;
@@ -117,6 +128,7 @@ namespace Checkers
                     crownIfPossible(newPosition, player);
                     return true;
                 }
+                //Backward Left/Right Move
                 else if (moveType == 5 || moveType == 6)
                 {
 
@@ -124,6 +136,7 @@ namespace Checkers
                     board[oldPosition[0], oldPosition[1]] = 0;
                     return true;
                 }
+                //Backward Left Jump
                 else if (moveType == 7)
                 {
                     //Keep Jumping Untill All Jumps of this piece
@@ -133,6 +146,7 @@ namespace Checkers
                     board[oldPosition[0], oldPosition[1]] = 0;
                     return true;
                 }
+                //Backward Right Jump
                 else if (moveType == 8)
                 {
                     board[newPosition[0], newPosition[1]] = board[oldPosition[0], oldPosition[1]];
@@ -145,13 +159,14 @@ namespace Checkers
             return false;
 
         }
-
+        //Takes old and new position and validates the move for a specific player
         public bool validateMove(int[] prev, int[] now, int player)
         {
             if (!godMode && (!(board[prev[0], prev[1]] == player || board[prev[0], prev[1]] == player + 2)))
                 return false;
             //Determine Piece Type
             bool pieceKing = isKing(board[prev[0], prev[1]]);
+            //Determine Move Type- List given in getMoveType
             int moveType = getMoveType(now, prev, player);
 
             if (moveType == 1 || moveType == 2)
@@ -272,10 +287,12 @@ namespace Checkers
             bool leftForward = false;
             if (player == 1)
             {
+                //Row difference 1, Column Difference 1, New Position is Empty and Piece being moved is player's piece
                 leftForward = (now[0] - prev[0] == 1) && (now[1] - prev[1] == 1) && (board[now[0], now[1]] == 0) && (board[prev[0], prev[1]] == piece);
             }
             else if (player == 2)
             {
+                //Row difference -1, Column Difference -1, New Position is Empty and Piece being moved is player's piece
                 leftForward = (now[0] - prev[0] == -1) && (now[1] - prev[1] == -1) && (board[now[0], now[1]] == 0) && (board[prev[0], prev[1]] == piece);
             }
             return leftForward;
@@ -287,10 +304,12 @@ namespace Checkers
 
             if (player == 1)
             {
+                //Row difference 1, Column Difference -1, New Position is Empty and Piece being moved is player's piece
                 rightForward = (now[0] - prev[0] == 1) && (now[1] - prev[1] == -1) && (board[now[0], now[1]] == 0) && (board[prev[0], prev[1]] == piece);
             }
             else if (player == 2)
             {
+                //Row difference -1, Column Difference 1, New Position is Empty and Piece being moved is player's piece
                 rightForward = (now[0] - prev[0] == -1) && (now[1] - prev[1] == 1) && (board[now[0], now[1]] == 0) && (board[prev[0], prev[1]] == piece);
             }
             return rightForward;
@@ -301,10 +320,12 @@ namespace Checkers
             bool jumpLeft = false;
             if (player == 1)
             {
+                //Row difference 2, Column Difference 2, Piece in the middle is either 2 or 4, Piece being moved is player's piece and Position being Moved to is Empty
                 jumpLeft = (now[0] - prev[0] == 2) && (now[1] - prev[1] == 2) && ((board[now[0] - 1, now[1] - 1] == 2) || (board[now[0] - 1, now[1] - 1] == 4)) && (board[prev[0], prev[1]] == piece) && (board[now[0],now[1]] == 0);
             }
             else if (player == 2)
             {
+                //Row difference -2, Column Difference -2, Piece in the middle is either 1 or 3, Piece being moved is player's piece and Position being Moved to is Empty
                 jumpLeft = (now[0] - prev[0] == -2) && (now[1] - prev[1] == -2) && ((board[now[0] + 1, now[1] + 1] == 1) || (board[now[0] + 1, now[1] + 1] == 3)) && (board[prev[0], prev[1]] == piece) && (board[now[0], now[1]] == 0);
             }
             return jumpLeft;
@@ -315,10 +336,12 @@ namespace Checkers
             bool jumpLeft = false;
             if (player == 1)
             {
+                //Row difference -2, Column Difference 2, Piece in the middle is either 2 or 4, Piece being moved is player's piece and Position being Moved to is Empty
                 jumpLeft = (now[0] - prev[0] == -2) && (now[1] - prev[1] == 2) && ((board[now[0] + 1, now[1] - 1] == 2) || (board[now[0] + 1, now[1] - 1] == 4)) && (board[prev[0], prev[1]] == 3) && (board[now[0], now[1]] == 0);
             }
             else if (player == 2)
             {
+                //Row difference 2, Column Difference -2, Piece in the middle is either 1 or 3, Piece being moved is player's piece and Position being Moved to is Empty
                 jumpLeft = (now[0] - prev[0] == 2) && (now[1] - prev[1] == -2) && ((board[now[0] - 1, now[1] + 1] == 1) || (board[now[0] - 1, now[1] + 1] == 3)) && (board[prev[0], prev[1]] == 4) && (board[now[0], now[1]] == 0);
             }
             return jumpLeft;
@@ -330,10 +353,12 @@ namespace Checkers
 
             if (player == 1)
             {
+                //Row difference 2, Column Difference -2, Piece in the middle is either 2 or 4, Piece being moved is player's piece and Position being Moved to is Empty
                 jumpRight = (now[0] - prev[0] == 2) && (now[1] - prev[1] == -2) && ((board[now[0] - 1, now[1] + 1] == 2) || (board[now[0] - 1, now[1] + 1] == 4)) && (board[prev[0], prev[1]] == piece) && (board[now[0], now[1]] == 0);
             }
             else if (player == 2)
             {
+                //Row difference -2, Column Difference 2, Piece in the middle is either 1 or 3, Piece being moved is player's piece and Position being Moved to is Empty
                 jumpRight = (now[0] - prev[0] == -2) && (now[1] - prev[1] == 2) && ((board[now[0] + 1, now[1] - 1] == 1 )|| (board[now[0] + 1, now[1] - 1] == 3)) && (board[prev[0], prev[1]] == piece) && (board[now[0], now[1]] == 0);
             }
             return jumpRight;
@@ -345,10 +370,12 @@ namespace Checkers
 
             if (player == 1)
             {
+                //Row difference -2, Column Difference -2, Piece in the middle is either 2 or 4, Piece being moved is player's piece and Position being Moved to is Empty
                 jumpRight = (now[0] - prev[0] == -2) && (now[1] - prev[1] == -2) && ((board[now[0] + 1, now[1] + 1] == 2) || (board[now[0] + 1, now[1] + 1] == 4)) && (board[prev[0], prev[1]] == 3) && (board[now[0], now[1]] == 0);
             }
             else if (player == 2)
             {
+                //Row difference 2, Column Difference 2, Piece in the middle is either 1 or 3, Piece being moved is player's piece and Position being Moved to is Empty
                 jumpRight = (now[0] - prev[0] == 2) && (now[1] - prev[1] == 2) && (board[now[0] - 1, now[1] - 1] == 1 || board[now[0] - 1, now[1] - 1] == 3) && (board[prev[0], prev[1]] == 4) && (board[now[0], now[1]] == 0);
             }
             return jumpRight;
@@ -359,10 +386,12 @@ namespace Checkers
             bool backwardLeft = false;
             if (player == 1)
             {
+                //Row difference -1, Column Difference 1, Piece being moved is player's piece and Position being Moved to is Empty
                 backwardLeft = (now[0] - prev[0] == -1) && (now[1] - prev[1] == 1) && (board[prev[0], prev[1]] == piece) && (board[now[0], now[1]] == 0);
             }
             else if (player == 2)
             {
+                //Row difference 1, Column Difference -1, Piece being moved is player's piece and Position being Moved to is Empty
                 backwardLeft = (now[0] - prev[0] == 1) && (now[1] - prev[1] == -1) && (board[prev[0], prev[1]] == piece) && (board[now[0], now[1]] == 0);
             }
             return backwardLeft;
@@ -373,21 +402,25 @@ namespace Checkers
             bool backwardRight = false;
             if (player == 1 && piece == 3)
             {
+                //Row difference -1, Column Difference -1, Piece being moved is player's piece and Position being Moved to is Empty
                 backwardRight = (now[0] - prev[0] == -1) && (now[1] - prev[1] == -1) && (board[prev[0], prev[1]] == piece) && (board[now[0], now[1]] == 0);
             }
             else if (player == 2 && piece == 4)
             {
+                //Row difference 1, Column Difference 1, Piece being moved is player's piece and Position being Moved to is Empty
                 backwardRight = (now[0] - prev[0] == 1) && (now[1] - prev[1] == 1) && (board[prev[0], prev[1]] == piece) && (board[now[0], now[1]] == 0);
             }
             return backwardRight;
         }
 
+        //Check if no Pieces left on board for passed in player
         private bool noPiecesLeft(int player)
         {
             return allAvailablePieces(player).Count() == 0;
 
         }
 
+        //Find all available pieces for a player
         public List<int[]> allAvailablePieces(int player)
         {
             List<int[]> pieces = new List<int[]>();
@@ -407,6 +440,7 @@ namespace Checkers
             return pieces;
         }
 
+        //Find all available kings for player
         public List<int[]> allAvailableKings(int player)
         {
             List<int[]> kings = new List<int[]>();
@@ -420,6 +454,7 @@ namespace Checkers
             return kings;
         }
 
+        //Check if a given position is valid (in the board indices)
         private bool checkValidPosition(int[] pos)
         {
             if (pos[0] < 0 || pos[0] > 7 || pos[1] < 0 || pos[1] > 7)
@@ -427,6 +462,9 @@ namespace Checkers
             else
                 return true;
         }
+
+        //Neft Few Methods Generate Positions as noted in method Name
+
         private int[] genLeftForwardJumpPos(int[] pos, int player)
         {
             int[] leftJumpPos = new int[2];
@@ -555,6 +593,8 @@ namespace Checkers
             return rightBackwardPos;
         }
 
+        //Check if a forward jump is possible for piece at given position
+        //Helps enforce - if jumps possible have to take it rule
         public bool checkForwardJumpPossible(int[] pos, int player)
         {
             bool leftJump = false;
@@ -574,6 +614,8 @@ namespace Checkers
             return leftJump || rightJump;
         }
 
+        //Check if a backward jump is possible for a king
+        //Helps enforce - if jumps possible have to take it rule
         public bool checkBackwardJumpPossible(int[] pos, int player)
         {
             if (board[pos[0], pos[1]] != 3 && board[pos[0], pos[1]] != 4)
@@ -595,6 +637,7 @@ namespace Checkers
             return leftJump || rightJump;
         }
 
+        //Check if any forward direction movement is possible for given pos
         public bool checkForwardPossible(int[] pos, int player)
         {
             bool leftForward = false;
@@ -616,6 +659,7 @@ namespace Checkers
             return leftForward || rightForward;
         }
 
+        //Check if any backward movement is possible for given piece
         public bool checkBackwardPossible(int[] pos, int player)
         {
             if (board[pos[0], pos[1]] != 3 && board[pos[0], pos[1]] != 4)
@@ -639,11 +683,13 @@ namespace Checkers
             return leftBackward || rightBackward;
         }
 
+        //Check if any Jump is Possible on the Board for given piece
         public bool checkAnyJumpPossiblePiece(int[] pos, int player)
         {
             return checkForwardJumpPossible(pos, player) || checkBackwardJumpPossible(pos, player);
         }
 
+        //Check if Any Jumps are possible for a player
         public bool checkAnyJumpPossible(int player)
         {
             List<int[]> availablePieces = allAvailablePieces(player);
@@ -659,6 +705,7 @@ namespace Checkers
             return validJump;
         }
 
+        //Check if any forward movement is possible for a player
         public bool checkAnyForwardPossible(int player)
         {
             List<int[]> availablePieces = allAvailablePieces(player);
@@ -675,6 +722,7 @@ namespace Checkers
             return validForward;
         }
 
+        //Check if any backward movement is possible for player
         public bool checkAnyBackwardPossible(int player)
         {
             List<int[]> allKings = allAvailableKings(player);
@@ -693,11 +741,14 @@ namespace Checkers
             }
             return validBackward;
         }
+
+        //Check if any possible moves are there for a player
         public bool checkAnyPossibleMoves(int player)
         {
 
             return checkAnyForwardPossible(player) || checkAnyJumpPossible(player) || checkAnyBackwardPossible(player);
         }
+        //Check Win condition for a player
         public bool checkWin(int player)
         {
             if (player == 1)
@@ -711,6 +762,7 @@ namespace Checkers
             return false;
         }
 
+        //Get Result of Game
         public int getResult()
         {
             if (checkWin(1))
