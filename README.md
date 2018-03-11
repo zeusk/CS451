@@ -1,8 +1,6 @@
-Project title : 
-Checkers
+Project title: Checkers
 
-Author: 
-Shantanu Gupta, Guruansh Singh, Yuwei Zhou
+Authors: Shantanu Gupta, Guruansh Singh, Yuwei Zhou
 
 Project overview: 
 
