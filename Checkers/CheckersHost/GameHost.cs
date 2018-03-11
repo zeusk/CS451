@@ -196,13 +196,36 @@ namespace CheckersHost
                     } break;
                 case "JOIN":
                     {
+                        string[] frags;
                         gameObject jGame;
+
+                        // Remove this user from any currently in progress games before we let them join any other game
+                        try {
+                            jGame = games.Single(g => g.gameState.IndexOf(userId) >= 0);
+                            frags = jGame.gameState.Split("|");
+
+                            if (frags[0].Equals(userId))
+                                frags[0] = "";
+                            if (frags[1].Equals(userId))
+                                frags[1] = "";
+                            if (frags[2].Equals(userId))
+                                frags[2] = "";
+
+                            if (string.IsNullOrWhiteSpace(frags[1]) && string.IsNullOrWhiteSpace(frags[2]))
+                                games.Remove(jGame);
+                            else
+                                jGame.gameState = string.Join("|", frags);
+
+                            inGame.Remove(userId);
+                        }
+                        catch (Exception) { }
+
 
                         try {
                             jGame = games.Single(g => g.gameState.IndexOf(userArg) >= 0);
                         } catch (Exception e) { resp = "E: Failed to find game " + e.ToString(); break; }
 
-                        string[] frags = jGame.gameState.Split("|");
+                        frags = jGame.gameState.Split("|");
 
                         if (string.IsNullOrEmpty(frags[0]))
                             frags[0] = userId;
@@ -253,7 +276,21 @@ namespace CheckersHost
                             iGame = games.Single(g => g.gameId == iGameIdx);
                         } catch (Exception e) { resp = "E: Failed to find game " + e.ToString(); break; }
 
-                        iGame.gameState = userArg;
+                        string[] fragsCur = iGame.gameState.Split("|");
+                        string[] fragsNew = userArg.Split("|");
+
+                        if (string.IsNullOrEmpty(fragsCur[1]))
+                        {
+                            if (fragsNew[0].Equals(fragsNew[1]))
+                                fragsNew[0] = "";
+                            fragsNew[1] = "";
+                        } else if (string.IsNullOrEmpty(fragsCur[2])) {
+                            if (fragsNew[0].Equals(fragsNew[2]))
+                                fragsNew[0] = "";
+                            fragsNew[2] = "";
+                        }
+
+                        iGame.gameState = string.Join("|", fragsNew);
 
                         resp = "OKAY";
                     } break;
