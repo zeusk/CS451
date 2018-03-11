@@ -27,6 +27,12 @@ namespace Checkers
         private static LinearGradientBrush blackGradient = new LinearGradientBrush();
         private static System.Windows.Threading.DispatcherTimer recvTimer;
 
+        private static Bitmap lightGridBM = Properties.Resources.LightGrid;
+        private static BitmapSource lightGridBMSrc = Imaging.CreateBitmapSourceFromHBitmap(lightGridBM.GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+
+        private static Bitmap darkGridBM = Properties.Resources.DarkGrid;
+        private static BitmapSource darkGridBMSrc = Imaging.CreateBitmapSourceFromHBitmap(darkGridBM.GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+
         public static CheckerBoardWindow Instance { get; private set; }
 
         public CheckerBoardWindow()
@@ -110,21 +116,16 @@ namespace Checkers
                 {
                     //Get the background of that grid (dark or light)
                     ImageBrush brush = new ImageBrush();
-                    
                     ImageBrush myBrush = new ImageBrush();
 
 
                     if (i % 2 == j % 2)
                     {
-                        Bitmap myBitmap = Properties.Resources.DarkGrid;
-                        var bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(myBitmap.GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                        brush.ImageSource = bitmapSource;
+                        brush.ImageSource = darkGridBMSrc;
                     }
                     else
                     {
-                        Bitmap myBitmap = Properties.Resources.LightGrid;
-                        var bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(myBitmap.GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                        brush.ImageSource = bitmapSource;
+                        brush.ImageSource = lightGridBMSrc;
                     }
 
                     //Set the grid to a clickable button 
