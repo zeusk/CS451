@@ -62,13 +62,6 @@ namespace Checkers
             return 0;
         }
 
-        private void DisInit()
-        {
-            remote = null;
-        }
-
-        // The meaty part of the file,
-        // This function brokers a network request that sends the string s and returns the response as a string
         private string SendRecv(string s)
         {
             String r = "";
@@ -133,13 +126,25 @@ namespace Checkers
         public int Disconnect()
         {
             if (testLocal)
+            {
+                game = null;
+                _inGame = false;
                 return 0;
-            if (!isConnected)
-                return -1;
+            }
 
-            DisInit();
+            if (isConnected)
+            {
+                String r = SendRecv("EXIT");
+                if (r.StartsWith("OKAY", StringComparison.OrdinalIgnoreCase))
+                {
+                    game = null;
+                    remote = null;
+                    _inGame = false;
+                    return 0;
+                }
+            }
 
-            return 0;
+            return -1;
         }
 
 
@@ -188,7 +193,7 @@ namespace Checkers
 
             // Use this format to load a gameState: (Also make sure you start game as the player1Name or bad things WILL happen)
             // game = GameState.fromString("Mike|Mike||0|1|0|0|0|1|0|1|1|0|1|0|1|0|1|0|0|1|0|1|0|0|0|0|0|0|0|0|0|0|1|0|0|2|0|2|0|0|0|0|2|0|0|0|0|0|2|0|0|0|0|2|0|2|0|2|2|0|3|0|0|0|2|0");
-            game = GameState.fromString("Mike|Mike||3|0|0|0|0|0|0|0|0|4|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0");
+            // game = GameState.fromString("Mike|Mike||3|0|3|0|0|0|0|0|0|4|0|0|0|0|0|0|3|0|3|0|3|0|0|0|3|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0");
 
             if (testLocal)
                 return 0;

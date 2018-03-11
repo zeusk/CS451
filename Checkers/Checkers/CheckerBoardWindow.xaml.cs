@@ -7,6 +7,10 @@ using System.Windows.Media;
 using System.Windows.Navigation;
 using System.Diagnostics;
 using System.Windows.Media.Imaging;
+using System.IO;
+using System.Reflection;
+using System.Drawing;
+using System.Windows.Interop;
 
 namespace Checkers
 {
@@ -23,6 +27,12 @@ namespace Checkers
         private static LinearGradientBrush blackGradient = new LinearGradientBrush();
         private static System.Windows.Threading.DispatcherTimer recvTimer;
 
+        private static Bitmap lightGridBM = Properties.Resources.LightGrid;
+        private static BitmapSource lightGridBMSrc = Imaging.CreateBitmapSourceFromHBitmap(lightGridBM.GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+
+        private static Bitmap darkGridBM = Properties.Resources.DarkGrid;
+        private static BitmapSource darkGridBMSrc = Imaging.CreateBitmapSourceFromHBitmap(darkGridBM.GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+
         public static CheckerBoardWindow Instance { get; private set; }
 
         public CheckerBoardWindow()
@@ -31,8 +41,8 @@ namespace Checkers
             Instance = this;
 
             //Set gradiant for the checker pieces
-            SetGradient(redGradient, Color.FromRgb(220, 141, 124), Color.FromRgb(177, 8, 1), Color.FromRgb(131, 22, 2));
-            SetGradient(blackGradient, Color.FromRgb(139, 141, 136), Color.FromRgb(43, 43, 45), Color.FromRgb(68, 67, 63));
+            SetGradient(redGradient, System.Windows.Media.Color.FromRgb(220, 141, 124), System.Windows.Media.Color.FromRgb(177, 8, 1), System.Windows.Media.Color.FromRgb(131, 22, 2));
+            SetGradient(blackGradient, System.Windows.Media.Color.FromRgb(139, 141, 136), System.Windows.Media.Color.FromRgb(43, 43, 45), System.Windows.Media.Color.FromRgb(68, 67, 63));
 
             //name for local 
             if (gc.testLocal)
@@ -49,10 +59,10 @@ namespace Checkers
         }
 
         //Set up the gradiant 
-        private static void SetGradient(LinearGradientBrush brush, Color s, Color m, Color e)
+        private static void SetGradient(LinearGradientBrush brush, System.Windows.Media.Color s, System.Windows.Media.Color m, System.Windows.Media.Color e)
         {
-            brush.StartPoint = new Point(0.5, 0);
-            brush.EndPoint = new Point(0.5, 1);
+            brush.StartPoint = new System.Windows.Point(0.5, 0);
+            brush.EndPoint = new System.Windows.Point(0.5, 1);
             brush.GradientStops.Add(new GradientStop { Offset = 0.0, Color = s });
             brush.GradientStops.Add(new GradientStop { Offset = 0.2, Color = m });
             brush.GradientStops.Add(new GradientStop { Offset = 0.7, Color = e });
@@ -70,8 +80,8 @@ namespace Checkers
         //Generate the checker board UI
         public static Border generateCheckerBoardUI(int size, GameState gs, bool clickable)
         {
-            SetGradient(redGradient, Color.FromRgb(220, 141, 124), Color.FromRgb(177, 8, 1), Color.FromRgb(131, 22, 2));
-            SetGradient(blackGradient, Color.FromRgb(139, 141, 136), Color.FromRgb(43, 43, 45), Color.FromRgb(68, 67, 63));
+            SetGradient(redGradient, System.Windows.Media.Color.FromRgb(220, 141, 124), System.Windows.Media.Color.FromRgb(177, 8, 1), System.Windows.Media.Color.FromRgb(131, 22, 2));
+            SetGradient(blackGradient, System.Windows.Media.Color.FromRgb(139, 141, 136), System.Windows.Media.Color.FromRgb(43, 43, 45), System.Windows.Media.Color.FromRgb(68, 67, 63));
 
             //Set a grid
             Grid myGrid = new Grid();
@@ -106,17 +116,17 @@ namespace Checkers
                 {
                     //Get the background of that grid (dark or light)
                     ImageBrush brush = new ImageBrush();
-                    BitmapImage bitmap = new BitmapImage();
-                    bitmap.BeginInit();
-                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+                    ImageBrush myBrush = new ImageBrush();
+
 
                     if (i % 2 == j % 2)
-                        bitmap.UriSource = new Uri("../../Resource/DarkGrid.JPG", UriKind.Relative);
+                    {
+                        brush.ImageSource = darkGridBMSrc;
+                    }
                     else
-                        bitmap.UriSource = new Uri("../../Resource/LightGrid.JPG", UriKind.Relative);
-
-                    brush.ImageSource = bitmap;
+                    {
+                        brush.ImageSource = lightGridBMSrc;
+                    }
 
                     //Set the grid to a clickable button 
                     Button checkerboxButton = new Button();
@@ -179,7 +189,7 @@ namespace Checkers
                         }
                         checkerboxButton.Content = OuterBorder;
                     }
-                    bitmap.EndInit();
+                    //bitmap.EndInit();
                     //Add that grid to the board grid
                     myGrid.Children.Add(checkerboxButton);
                 }
@@ -195,7 +205,7 @@ namespace Checkers
             Border gridBorder = new Border();
 
             //Add a overall grid to the checkerboard
-            gridBorder.BorderBrush = new SolidColorBrush(Color.FromRgb(102, 51, 0));
+            gridBorder.BorderBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(102, 51, 0));
             gridBorder.Height = size;
             gridBorder.Width = size;
             gridBorder.BorderThickness = size > 150 ? new Thickness(5) : new Thickness(1);
@@ -280,7 +290,7 @@ namespace Checkers
             dynamicGrid.Children.Clear();
 
             playerColorCircle.Background = getColorForPlayer();
-            turnToMoveText.Text = Util.isMyTurn() ? "Your turn" : Util.GetOpponentName() + "'s turn";
+            turnToMoveText.Text = Util.isMyTurn() ? "Your turn" : string.IsNullOrEmpty(Util.GetOpponentName()) ? "Waiting to join" : Util.GetOpponentName() + "'s turn";
             connectedPlayerName.Text = string.IsNullOrEmpty(Util.GetOpponentName()) ? "Waiting to join" : Util.GetOpponentName();
 
             dynamicGrid.Children.Add(newG);
@@ -289,8 +299,6 @@ namespace Checkers
         //Close the program and delete player from server 
         private void CloseGame(object sender, RoutedEventArgs e)
         {
-            if (gc.inGame)
-                gc.QuitGame();
             gc.Disconnect();
             Properties.Settings.Default.Save();
             Application.Current.Shutdown();
